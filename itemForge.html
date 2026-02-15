@@ -1,0 +1,2163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ItemForge</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: #0a0e13;
+      --bg-secondary: #0f1419;
+      --bg-tertiary: #151b23;
+      --bg-input: #1a2332;
+      --border-subtle: #1c2531;
+      --border-medium: #2d3748;
+      --border-active: #3b82f6;
+      --text-primary: #e9ecf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-yellow: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    header .t {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .pill {
+      font-size: 12px;
+      padding: 4px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 340px 500px 1fr;
+      height: calc(100vh - 57px);
+    }
+
+    @media (max-width: 1200px) {
+      main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        height: auto;
+        min-height: calc(100vh - 57px);
+      }
+      main > .panel:last-child {
+        grid-column: 1 / -1;
+        min-height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      main > .panel:last-child {
+        grid-column: 1;
+        min-height: 350px;
+      }
+    }
+
+    .panel {
+      overflow: auto;
+      background: var(--bg-secondary);
+    }
+
+    .panel.b1, .panel.b2 {
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .panel::-webkit-scrollbar { width: 10px; }
+    .panel::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .panel::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 5px;
+    }
+    .panel::-webkit-scrollbar-thumb:hover { background: #3d4a5c; }
+
+    .section {
+      padding: 20px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .section h2 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 16px;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.9;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    input:hover, select:hover, textarea:hover {
+      border-color: #3d4a5c;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 90px;
+      resize: vertical;
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      line-height: 1.5;
+    }
+
+    .row { margin-bottom: 14px; }
+    .row:last-child { margin-bottom: 0; }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btnrow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    button:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: var(--bg-secondary);
+      border-color: var(--border-subtle);
+    }
+
+    button.secondary:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-medium);
+    }
+
+    button.danger {
+      background: #1f1315;
+      border-color: #4b1b1b;
+      color: #fca5a5;
+    }
+
+    button.danger:hover {
+      background: #2d1215;
+      border-color: #7c2d2d;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .mono {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px;
+      height: 100%;
+      overflow: auto;
+      white-space: pre;
+      tab-size: 2;
+      font-size: 13px;
+      line-height: 1.6;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    }
+
+    pre::-webkit-scrollbar { width: 10px; height: 10px; }
+    pre::-webkit-scrollbar-track { background: var(--bg-primary); }
+    pre::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 5px;
+    }
+
+    .lint {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .ok { color: var(--accent-green); font-weight: 500; }
+    .bad { color: var(--accent-red); }
+    .warn { color: var(--accent-yellow); }
+    .muted { color: var(--text-muted); }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .itembtn {
+      text-align: left;
+      padding: 10px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+      color: var(--text-primary);
+    }
+
+    .itembtn:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+      transform: translateX(2px);
+    }
+
+    .itembtn.active {
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--bg-tertiary);
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-right: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+      accent-color: var(--accent-blue);
+    }
+
+    details { margin-top: 14px; }
+    details > summary {
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 8px 0;
+      user-select: none;
+    }
+    details > summary:hover { color: var(--text-primary); }
+    details[open] > summary { color: var(--accent-blue); }
+
+    .translation-line {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .translation-line code {
+      flex: 1;
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .translation-line button {
+      padding: 4px 10px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .built-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .built-item .built-label {
+      flex: 1;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .built-item .built-del {
+      padding: 2px 8px;
+      font-size: 10px;
+      min-width: 0;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
+
+    .section h2 .badge {
+      display: inline-block;
+      background: var(--accent-blue);
+      color: #fff;
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-left: 8px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    /* Custom properties table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+      vertical-align: middle;
+    }
+
+    th {
+      text-align: left;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 11px;
+    }
+
+    td input, td select {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    td button {
+      padding: 6px 12px;
+      font-size: 11px;
+      width: 100%;
+    }
+
+    /* Guide modal */
+    .guide-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .guide-overlay.visible { display: flex; }
+    .guide-modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: 12px;
+      width: 90vw;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+    }
+    .guide-header h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .guide-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .guide-close:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+    .guide-body {
+      overflow-y: auto;
+      padding: 24px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+    .guide-body::-webkit-scrollbar { width: 10px; }
+    .guide-body::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .guide-body::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    .guide-body h3 {
+      color: var(--text-primary);
+      font-size: 15px;
+      margin: 28px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-body h3:first-child { margin-top: 0; }
+    .guide-body h4 {
+      color: var(--accent-blue);
+      font-size: 13px;
+      margin: 18px 0 6px;
+    }
+    .guide-body p { margin: 0 0 10px; }
+    .guide-body ul, .guide-body ol { margin: 0 0 10px; padding-left: 20px; }
+    .guide-body li { margin-bottom: 4px; }
+    .guide-body code {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      background: var(--bg-input);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .guide-body pre {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0 0 12px;
+      height: auto;
+    }
+    .guide-body table {
+      margin: 8px 0 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .guide-body th {
+      background: var(--bg-tertiary);
+      padding: 8px 12px;
+    }
+    .guide-body td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-btn {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .guide-btn:hover {
+      background: linear-gradient(135deg, #264d7a 0%, #1e3044 100%);
+      color: #93c5fd;
+      transform: translateY(-1px);
+    }
+
+    /* Type-conditional section visibility */
+    .type-section { display: none; }
+    .type-section.visible { display: block; }
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="btn-home" style="text-decoration:none; margin-right: 15px;">
+    &larr; Project Omen
+  </a>
+  
+  <div class="t">ItemForge</div>
+  <span class="pill">Build &rarr; Export</span>
+  
+  <button id="openGuide" class="guide-btn">Guide &amp; Reference</button>
+</header>
+
+<!-- Guide Modal -->
+<div id="guideOverlay" class="guide-overlay">
+  <div class="guide-modal">
+    <div class="guide-header">
+      <h2>ItemForge &mdash; User Guide &amp; B42 Reference</h2>
+      <button id="closeGuide" class="guide-close">&times;</button>
+    </div>
+    <div class="guide-body">
+      <p style="color: var(--text-muted); text-align: center;">Loading guide...</p>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- LEFT: LOADER + LIST -->
+  <div class="panel b1">
+    <div class="section">
+      <h2>Load Item Script File</h2>
+      <div class="row">
+        <input id="fileInput" type="file" accept=".txt" />
+        <div class="hint">
+          Loads into memory only &mdash; nothing is written back. Use Export to copy or download.
+        </div>
+      </div>
+      <div class="row">
+        <label for="filter">Filter</label>
+        <input id="filter" placeholder="type to filter item IDs..." />
+      </div>
+      <div class="row">
+        <label for="filterType">Filter by Type</label>
+        <select id="filterType" style="width:100%;">
+          <option value="">(All Types)</option>
+          <option>Normal</option>
+          <option>Weapon</option>
+          <option>Food</option>
+          <option>Literature</option>
+          <option>Drainable</option>
+          <option>Clothing</option>
+          <option>Container</option>
+          <option>WeaponPart</option>
+          <option>Key</option>
+          <option>Moveable</option>
+          <option>Radio</option>
+          <option>AlarmClock</option>
+          <option>AlarmClockClothing</option>
+          <option>Map</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="chip"><span class="muted">Loaded:</span> <span id="loadedName" class="mono small">(none)</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Your Items <span id="builtBadge" class="badge" style="display:none;">0</span></h2>
+      <div class="btnrow" style="margin-bottom:10px;">
+        <button id="saveItemBtn">Save Current Item</button>
+        <button id="newItemBtn" class="secondary">New Item</button>
+      </div>
+      <div id="builtList" class="list"></div>
+      <div id="builtEmpty" class="hint">No items saved yet. Build one in the form and click "Save Current Item".</div>
+      <div class="btnrow" style="margin-top:10px;">
+        <button id="exportAllBtn" class="secondary" style="display:none;">Export All Items</button>
+        <button id="dlAllBtn" class="secondary" style="display:none;">Download All Items</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Loaded File Items</h2>
+      <div id="itemList" class="list"></div>
+    </div>
+  </div>
+
+  <!-- MIDDLE: ITEM FORM -->
+  <div class="panel b2">
+    <div class="section">
+      <h2>Item Builder</h2>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="moduleName">Module (locked)</label>
+          <input id="moduleName" value="Base" readonly style="opacity:0.6; cursor:not-allowed;" />
+          <div class="hint">Must be <span class="mono">Base</span> for multiplayer.</div>
+        </div>
+        <div class="row">
+          <label for="itemId">Item ID</label>
+          <input id="itemId" placeholder="MyCustomItem" />
+          <div class="hint">Unique identifier, no spaces.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="displayName">DisplayName</label>
+        <input id="displayName" placeholder="My Custom Item" />
+        <div class="hint">The name players see in-game. Also generates the <span class="mono">Items_EN.txt</span> translation line.</div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="itemType">Type</label>
+          <select id="itemType" style="width:100%;">
+            <option value="Normal">Normal</option>
+            <option value="Weapon">Weapon</option>
+            <option value="Food">Food</option>
+            <option value="Literature">Literature</option>
+            <option value="Drainable">Drainable</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Container">Container</option>
+            <option value="WeaponPart">WeaponPart</option>
+            <option value="Key">Key</option>
+            <option value="Moveable">Moveable</option>
+            <option value="Radio">Radio</option>
+            <option value="AlarmClock">AlarmClock</option>
+            <option value="AlarmClockClothing">AlarmClockClothing</option>
+            <option value="Map">Map</option>
+          </select>
+          <div class="hint">Determines which property sections appear below.</div>
+        </div>
+        <div class="row">
+          <label for="weight">Weight</label>
+          <input id="weight" placeholder="1.0" />
+          <div class="hint">Item weight in kilograms.</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="icon">Icon</label>
+          <input id="icon" placeholder="MyIcon" />
+          <div class="hint">Icon texture name.</div>
+        </div>
+        <div class="row">
+          <label for="displayCategory">DisplayCategory</label>
+          <input id="displayCategory" placeholder="Material" />
+          <div class="hint">Category shown in inventory menus.</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="tags">Tags</label>
+          <input id="tags" placeholder="TagA;TagB" />
+          <div class="hint">Semicolon-separated. Used for recipe matching.</div>
+        </div>
+        <div class="row">
+          <label for="tooltip">Tooltip</label>
+          <input id="tooltip" placeholder="Item description" />
+        </div>
+      </div>
+
+      <div class="grid3">
+        <div class="row">
+          <label for="colorRed">ColorRed</label>
+          <input id="colorRed" placeholder="1.0" />
+        </div>
+        <div class="row">
+          <label for="colorGreen">ColorGreen</label>
+          <input id="colorGreen" placeholder="1.0" />
+        </div>
+        <div class="row">
+          <label for="colorBlue">ColorBlue</label>
+          <input id="colorBlue" placeholder="1.0" />
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="count">Count</label>
+          <input id="count" placeholder="1" />
+        </div>
+        <div class="row">
+          <label for="onCreate">OnCreate</label>
+          <input id="onCreate" placeholder="Module.FuncName" />
+          <div class="hint">Lua function called when item is created.</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="staticModel">StaticModel</label>
+          <input id="staticModel" placeholder="ModelName" />
+        </div>
+        <div class="row">
+          <label for="worldStaticModel">WorldStaticModel</label>
+          <input id="worldStaticModel" placeholder="ModelName" />
+        </div>
+      </div>
+    </div>
+
+    <!-- WEAPON SECTION -->
+    <div id="sectionWeapon" class="section type-section">
+      <details open>
+        <summary>Weapon Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="wMinDamage">MinDamage</label><input id="wMinDamage" placeholder="0.2" /></div>
+          <div class="row"><label for="wMaxDamage">MaxDamage</label><input id="wMaxDamage" placeholder="0.8" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wMinRange">MinRange</label><input id="wMinRange" placeholder="0.61" /></div>
+          <div class="row"><label for="wMaxRange">MaxRange</label><input id="wMaxRange" placeholder="1.55" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wBaseSpeed">BaseSpeed</label><input id="wBaseSpeed" placeholder="1.0" /></div>
+          <div class="row"><label for="wSwingTime">SwingTime</label><input id="wSwingTime" placeholder="2" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wMinimumSwingTime">MinimumSwingTime</label><input id="wMinimumSwingTime" placeholder="2" /></div>
+          <div class="row"><label for="wSwingAnim">SwingAnim</label><input id="wSwingAnim" placeholder="Bat" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wCriticalChance">CriticalChance</label><input id="wCriticalChance" placeholder="5" /></div>
+          <div class="row"><label for="wCritDmgMultiplier">CritDmgMultiplier</label><input id="wCritDmgMultiplier" placeholder="2" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wCategories">Categories</label><input id="wCategories" placeholder="Improvised;Blunt" /></div>
+          <div class="row"><label for="wSubCategory">SubCategory</label><input id="wSubCategory" placeholder="Swinging" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wConditionMax">ConditionMax</label><input id="wConditionMax" placeholder="10" /></div>
+          <div class="row"><label for="wConditionLowerChanceOneIn">ConditionLowerChanceOneIn</label><input id="wConditionLowerChanceOneIn" placeholder="2" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wDoorDamage">DoorDamage</label><input id="wDoorDamage" placeholder="5" /></div>
+          <div class="row"><label for="wTreeDamage">TreeDamage</label><input id="wTreeDamage" placeholder="0" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wMaxHitCount">MaxHitCount</label><input id="wMaxHitCount" placeholder="2" /></div>
+          <div class="row"><label for="wKnockdownMod">KnockdownMod</label><input id="wKnockdownMod" placeholder="0" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wPushBackMod">PushBackMod</label><input id="wPushBackMod" placeholder="0.3" /></div>
+          <div class="row"><label for="wEnduranceMod">EnduranceMod</label><input id="wEnduranceMod" placeholder="0" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wMinAngle">MinAngle</label><input id="wMinAngle" placeholder="0.8" /></div>
+          <div class="row"><label for="wWeaponSprite">WeaponSprite</label><input id="wWeaponSprite" placeholder="SpriteName" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wAttachmentType">AttachmentType</label><input id="wAttachmentType" placeholder="Shovel" /></div>
+          <div class="row"><label for="wIdleAnim">IdleAnim</label><input id="wIdleAnim" placeholder="Idle_Weapon2" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wRunAnim">RunAnim</label><input id="wRunAnim" placeholder="Run_Weapon2" /></div>
+          <div class="row"><label for="wSwingAmountBeforeImpact">SwingAmountBeforeImpact</label><input id="wSwingAmountBeforeImpact" placeholder="0.02" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wSplatNumber">SplatNumber</label><input id="wSplatNumber" placeholder="1" /></div>
+          <div class="row"><label for="wMetalValue">MetalValue</label><input id="wMetalValue" placeholder="0" /></div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="wTwoHandWeapon" /> TwoHandWeapon
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="wKnockBackOnNoDeath" /> KnockBackOnNoDeath
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="wSplatBloodOnNoDeath" /> SplatBloodOnNoDeath
+          </label>
+        </div>
+
+        <details style="margin-top:14px;">
+          <summary>Sounds</summary>
+          <div class="grid2">
+            <div class="row"><label for="wSwingSound">SwingSound</label><input id="wSwingSound" placeholder="" /></div>
+            <div class="row"><label for="wHitSound">HitSound</label><input id="wHitSound" placeholder="" /></div>
+          </div>
+          <div class="grid2">
+            <div class="row"><label for="wHitFloorSound">HitFloorSound</label><input id="wHitFloorSound" placeholder="" /></div>
+            <div class="row"><label for="wDoorHitSound">DoorHitSound</label><input id="wDoorHitSound" placeholder="" /></div>
+          </div>
+          <div class="grid2">
+            <div class="row"><label for="wBreakSound">BreakSound</label><input id="wBreakSound" placeholder="" /></div>
+            <div class="row"><label for="wEquipSound">EquipSound</label><input id="wEquipSound" placeholder="" /></div>
+          </div>
+          <div class="row"><label for="wUnequipSound">UnequipSound</label><input id="wUnequipSound" placeholder="" /></div>
+        </details>
+
+        <details style="margin-top:14px;">
+          <summary>Firearm Properties</summary>
+          <div class="grid2">
+            <div class="row"><label for="wAmmoType">AmmoType</label><input id="wAmmoType" placeholder="Base.Bullets9mm" /></div>
+            <div class="row"><label for="wMagazineType">MagazineType</label><input id="wMagazineType" placeholder="" /></div>
+          </div>
+          <div class="grid2">
+            <div class="row"><label for="wClipSize">ClipSize</label><input id="wClipSize" placeholder="" /></div>
+            <div class="row"><label for="wReloadTime">ReloadTime</label><input id="wReloadTime" placeholder="" /></div>
+          </div>
+          <div class="grid2">
+            <div class="row"><label for="wAimingTime">AimingTime</label><input id="wAimingTime" placeholder="" /></div>
+            <div class="row"><label for="wRecoilDelay">RecoilDelay</label><input id="wRecoilDelay" placeholder="" /></div>
+          </div>
+          <div class="grid2">
+            <div class="row"><label for="wHitChance">HitChance</label><input id="wHitChance" placeholder="" /></div>
+            <div class="row"><label for="wSoundRadius">SoundRadius</label><input id="wSoundRadius" placeholder="" /></div>
+          </div>
+          <div class="grid2">
+            <div class="row"><label for="wFireRange">FireRange</label><input id="wFireRange" placeholder="" /></div>
+            <div class="row"><label for="wFirePower">FirePower</label><input id="wFirePower" placeholder="" /></div>
+          </div>
+          <div class="row">
+            <label style="display:inline-flex; align-items:center; cursor:pointer;">
+              <input type="checkbox" id="wIsAimedFirearm" /> IsAimedFirearm
+            </label>
+          </div>
+          <div class="row">
+            <label style="display:inline-flex; align-items:center; cursor:pointer;">
+              <input type="checkbox" id="wHaveChamber" /> HaveChamber
+            </label>
+          </div>
+        </details>
+      </details>
+    </div>
+
+    <!-- FOOD SECTION -->
+    <div id="sectionFood" class="section type-section">
+      <details open>
+        <summary>Food Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="fHungerChange">HungerChange</label><input id="fHungerChange" placeholder="-16" /><div class="hint">Negative = reduces hunger.</div></div>
+          <div class="row"><label for="fThirstChange">ThirstChange</label><input id="fThirstChange" placeholder="-7" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="fCalories">Calories</label><input id="fCalories" placeholder="95" /></div>
+          <div class="row"><label for="fFoodType">FoodType</label><input id="fFoodType" placeholder="Fruits" /></div>
+        </div>
+        <div class="grid3">
+          <div class="row"><label for="fCarbohydrates">Carbohydrates</label><input id="fCarbohydrates" placeholder="25.13" /></div>
+          <div class="row"><label for="fLipids">Lipids</label><input id="fLipids" placeholder="0.31" /></div>
+          <div class="row"><label for="fProteins">Proteins</label><input id="fProteins" placeholder="0.47" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="fDaysFresh">DaysFresh</label><input id="fDaysFresh" placeholder="5" /></div>
+          <div class="row"><label for="fDaysTotallyRotten">DaysTotallyRotten</label><input id="fDaysTotallyRotten" placeholder="8" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="fMinutesToCook">MinutesToCook</label><input id="fMinutesToCook" placeholder="" /></div>
+          <div class="row"><label for="fMinutesToBurn">MinutesToBurn</label><input id="fMinutesToBurn" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="fBoredomChange">BoredomChange</label><input id="fBoredomChange" placeholder="" /></div>
+          <div class="row"><label for="fUnhappyChange">UnhappyChange</label><input id="fUnhappyChange" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="fStressChange">StressChange</label><input id="fStressChange" placeholder="" /></div>
+          <div class="row"><label for="fEnduranceChange">EnduranceChange</label><input id="fEnduranceChange" placeholder="" /></div>
+        </div>
+        <div class="row"><label for="fEvolvedRecipe">EvolvedRecipe</label><input id="fEvolvedRecipe" placeholder="Cake:16;FruitSalad:8" /><div class="hint">Format: RecipeName:Weight;RecipeName:Weight</div></div>
+        <div class="grid2">
+          <div class="row"><label for="fCustomEatSound">CustomEatSound</label><input id="fCustomEatSound" placeholder="EatingFruit" /></div>
+          <div class="row"><label for="fCookingSound">CookingSound</label><input id="fCookingSound" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="fReplaceOnCooked">ReplaceOnCooked</label><input id="fReplaceOnCooked" placeholder="" /></div>
+          <div class="row"><label for="fReplaceOnRotten">ReplaceOnRotten</label><input id="fReplaceOnRotten" placeholder="" /></div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="fIsCookable" /> IsCookable
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="fDangerousUncooked" /> DangerousUncooked
+          </label>
+        </div>
+        <div class="grid2">
+          <div class="row">
+            <label style="display:inline-flex; align-items:center; cursor:pointer;">
+              <input type="checkbox" id="fGoodHot" /> GoodHot
+            </label>
+          </div>
+          <div class="row">
+            <label style="display:inline-flex; align-items:center; cursor:pointer;">
+              <input type="checkbox" id="fBadCold" /> BadCold
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="fCannedFood" /> CannedFood
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="fSpice" /> Spice
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <!-- CLOTHING SECTION -->
+    <div id="sectionClothing" class="section type-section">
+      <details open>
+        <summary>Clothing Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="cBodyLocation">BodyLocation</label><input id="cBodyLocation" placeholder="Torso" /></div>
+          <div class="row"><label for="cClothingItem">ClothingItem</label><input id="cClothingItem" placeholder="" /></div>
+        </div>
+        <div class="grid3">
+          <div class="row"><label for="cBiteDefense">BiteDefense</label><input id="cBiteDefense" placeholder="0" /></div>
+          <div class="row"><label for="cScratchDefense">ScratchDefense</label><input id="cScratchDefense" placeholder="0" /></div>
+          <div class="row"><label for="cBulletDefense">BulletDefense</label><input id="cBulletDefense" placeholder="0" /></div>
+        </div>
+        <div class="grid3">
+          <div class="row"><label for="cInsulation">Insulation</label><input id="cInsulation" placeholder="0" /></div>
+          <div class="row"><label for="cWindResistance">WindResistance</label><input id="cWindResistance" placeholder="0" /></div>
+          <div class="row"><label for="cWaterResistance">WaterResistance</label><input id="cWaterResistance" placeholder="0" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="cFabricType">FabricType</label><input id="cFabricType" placeholder="" /></div>
+          <div class="row"><label for="cConditionMax">ConditionMax</label><input id="cConditionMax" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="cBloodLocation">BloodLocation</label><input id="cBloodLocation" placeholder="" /></div>
+          <div class="row"><label for="cChanceToFall">ChanceToFall</label><input id="cChanceToFall" placeholder="" /></div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="cCanHaveHoles" /> CanHaveHoles
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="cCosmetic" /> Cosmetic
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <!-- CONTAINER SECTION -->
+    <div id="sectionContainer" class="section type-section">
+      <details open>
+        <summary>Container Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="cnCapacity">Capacity</label><input id="cnCapacity" placeholder="15" /></div>
+          <div class="row"><label for="cnWeightReduction">WeightReduction</label><input id="cnWeightReduction" placeholder="70" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="cnCanBeEquipped">CanBeEquipped</label><input id="cnCanBeEquipped" placeholder="Back" /></div>
+          <div class="row"><label for="cnClothingItem">ClothingItem</label><input id="cnClothingItem" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="cnOpenSound">OpenSound</label><input id="cnOpenSound" placeholder="" /></div>
+          <div class="row"><label for="cnCloseSound">CloseSound</label><input id="cnCloseSound" placeholder="" /></div>
+        </div>
+        <div class="row"><label for="cnPutInSound">PutInSound</label><input id="cnPutInSound" placeholder="" /></div>
+      </details>
+    </div>
+
+    <!-- LITERATURE SECTION -->
+    <div id="sectionLiterature" class="section type-section">
+      <details open>
+        <summary>Literature Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="lSkillTrained">SkillTrained</label><input id="lSkillTrained" placeholder="Mechanics" /></div>
+          <div class="row"><label for="lNumLevelsTrained">NumLevelsTrained</label><input id="lNumLevelsTrained" placeholder="2" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="lLvlSkillTrained">LvlSkillTrained</label><input id="lLvlSkillTrained" placeholder="1" /></div>
+          <div class="row"><label for="lNumberOfPages">NumberOfPages</label><input id="lNumberOfPages" placeholder="10" /></div>
+        </div>
+        <div class="row"><label for="lTeachedRecipes">TeachedRecipes</label><input id="lTeachedRecipes" placeholder="RecipeA;RecipeB" /><div class="hint">Semicolon-separated recipe IDs this book teaches.</div></div>
+        <div class="grid2">
+          <div class="row"><label for="lBoredomChange">BoredomChange</label><input id="lBoredomChange" placeholder="-10" /></div>
+          <div class="row"><label for="lStressChange">StressChange</label><input id="lStressChange" placeholder="" /></div>
+        </div>
+      </details>
+    </div>
+
+    <!-- DRAINABLE SECTION -->
+    <div id="sectionDrainable" class="section type-section">
+      <details open>
+        <summary>Drainable Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="dUseDelta">UseDelta</label><input id="dUseDelta" placeholder="0.1" /><div class="hint">Amount consumed per use (0-1 range).</div></div>
+          <div class="row"><label for="dWeightEmpty">WeightEmpty</label><input id="dWeightEmpty" placeholder="0.1" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="dLightDistance">LightDistance</label><input id="dLightDistance" placeholder="" /></div>
+          <div class="row"><label for="dLightStrength">LightStrength</label><input id="dLightStrength" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="dTorchCone">TorchCone</label><input id="dTorchCone" placeholder="" /></div>
+          <div class="row"><label for="dTorchDot">TorchDot</label><input id="dTorchDot" placeholder="" /></div>
+        </div>
+        <div class="row"><label for="dReplaceOnDeplete">ReplaceOnDeplete</label><input id="dReplaceOnDeplete" placeholder="" /></div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="dCanStoreWater" /> CanStoreWater
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="dActivatedItem" /> ActivatedItem
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <!-- WEAPONPART SECTION -->
+    <div id="sectionWeaponPart" class="section type-section">
+      <details open>
+        <summary>WeaponPart Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="wpPartType">PartType</label><input id="wpPartType" placeholder="Scope" /></div>
+          <div class="row"><label for="wpMountOn">MountOn</label><input id="wpMountOn" placeholder="Base.Pistol" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wpAimingTimeModifier">AimingTimeModifier</label><input id="wpAimingTimeModifier" placeholder="" /></div>
+          <div class="row"><label for="wpHitChanceModifier">HitChanceModifier</label><input id="wpHitChanceModifier" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="wpMaxRangeModifier">MaxRangeModifier</label><input id="wpMaxRangeModifier" placeholder="" /></div>
+          <div class="row"><label for="wpRecoilDelayModifier">RecoilDelayModifier</label><input id="wpRecoilDelayModifier" placeholder="" /></div>
+        </div>
+        <div class="row"><label for="wpWeightModifier">WeightModifier</label><input id="wpWeightModifier" placeholder="" /></div>
+      </details>
+    </div>
+
+    <!-- KEY SECTION -->
+    <div id="sectionKey" class="section type-section">
+      <details open>
+        <summary>Key Properties</summary>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="kPadlock" /> Padlock
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="kDigitalPadlock" /> DigitalPadlock
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <!-- MOVEABLE SECTION -->
+    <div id="sectionMoveable" class="section type-section">
+      <details open>
+        <summary>Moveable Properties</summary>
+        <div class="row"><label for="mvWorldObjectSprite">WorldObjectSprite</label><input id="mvWorldObjectSprite" placeholder="" /></div>
+      </details>
+    </div>
+
+    <!-- RADIO SECTION -->
+    <div id="sectionRadio" class="section type-section">
+      <details open>
+        <summary>Radio Properties</summary>
+        <div class="grid2">
+          <div class="row"><label for="rMinChannel">MinChannel</label><input id="rMinChannel" placeholder="" /></div>
+          <div class="row"><label for="rMaxChannel">MaxChannel</label><input id="rMaxChannel" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="rTransmitRange">TransmitRange</label><input id="rTransmitRange" placeholder="" /></div>
+          <div class="row"><label for="rMicRange">MicRange</label><input id="rMicRange" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row">
+            <label style="display:inline-flex; align-items:center; cursor:pointer;">
+              <input type="checkbox" id="rTwoWay" /> TwoWay
+            </label>
+          </div>
+          <div class="row">
+            <label style="display:inline-flex; align-items:center; cursor:pointer;">
+              <input type="checkbox" id="rIsPortable" /> IsPortable
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="rIsTelevision" /> IsTelevision
+          </label>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="rUsesBattery" /> UsesBattery
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <!-- ALARMCLOCK SECTION -->
+    <div id="sectionAlarmClock" class="section type-section">
+      <details open>
+        <summary>AlarmClock Properties</summary>
+        <div class="row"><label for="acAlarmSound">AlarmSound</label><input id="acAlarmSound" placeholder="" /></div>
+      </details>
+    </div>
+
+    <!-- ALARMCLOCKCLOTHING SECTION -->
+    <div id="sectionAlarmClockClothing" class="section type-section">
+      <details open>
+        <summary>AlarmClockClothing Properties</summary>
+        <div class="row"><label for="accAlarmSound">AlarmSound</label><input id="accAlarmSound" placeholder="" /></div>
+        <div class="hint" style="margin-bottom:12px;">This type also inherits all Clothing properties. Fill those in the Clothing section above if it appears.</div>
+        <div class="grid2">
+          <div class="row"><label for="accBodyLocation">BodyLocation</label><input id="accBodyLocation" placeholder="Wrist" /></div>
+          <div class="row"><label for="accClothingItem">ClothingItem</label><input id="accClothingItem" placeholder="" /></div>
+        </div>
+        <div class="grid3">
+          <div class="row"><label for="accBiteDefense">BiteDefense</label><input id="accBiteDefense" placeholder="0" /></div>
+          <div class="row"><label for="accScratchDefense">ScratchDefense</label><input id="accScratchDefense" placeholder="0" /></div>
+          <div class="row"><label for="accInsulation">Insulation</label><input id="accInsulation" placeholder="0" /></div>
+        </div>
+      </details>
+    </div>
+
+    <!-- MAP SECTION -->
+    <div id="sectionMap" class="section type-section">
+      <details open>
+        <summary>Map Properties</summary>
+        <div class="row"><label for="mpMap">Map</label><input id="mpMap" placeholder="MapName" /></div>
+      </details>
+    </div>
+
+    <!-- NORMAL-SPECIFIC SECTION -->
+    <div id="sectionNormal" class="section type-section">
+      <details>
+        <summary>Normal-Type Extras</summary>
+        <div class="grid2">
+          <div class="row"><label for="nMaxCapacity">MaxCapacity</label><input id="nMaxCapacity" placeholder="" /></div>
+          <div class="row"><label for="nReplaceOnUse">ReplaceOnUse</label><input id="nReplaceOnUse" placeholder="" /></div>
+        </div>
+        <div class="grid2">
+          <div class="row"><label for="nConditionMax">ConditionMax</label><input id="nConditionMax" placeholder="" /></div>
+          <div class="row"><label for="nMetalValue">MetalValue</label><input id="nMetalValue" placeholder="" /></div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="nSurvivalGear" /> SurvivalGear
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <!-- CUSTOM PROPERTIES -->
+    <div class="section">
+      <details id="customPropsDetails">
+        <summary>Custom Properties (ModData)</summary>
+        <div class="hint" style="margin-bottom:10px;">Any property not recognized by the engine is stored in ModData. Access in Lua: <span class="mono">item:getModData().YourKey</span></div>
+        <div class="btnrow">
+          <button id="addCustomProp">+ Add Property</button>
+          <button id="clearCustomProps" class="danger">Clear</button>
+        </div>
+        <table id="customPropsTable">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Value</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </details>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="section">
+      <h2>Export</h2>
+      <div class="row">
+        <label style="display:inline-flex; align-items:center; cursor:pointer;">
+          <input type="checkbox" id="wrapModule" /> Wrap in <span class="mono" style="margin-left:4px;">module Base { }</span>
+        </label>
+        <div class="hint">Include the module wrapper. Useful when starting a new item file.</div>
+      </div>
+      <div class="btnrow">
+        <button id="copyBlock">Copy Item Block</button>
+        <button id="dlBlock" class="secondary">Download Item</button>
+      </div>
+      <div class="btnrow" style="margin-top:8px;">
+        <button id="loadExample" class="secondary">Load Example</button>
+        <button id="resetForm" class="danger">Reset Form</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW + LINT -->
+  <div class="panel" style="display:grid; grid-template-rows: 1fr auto auto;">
+    <div style="display:flex; flex-direction:column; height:100%;">
+      <div style="padding: 12px 20px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-tertiary);">
+        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Preview Output</div>
+        <div id="previewLabel" class="mono" style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">(no item)</div>
+      </div>
+      <pre id="preview" class="mono" style="flex: 1; height: auto;"></pre>
+    </div>
+    <div id="translationArea" style="padding: 12px 20px; border-top: 1px solid var(--border-subtle); background: var(--bg-secondary); display: none;">
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 6px;">Translation Line (Items_EN.txt)</div>
+      <div class="translation-line">
+        <code id="translationCode"></code>
+        <button id="copyTranslation" style="padding:4px 10px; font-size:11px;">Copy</button>
+      </div>
+    </div>
+    <div id="lint" class="lint mono"></div>
+  </div>
+</main>
+
+<script>
+  // --- Constants ---
+  const ITEM_TYPES = ["Normal","Weapon","Food","Literature","Drainable","Clothing","Container","WeaponPart","Key","Moveable","Radio","AlarmClock","AlarmClockClothing","Map"];
+
+  const RX_IDENT = /^[A-Za-z_][A-Za-z0-9_]*$/;
+  const RX_NUM = /^-?\d+(\.\d+)?$/;
+
+  const el = (id) => document.getElementById(id);
+
+  // Type-section mapping
+  const TYPE_SECTIONS = {
+    Normal: "sectionNormal",
+    Weapon: "sectionWeapon",
+    Food: "sectionFood",
+    Literature: "sectionLiterature",
+    Drainable: "sectionDrainable",
+    Clothing: "sectionClothing",
+    Container: "sectionContainer",
+    WeaponPart: "sectionWeaponPart",
+    Key: "sectionKey",
+    Moveable: "sectionMoveable",
+    Radio: "sectionRadio",
+    AlarmClock: "sectionAlarmClock",
+    AlarmClockClothing: "sectionAlarmClockClothing",
+    Map: "sectionMap",
+  };
+
+  // Field definitions per type-section: { elementId, propertyName, isCheckbox }
+  const TYPE_FIELDS = {
+    Weapon: [
+      {id:"wMinDamage",prop:"MinDamage"},{id:"wMaxDamage",prop:"MaxDamage"},
+      {id:"wMinRange",prop:"MinRange"},{id:"wMaxRange",prop:"MaxRange"},
+      {id:"wBaseSpeed",prop:"BaseSpeed"},{id:"wSwingTime",prop:"SwingTime"},
+      {id:"wMinimumSwingTime",prop:"MinimumSwingTime"},{id:"wSwingAnim",prop:"SwingAnim"},
+      {id:"wCriticalChance",prop:"CriticalChance"},{id:"wCritDmgMultiplier",prop:"CritDmgMultiplier"},
+      {id:"wCategories",prop:"Categories"},{id:"wSubCategory",prop:"SubCategory"},
+      {id:"wConditionMax",prop:"ConditionMax"},{id:"wConditionLowerChanceOneIn",prop:"ConditionLowerChanceOneIn"},
+      {id:"wDoorDamage",prop:"DoorDamage"},{id:"wTreeDamage",prop:"TreeDamage"},
+      {id:"wMaxHitCount",prop:"MaxHitCount"},{id:"wKnockdownMod",prop:"KnockdownMod"},
+      {id:"wPushBackMod",prop:"PushBackMod"},{id:"wEnduranceMod",prop:"EnduranceMod"},
+      {id:"wMinAngle",prop:"MinAngle"},{id:"wWeaponSprite",prop:"WeaponSprite"},
+      {id:"wAttachmentType",prop:"AttachmentType"},{id:"wIdleAnim",prop:"IdleAnim"},
+      {id:"wRunAnim",prop:"RunAnim"},{id:"wSwingAmountBeforeImpact",prop:"SwingAmountBeforeImpact"},
+      {id:"wSplatNumber",prop:"SplatNumber"},{id:"wMetalValue",prop:"MetalValue"},
+      {id:"wTwoHandWeapon",prop:"TwoHandWeapon",cb:true},
+      {id:"wKnockBackOnNoDeath",prop:"KnockBackOnNoDeath",cb:true},
+      {id:"wSplatBloodOnNoDeath",prop:"SplatBloodOnNoDeath",cb:true},
+      {id:"wSwingSound",prop:"SwingSound"},{id:"wHitSound",prop:"HitSound"},
+      {id:"wHitFloorSound",prop:"HitFloorSound"},{id:"wDoorHitSound",prop:"DoorHitSound"},
+      {id:"wBreakSound",prop:"BreakSound"},{id:"wEquipSound",prop:"EquipSound"},
+      {id:"wUnequipSound",prop:"UnequipSound"},
+      {id:"wAmmoType",prop:"AmmoType"},{id:"wMagazineType",prop:"MagazineType"},
+      {id:"wClipSize",prop:"ClipSize"},{id:"wReloadTime",prop:"ReloadTime"},
+      {id:"wAimingTime",prop:"AimingTime"},{id:"wRecoilDelay",prop:"RecoilDelay"},
+      {id:"wHitChance",prop:"HitChance"},{id:"wSoundRadius",prop:"SoundRadius"},
+      {id:"wFireRange",prop:"FireRange"},{id:"wFirePower",prop:"FirePower"},
+      {id:"wIsAimedFirearm",prop:"IsAimedFirearm",cb:true},
+      {id:"wHaveChamber",prop:"HaveChamber",cb:true},
+    ],
+    Food: [
+      {id:"fHungerChange",prop:"HungerChange"},{id:"fThirstChange",prop:"ThirstChange"},
+      {id:"fCalories",prop:"Calories"},{id:"fFoodType",prop:"FoodType"},
+      {id:"fCarbohydrates",prop:"Carbohydrates"},{id:"fLipids",prop:"Lipids"},
+      {id:"fProteins",prop:"Proteins"},
+      {id:"fDaysFresh",prop:"DaysFresh"},{id:"fDaysTotallyRotten",prop:"DaysTotallyRotten"},
+      {id:"fMinutesToCook",prop:"MinutesToCook"},{id:"fMinutesToBurn",prop:"MinutesToBurn"},
+      {id:"fBoredomChange",prop:"BoredomChange"},{id:"fUnhappyChange",prop:"UnhappyChange"},
+      {id:"fStressChange",prop:"StressChange"},{id:"fEnduranceChange",prop:"EnduranceChange"},
+      {id:"fEvolvedRecipe",prop:"EvolvedRecipe"},
+      {id:"fCustomEatSound",prop:"CustomEatSound"},{id:"fCookingSound",prop:"CookingSound"},
+      {id:"fReplaceOnCooked",prop:"ReplaceOnCooked"},{id:"fReplaceOnRotten",prop:"ReplaceOnRotten"},
+      {id:"fIsCookable",prop:"IsCookable",cb:true},
+      {id:"fDangerousUncooked",prop:"DangerousUncooked",cb:true},
+      {id:"fGoodHot",prop:"GoodHot",cb:true},{id:"fBadCold",prop:"BadCold",cb:true},
+      {id:"fCannedFood",prop:"CannedFood",cb:true},{id:"fSpice",prop:"Spice",cb:true},
+    ],
+    Clothing: [
+      {id:"cBodyLocation",prop:"BodyLocation"},{id:"cClothingItem",prop:"ClothingItem"},
+      {id:"cBiteDefense",prop:"BiteDefense"},{id:"cScratchDefense",prop:"ScratchDefense"},
+      {id:"cBulletDefense",prop:"BulletDefense"},
+      {id:"cInsulation",prop:"Insulation"},{id:"cWindResistance",prop:"WindResistance"},
+      {id:"cWaterResistance",prop:"WaterResistance"},
+      {id:"cFabricType",prop:"FabricType"},{id:"cConditionMax",prop:"ConditionMax"},
+      {id:"cBloodLocation",prop:"BloodLocation"},{id:"cChanceToFall",prop:"ChanceToFall"},
+      {id:"cCanHaveHoles",prop:"CanHaveHoles",cb:true},
+      {id:"cCosmetic",prop:"Cosmetic",cb:true},
+    ],
+    Container: [
+      {id:"cnCapacity",prop:"Capacity"},{id:"cnWeightReduction",prop:"WeightReduction"},
+      {id:"cnCanBeEquipped",prop:"CanBeEquipped"},{id:"cnClothingItem",prop:"ClothingItem"},
+      {id:"cnOpenSound",prop:"OpenSound"},{id:"cnCloseSound",prop:"CloseSound"},
+      {id:"cnPutInSound",prop:"PutInSound"},
+    ],
+    Literature: [
+      {id:"lSkillTrained",prop:"SkillTrained"},{id:"lNumLevelsTrained",prop:"NumLevelsTrained"},
+      {id:"lLvlSkillTrained",prop:"LvlSkillTrained"},{id:"lNumberOfPages",prop:"NumberOfPages"},
+      {id:"lTeachedRecipes",prop:"TeachedRecipes"},
+      {id:"lBoredomChange",prop:"BoredomChange"},{id:"lStressChange",prop:"StressChange"},
+    ],
+    Drainable: [
+      {id:"dUseDelta",prop:"UseDelta"},{id:"dWeightEmpty",prop:"WeightEmpty"},
+      {id:"dLightDistance",prop:"LightDistance"},{id:"dLightStrength",prop:"LightStrength"},
+      {id:"dTorchCone",prop:"TorchCone"},{id:"dTorchDot",prop:"TorchDot"},
+      {id:"dReplaceOnDeplete",prop:"ReplaceOnDeplete"},
+      {id:"dCanStoreWater",prop:"CanStoreWater",cb:true},
+      {id:"dActivatedItem",prop:"ActivatedItem",cb:true},
+    ],
+    WeaponPart: [
+      {id:"wpPartType",prop:"PartType"},{id:"wpMountOn",prop:"MountOn"},
+      {id:"wpAimingTimeModifier",prop:"AimingTimeModifier"},{id:"wpHitChanceModifier",prop:"HitChanceModifier"},
+      {id:"wpMaxRangeModifier",prop:"MaxRangeModifier"},{id:"wpRecoilDelayModifier",prop:"RecoilDelayModifier"},
+      {id:"wpWeightModifier",prop:"WeightModifier"},
+    ],
+    Key: [
+      {id:"kPadlock",prop:"Padlock",cb:true},
+      {id:"kDigitalPadlock",prop:"DigitalPadlock",cb:true},
+    ],
+    Moveable: [
+      {id:"mvWorldObjectSprite",prop:"WorldObjectSprite"},
+    ],
+    Radio: [
+      {id:"rMinChannel",prop:"MinChannel"},{id:"rMaxChannel",prop:"MaxChannel"},
+      {id:"rTransmitRange",prop:"TransmitRange"},{id:"rMicRange",prop:"MicRange"},
+      {id:"rTwoWay",prop:"TwoWay",cb:true},{id:"rIsPortable",prop:"IsPortable",cb:true},
+      {id:"rIsTelevision",prop:"IsTelevision",cb:true},{id:"rUsesBattery",prop:"UsesBattery",cb:true},
+    ],
+    AlarmClock: [
+      {id:"acAlarmSound",prop:"AlarmSound"},
+    ],
+    AlarmClockClothing: [
+      {id:"accAlarmSound",prop:"AlarmSound"},
+      {id:"accBodyLocation",prop:"BodyLocation"},{id:"accClothingItem",prop:"ClothingItem"},
+      {id:"accBiteDefense",prop:"BiteDefense"},{id:"accScratchDefense",prop:"ScratchDefense"},
+      {id:"accInsulation",prop:"Insulation"},
+    ],
+    Map: [
+      {id:"mpMap",prop:"Map"},
+    ],
+    Normal: [
+      {id:"nMaxCapacity",prop:"MaxCapacity"},{id:"nReplaceOnUse",prop:"ReplaceOnUse"},
+      {id:"nConditionMax",prop:"ConditionMax"},{id:"nMetalValue",prop:"MetalValue"},
+      {id:"nSurvivalGear",prop:"SurvivalGear",cb:true},
+    ],
+  };
+
+  // Common field IDs (always emitted if non-empty)
+  const COMMON_FIELDS = [
+    {id:"displayName",prop:"DisplayName"},
+    {id:"weight",prop:"Weight"},
+    {id:"icon",prop:"Icon"},
+    {id:"displayCategory",prop:"DisplayCategory"},
+    {id:"tags",prop:"Tags"},
+    {id:"tooltip",prop:"Tooltip"},
+    {id:"colorRed",prop:"ColorRed"},
+    {id:"colorGreen",prop:"ColorGreen"},
+    {id:"colorBlue",prop:"ColorBlue"},
+    {id:"count",prop:"Count"},
+    {id:"onCreate",prop:"OnCreate"},
+    {id:"staticModel",prop:"StaticModel"},
+    {id:"worldStaticModel",prop:"WorldStaticModel"},
+  ];
+
+  // --- App State ---
+  const state = {
+    loadedText: "",
+    loadedFilename: "",
+    items: [],            // parsed items from loaded file [{id, type, raw, start, end}]
+    selectedItemId: "",
+    builtItems: [],       // saved items [{snapshot, id, type}]
+    editingBuiltIndex: -1,
+  };
+
+  const model = {
+    customProps: [],       // [{key, value}]
+  };
+
+  // --- Utility ---
+  function escapeRegExp(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  // --- Parser ---
+  function parseAllItems(text) {
+    const src = String(text || "");
+    const results = [];
+    const re = /\bitem\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/g;
+    let m;
+    while ((m = re.exec(src)) !== null) {
+      const id = m[1];
+      const headerIndex = m.index;
+      const braceOpen = src.indexOf("{", m.index + m[0].length - 1);
+      if (braceOpen === -1) continue;
+
+      let depth = 0, i = braceOpen;
+      for (; i < src.length; i++) {
+        if (src[i] === "{") depth++;
+        else if (src[i] === "}") {
+          depth--;
+          if (depth === 0) { i++; break; }
+        }
+      }
+      if (depth !== 0) continue;
+
+      const raw = src.slice(headerIndex, i).trimEnd();
+      const type = extractField(raw, "Type") || "Normal";
+
+      results.push({ id, type: type.trim(), raw, start: headerIndex, end: i });
+    }
+    return results;
+  }
+
+  function extractField(blockText, key) {
+    const re = new RegExp("\\b" + escapeRegExp(key) + "\\s*=\\s*([^,\\n\\r]+)", "i");
+    const m = re.exec(blockText);
+    return m ? m[1].trim() : "";
+  }
+
+  function extractBoolField(blockText, key) {
+    const val = extractField(blockText, key);
+    return val.toUpperCase() === "TRUE";
+  }
+
+  // --- Type section visibility ---
+  function updateTypeSections() {
+    const type = el("itemType").value;
+    Object.entries(TYPE_SECTIONS).forEach(([t, sectionId]) => {
+      const section = el(sectionId);
+      if (section) {
+        section.classList.toggle("visible", t === type);
+      }
+    });
+  }
+
+  // --- Sync form → gather all values ---
+  function gatherModel() {
+    const type = el("itemType").value;
+    const m = {
+      moduleName: el("moduleName").value.trim() || "Base",
+      itemId: el("itemId").value.trim(),
+      type: type,
+    };
+
+    // Common fields
+    COMMON_FIELDS.forEach(f => {
+      m[f.prop] = el(f.id).value.trim();
+    });
+
+    // Type-specific fields
+    const typeFields = TYPE_FIELDS[type] || [];
+    typeFields.forEach(f => {
+      if (f.cb) {
+        m[f.prop] = el(f.id).checked;
+      } else {
+        m[f.prop] = el(f.id).value.trim();
+      }
+    });
+
+    // Custom properties
+    m.customProps = model.customProps.map(p => ({key: p.key, value: p.value}));
+
+    return m;
+  }
+
+  // --- Emit item block ---
+  function emitItemBlock(m) {
+    const iid = m.itemId || "ItemIdHere";
+    const wrap = el("wrapModule").checked;
+    const T = wrap ? "\t" : "";
+    const lines = [];
+
+    if (wrap) lines.push(`module ${m.moduleName || "Base"}\n{`);
+
+    lines.push(`${T}item ${iid}`);
+    lines.push(`${T}{`);
+
+    // Always emit DisplayName first, then Type
+    if (m.DisplayName) lines.push(`${T}\tDisplayName = ${m.DisplayName},`);
+    lines.push(`${T}\tType = ${m.type},`);
+
+    // Common fields (skip DisplayName already emitted)
+    COMMON_FIELDS.forEach(f => {
+      if (f.prop === "DisplayName") return;
+      const val = m[f.prop];
+      if (val) lines.push(`${T}\t${f.prop} = ${val},`);
+    });
+
+    // Type-specific fields
+    const typeFields = TYPE_FIELDS[m.type] || [];
+    typeFields.forEach(f => {
+      if (f.cb) {
+        if (m[f.prop]) lines.push(`${T}\t${f.prop} = TRUE,`);
+      } else {
+        const val = m[f.prop];
+        if (val) lines.push(`${T}\t${f.prop} = ${val},`);
+      }
+    });
+
+    // Custom properties
+    if (m.customProps) {
+      m.customProps.forEach(p => {
+        if (p.key && p.value) lines.push(`${T}\t${p.key} = ${p.value},`);
+      });
+    }
+
+    lines.push(`${T}}`);
+    if (wrap) lines.push(`}`);
+
+    return lines.join("\n");
+  }
+
+  // --- Linter ---
+  function lintItem(m) {
+    const issues = [];
+    const warnings = [];
+
+    if (!m.itemId) issues.push("Item ID is required.");
+    else if (!RX_IDENT.test(m.itemId)) issues.push("Item ID must be an identifier (no spaces/symbols).");
+
+    if (!m.DisplayName) warnings.push("DisplayName is empty — players won't see a name.");
+
+    if (m.Weight && !RX_NUM.test(m.Weight)) issues.push("Weight must be a number.");
+
+    // Check for duplicate in loaded file
+    if (m.itemId && state.items.some(it => it.id === m.itemId) && state.selectedItemId !== m.itemId) {
+      warnings.push(`Item ID "${m.itemId}" already exists in the loaded file.`);
+    }
+    // Check for duplicate in built items
+    const builtDupe = state.builtItems.findIndex(it => it.id === m.itemId);
+    if (m.itemId && builtDupe >= 0 && builtDupe !== state.editingBuiltIndex) {
+      warnings.push(`Item ID "${m.itemId}" already exists in your saved items.`);
+    }
+
+    // Type-specific validation
+    if (m.type === "Weapon") {
+      if (m.MinDamage && !RX_NUM.test(m.MinDamage)) issues.push("MinDamage must be a number.");
+      if (m.MaxDamage && !RX_NUM.test(m.MaxDamage)) issues.push("MaxDamage must be a number.");
+      if (m.MinDamage && m.MaxDamage && parseFloat(m.MinDamage) > parseFloat(m.MaxDamage)) {
+        warnings.push("MinDamage is greater than MaxDamage.");
+      }
+    }
+
+    if (m.type === "Food") {
+      if (m.DaysFresh && m.DaysTotallyRotten) {
+        if (parseInt(m.DaysFresh) >= parseInt(m.DaysTotallyRotten)) {
+          warnings.push("DaysFresh should be less than DaysTotallyRotten.");
+        }
+      }
+    }
+
+    if (m.type === "Drainable") {
+      if (m.UseDelta && (parseFloat(m.UseDelta) <= 0 || parseFloat(m.UseDelta) > 1)) {
+        warnings.push("UseDelta should be between 0 and 1.");
+      }
+    }
+
+    return { issues, warnings };
+  }
+
+  // --- Render all ---
+  function renderAll() {
+    const m = gatherModel();
+    const block = emitItemBlock(m);
+    el("preview").textContent = block;
+
+    const itemId = m.itemId || "(unnamed)";
+    el("previewLabel").textContent = itemId + " — " + m.type;
+
+    // Translation line
+    if (m.itemId) {
+      el("translationArea").style.display = "";
+      const displayName = m.DisplayName || m.itemId;
+      el("translationCode").textContent = `DisplayName_${m.itemId} = "${displayName}",`;
+    } else {
+      el("translationArea").style.display = "none";
+    }
+
+    const { issues, warnings } = lintItem(m);
+    if (issues.length === 0 && warnings.length === 0) {
+      el("lint").innerHTML = `<span class="ok">&#10003; Item looks valid</span> &mdash; ready to export.`;
+    } else {
+      let html = "";
+      if (issues.length > 0) {
+        html += `<div class="bad"><b>Requirements:</b></div>` + issues.map(x => `<div class="bad">&bull; ${escapeHtml(x)}</div>`).join("");
+      }
+      if (warnings.length > 0) {
+        html += `<div class="warn" style="margin-top:${issues.length ? 6 : 0}px;"><b>Warnings:</b></div>` + warnings.map(x => `<div class="warn">&bull; ${escapeHtml(x)}</div>`).join("");
+      }
+      el("lint").innerHTML = html;
+    }
+  }
+
+  // --- Custom properties table ---
+  function renderCustomProps() {
+    const tbody = el("customPropsTable").querySelector("tbody");
+    tbody.innerHTML = "";
+    model.customProps.forEach((p, i) => {
+      const tr = document.createElement("tr");
+
+      const tdKey = document.createElement("td");
+      const inKey = document.createElement("input");
+      inKey.value = p.key;
+      inKey.placeholder = "PropertyName";
+      inKey.addEventListener("input", () => { p.key = inKey.value; renderAll(); });
+      tdKey.appendChild(inKey);
+
+      const tdVal = document.createElement("td");
+      const inVal = document.createElement("input");
+      inVal.value = p.value;
+      inVal.placeholder = "value";
+      inVal.addEventListener("input", () => { p.value = inVal.value; renderAll(); });
+      tdVal.appendChild(inVal);
+
+      const tdDel = document.createElement("td");
+      const bDel = document.createElement("button");
+      bDel.textContent = "X";
+      bDel.className = "danger";
+      bDel.addEventListener("click", () => { model.customProps.splice(i, 1); renderCustomProps(); renderAll(); });
+      tdDel.appendChild(bDel);
+
+      tr.appendChild(tdKey);
+      tr.appendChild(tdVal);
+      tr.appendChild(tdDel);
+      tbody.appendChild(tr);
+    });
+  }
+
+  // --- Built items management ---
+  function snapshotForm() {
+    const m = gatherModel();
+    m._customProps = JSON.parse(JSON.stringify(model.customProps));
+    return m;
+  }
+
+  function restoreFromSnapshot(snap) {
+    el("itemId").value = snap.itemId || "";
+    el("itemType").value = snap.type || "Normal";
+    updateTypeSections();
+
+    COMMON_FIELDS.forEach(f => {
+      el(f.id).value = snap[f.prop] || "";
+    });
+
+    // Set type-specific fields for the snapshotted type
+    const typeFields = TYPE_FIELDS[snap.type] || [];
+    // First clear ALL type fields
+    Object.values(TYPE_FIELDS).flat().forEach(f => {
+      if (f.cb) el(f.id).checked = false;
+      else el(f.id).value = "";
+    });
+    // Then set the ones for this type
+    typeFields.forEach(f => {
+      if (f.cb) el(f.id).checked = !!snap[f.prop];
+      else el(f.id).value = snap[f.prop] || "";
+    });
+
+    model.customProps = snap._customProps ? JSON.parse(JSON.stringify(snap._customProps)) : [];
+    renderCustomProps();
+    renderAll();
+  }
+
+  function saveCurrentItem() {
+    const m = gatherModel();
+    if (!m.itemId) {
+      flashLint(`<span class="bad">Cannot save</span> &mdash; Item ID is required.`);
+      return;
+    }
+    const dupeIdx = state.builtItems.findIndex(it => it.id === m.itemId);
+    if (dupeIdx >= 0 && dupeIdx !== state.editingBuiltIndex) {
+      flashLint(`<span class="bad">Cannot save</span> &mdash; Item ID "${m.itemId}" already exists.`);
+      return;
+    }
+
+    const snap = snapshotForm();
+    if (state.editingBuiltIndex >= 0) {
+      state.builtItems[state.editingBuiltIndex] = { snapshot: snap, id: m.itemId, type: m.type };
+      state.editingBuiltIndex = -1;
+      flashLint(`<span class="ok">&#10003; Updated</span> &mdash; "${m.itemId}" saved.`);
+    } else {
+      state.builtItems.push({ snapshot: snap, id: m.itemId, type: m.type });
+      flashLint(`<span class="ok">&#10003; Saved</span> &mdash; "${m.itemId}" added. ${state.builtItems.length} item(s) total.`);
+    }
+    rebuildBuiltList();
+  }
+
+  function clearFormForNew() {
+    state.editingBuiltIndex = -1;
+    state.selectedItemId = "";
+    el("itemId").value = "";
+    el("displayName").value = "";
+    // Keep type for convenience
+    COMMON_FIELDS.forEach(f => {
+      if (f.id !== "displayName") el(f.id).value = "";
+    });
+    Object.values(TYPE_FIELDS).flat().forEach(f => {
+      if (f.cb) el(f.id).checked = false;
+      else el(f.id).value = "";
+    });
+    model.customProps = [];
+    renderCustomProps();
+    rebuildBuiltList();
+    rebuildItemList();
+    renderAll();
+  }
+
+  function editBuiltItem(index) {
+    state.editingBuiltIndex = index;
+    restoreFromSnapshot(state.builtItems[index].snapshot);
+    rebuildBuiltList();
+  }
+
+  function deleteBuiltItem(index) {
+    state.builtItems.splice(index, 1);
+    if (state.editingBuiltIndex === index) state.editingBuiltIndex = -1;
+    else if (state.editingBuiltIndex > index) state.editingBuiltIndex--;
+    rebuildBuiltList();
+    renderAll();
+  }
+
+  function rebuildBuiltList() {
+    const listEl = el("builtList");
+    listEl.innerHTML = "";
+    const count = state.builtItems.length;
+    el("builtEmpty").style.display = count === 0 ? "" : "none";
+    el("builtBadge").style.display = count > 0 ? "" : "none";
+    el("builtBadge").textContent = count;
+    el("exportAllBtn").style.display = count > 0 ? "" : "none";
+    el("dlAllBtn").style.display = count > 0 ? "" : "none";
+
+    state.builtItems.forEach((entry, i) => {
+      const b = document.createElement("button");
+      b.className = "itembtn" + (state.editingBuiltIndex === i ? " active" : "");
+      const wrapper = document.createElement("div");
+      wrapper.className = "built-item";
+
+      const label = document.createElement("span");
+      label.className = "built-label";
+      label.textContent = `${entry.id}  —  ${entry.type}`;
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "X";
+      delBtn.className = "danger built-del";
+      delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteBuiltItem(i); });
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(delBtn);
+      b.appendChild(wrapper);
+      b.addEventListener("click", () => editBuiltItem(i));
+      listEl.appendChild(b);
+    });
+  }
+
+  function emitAllBuiltItems() {
+    const moduleName = "Base";
+    const lines = [];
+    lines.push(`module ${moduleName}\n{`);
+    state.builtItems.forEach(entry => {
+      const savedWrap = el("wrapModule").checked;
+      el("wrapModule").checked = false;
+      const block = emitItemBlock(entry.snapshot);
+      el("wrapModule").checked = savedWrap;
+      const indented = block.split("\n").map(l => "\t" + l).join("\n");
+      lines.push("");
+      lines.push(indented);
+    });
+    lines.push("");
+    lines.push("}");
+    return lines.join("\n");
+  }
+
+  function emitAllTranslationLines() {
+    return state.builtItems.map(entry => {
+      const displayName = entry.snapshot.DisplayName || entry.id;
+      return `\tDisplayName_${entry.id} = "${displayName}",`;
+    }).join("\n");
+  }
+
+  // --- Item list (loaded file) ---
+  let filterTimer;
+  function rebuildItemList() {
+    const filterText = el("filter").value.trim().toLowerCase();
+    const filterType = el("filterType").value;
+    const list = state.items
+      .filter(it => !filterText || it.id.toLowerCase().includes(filterText))
+      .filter(it => !filterType || it.type === filterType)
+      .sort((a, b) => a.id.localeCompare(b.id));
+
+    const listEl = el("itemList");
+    listEl.innerHTML = "";
+    list.forEach(it => {
+      const b = document.createElement("button");
+      b.className = "itembtn" + (state.selectedItemId === it.id ? " active" : "");
+      b.textContent = `${it.id}  —  ${it.type}`;
+      b.addEventListener("click", () => {
+        state.selectedItemId = it.id;
+        loadItemIntoForm(it);
+        rebuildItemList();
+      });
+      listEl.appendChild(b);
+    });
+    if (list.length === 0) {
+      listEl.innerHTML = `<div class="hint">No items match current filters.</div>`;
+    }
+  }
+
+  // --- Load item into form ---
+  function loadItemIntoForm(item) {
+    el("itemId").value = item.id;
+    const type = extractField(item.raw, "Type") || "Normal";
+    el("itemType").value = type;
+    updateTypeSections();
+
+    COMMON_FIELDS.forEach(f => {
+      el(f.id).value = extractField(item.raw, f.prop) || "";
+    });
+
+    // Clear all type fields first
+    Object.values(TYPE_FIELDS).flat().forEach(f => {
+      if (f.cb) el(f.id).checked = false;
+      else el(f.id).value = "";
+    });
+
+    // Set type-specific fields
+    const typeFields = TYPE_FIELDS[type] || [];
+    typeFields.forEach(f => {
+      if (f.cb) {
+        el(f.id).checked = extractBoolField(item.raw, f.prop);
+      } else {
+        el(f.id).value = extractField(item.raw, f.prop) || "";
+      }
+    });
+
+    // Parse custom/unknown properties
+    model.customProps = parseCustomProps(item.raw, type);
+    renderCustomProps();
+    renderAll();
+  }
+
+  function parseCustomProps(raw, type) {
+    // Get all known property names for this type
+    const knownProps = new Set(["DisplayName","Type","Weight","Icon","DisplayCategory","Tags","Tooltip",
+      "ColorRed","ColorGreen","ColorBlue","Count","OnCreate","StaticModel","WorldStaticModel"]);
+    const typeFields = TYPE_FIELDS[type] || [];
+    typeFields.forEach(f => knownProps.add(f.prop));
+
+    const customs = [];
+    // Parse the inner block
+    const innerMatch = raw.match(/\{([\s\S]*)\}/);
+    if (!innerMatch) return customs;
+    const lines = innerMatch[1].split("\n");
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("//") || trimmed.startsWith("/*")) continue;
+      const kv = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+?),?\s*$/);
+      if (kv) {
+        const key = kv[1];
+        const value = kv[2].replace(/,\s*$/, "");
+        if (!knownProps.has(key)) {
+          customs.push({ key, value });
+        }
+      }
+    }
+    return customs;
+  }
+
+  function flashLint(html) {
+    el("lint").innerHTML = html;
+    setTimeout(renderAll, 1200);
+  }
+
+  // --- Wire up: file load ---
+  el("fileInput").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const text = await f.text();
+    state.loadedText = text;
+    state.loadedFilename = f.name;
+    el("loadedName").textContent = f.name;
+    state.items = parseAllItems(text);
+    state.selectedItemId = "";
+    rebuildItemList();
+    renderAll();
+  });
+
+  el("filter").addEventListener("input", () => {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(rebuildItemList, 150);
+  });
+
+  el("filterType").addEventListener("change", rebuildItemList);
+
+  // --- Wire up: form fields ---
+  el("itemType").addEventListener("change", () => {
+    updateTypeSections();
+    renderAll();
+  });
+
+  // Common field inputs
+  ["itemId","displayName","weight","icon","displayCategory","tags","tooltip",
+   "colorRed","colorGreen","colorBlue","count","onCreate","staticModel","worldStaticModel"
+  ].forEach(id => {
+    el(id).addEventListener("input", renderAll);
+  });
+
+  // All type-specific fields
+  Object.values(TYPE_FIELDS).flat().forEach(f => {
+    if (f.cb) {
+      el(f.id).addEventListener("change", renderAll);
+    } else {
+      el(f.id).addEventListener("input", renderAll);
+    }
+  });
+
+  el("wrapModule").addEventListener("change", renderAll);
+
+  // --- Wire up: custom props ---
+  el("addCustomProp").addEventListener("click", () => {
+    model.customProps.push({ key: "", value: "" });
+    renderCustomProps();
+    el("customPropsDetails").open = true;
+    renderAll();
+  });
+
+  el("clearCustomProps").addEventListener("click", () => {
+    model.customProps = [];
+    renderCustomProps();
+    renderAll();
+  });
+
+  // --- Wire up: built items ---
+  el("saveItemBtn").addEventListener("click", saveCurrentItem);
+  el("newItemBtn").addEventListener("click", clearFormForNew);
+
+  el("exportAllBtn").addEventListener("click", async () => {
+    if (state.builtItems.length === 0) { flashLint(`<span class="bad">No saved items to export.</span>`); return; }
+    try {
+      const full = emitAllBuiltItems();
+      const translations = emitAllTranslationLines();
+      const output = full + "\n\n\n/* --- Items_EN.txt entries --- */\n/*\n" + translations + "\n*/";
+      await copyToClipboard(output);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; ${state.builtItems.length} item(s) + translation lines.`);
+    } catch { flashLint(`<span class="bad">Copy failed</span>`); }
+  });
+
+  el("dlAllBtn").addEventListener("click", () => {
+    if (state.builtItems.length === 0) { flashLint(`<span class="bad">No saved items.</span>`); return; }
+    downloadFile("items.txt", emitAllBuiltItems());
+    downloadFile("Items_EN_additions.txt", emitAllTranslationLines());
+    flashLint(`<span class="ok">&#10003; Downloaded</span> &mdash; items.txt + Items_EN_additions.txt`);
+  });
+
+  // --- Wire up: copy/download ---
+  el("copyBlock").addEventListener("click", async () => {
+    try {
+      await copyToClipboard(el("preview").textContent);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; Item block copied to clipboard.`);
+    } catch { flashLint(`<span class="bad">Copy failed</span>`); }
+  });
+
+  el("dlBlock").addEventListener("click", () => {
+    const m = gatherModel();
+    const block = el("preview").textContent;
+    downloadFile(`${m.itemId || "item"}.txt`, block);
+    flashLint(`<span class="ok">&#10003; Downloaded</span>`);
+  });
+
+  el("copyTranslation").addEventListener("click", async () => {
+    try {
+      await copyToClipboard(el("translationCode").textContent);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; Translation line copied.`);
+    } catch { flashLint(`<span class="bad">Copy failed</span>`); }
+  });
+
+  // --- Wire up: example + reset ---
+  el("loadExample").addEventListener("click", () => {
+    el("itemId").value = "FishingRod";
+    el("displayName").value = "Fishing Rod";
+    el("itemType").value = "Weapon";
+    el("weight").value = "0.4";
+    el("icon").value = "FishingRod";
+    el("displayCategory").value = "Fishing";
+    el("tags").value = "FishingRod";
+    el("onCreate").value = "Fishing.OnCreateNewFishingRodItem";
+    updateTypeSections();
+
+    // Set weapon fields
+    el("wMinDamage").value = "0.2";
+    el("wMaxDamage").value = "0.3";
+    el("wMinRange").value = "0.61";
+    el("wMaxRange").value = "1.55";
+    el("wBaseSpeed").value = "1.3";
+    el("wSwingTime").value = "2";
+    el("wMinimumSwingTime").value = "2";
+    el("wSwingAnim").value = "Bat";
+    el("wCriticalChance").value = "5";
+    el("wCritDmgMultiplier").value = "2";
+    el("wCategories").value = "Improvised;Blunt";
+    el("wSubCategory").value = "Swinging";
+    el("wConditionMax").value = "3";
+    el("wConditionLowerChanceOneIn").value = "1";
+    el("wDoorDamage").value = "1";
+    el("wTreeDamage").value = "0";
+    el("wMaxHitCount").value = "2";
+    el("wKnockdownMod").value = "0";
+    el("wPushBackMod").value = "0.3";
+    el("wMinAngle").value = "0.8";
+    el("wWeaponSprite").value = "FishingRod_Modern";
+    el("wAttachmentType").value = "Shovel";
+    el("wIdleAnim").value = "Idle_Weapon2";
+    el("wRunAnim").value = "Run_Weapon2";
+    el("wSwingAmountBeforeImpact").value = "0.02";
+    el("wSplatNumber").value = "1";
+    el("wTwoHandWeapon").checked = true;
+    el("wKnockBackOnNoDeath").checked = false;
+    el("wSplatBloodOnNoDeath").checked = false;
+    el("wSwingSound").value = "FishingRodSwing";
+    el("wHitSound").value = "FishingRodHit";
+    el("wHitFloorSound").value = "FishingRodHit";
+    el("wDoorHitSound").value = "FishingRodHit";
+    el("wBreakSound").value = "FishingRodBreak";
+    el("nSurvivalGear").checked = true;
+
+    model.customProps = [];
+    renderCustomProps();
+    renderAll();
+  });
+
+  el("resetForm").addEventListener("click", () => {
+    el("itemId").value = "";
+    el("displayName").value = "";
+    el("itemType").value = "Normal";
+    updateTypeSections();
+    COMMON_FIELDS.forEach(f => { el(f.id).value = ""; });
+    Object.values(TYPE_FIELDS).flat().forEach(f => {
+      if (f.cb) el(f.id).checked = false;
+      else el(f.id).value = "";
+    });
+    model.customProps = [];
+    state.selectedItemId = "";
+    renderCustomProps();
+    rebuildItemList();
+    renderAll();
+  });
+
+  // --- Guide modal ---
+  el("openGuide").addEventListener("click", () => {
+    el("guideOverlay").classList.add("visible");
+  });
+  el("closeGuide").addEventListener("click", () => {
+    el("guideOverlay").classList.remove("visible");
+  });
+  el("guideOverlay").addEventListener("click", (e) => {
+    if (e.target === el("guideOverlay")) el("guideOverlay").classList.remove("visible");
+  });
+
+  // --- Initial state ---
+  updateTypeSections();
+  rebuildBuiltList();
+  renderAll();
+</script>
+<script src="assets/utils.js"></script>
+<script>
+  // Load guide content
+  loadGuide('itemForge');
+</script>
+</body>
+</html>

@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>modScaffold</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: #0a0e13;
+      --bg-secondary: #0f1419;
+      --bg-tertiary: #151b23;
+      --bg-input: #1a2332;
+      --border-subtle: #1c2531;
+      --border-medium: #2d3748;
+      --border-active: #3b82f6;
+      --text-primary: #e9ecf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-yellow: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    header .t {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .pill {
+      font-size: 12px;
+      padding: 4px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .guide-btn {
+      margin-left: auto;
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .guide-btn:hover {
+      background: linear-gradient(135deg, #264d7a 0%, #1e3044 100%);
+      color: #93c5fd;
+      transform: translateY(-1px);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: calc(100vh - 57px);
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: calc(100vh - 57px);
+      }
+    }
+
+    .panel {
+      overflow: auto;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-medium);
+      padding: 0;
+    }
+    .panel:last-child { border-right: none; background: var(--bg-primary); }
+
+    .panel::-webkit-scrollbar { width: 10px; }
+    .panel::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .panel::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    .panel::-webkit-scrollbar-thumb:hover { background: #3d4a5c; }
+
+    .section { padding: 20px; border-bottom: 1px solid var(--border-subtle); }
+    .section h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 16px;
+      opacity: 0.9;
+    }
+
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--bg-input);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    .field input:hover, .field textarea:hover, .field select:hover {
+      border-color: #3d4a5c;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .field textarea { resize: vertical; min-height: 60px; }
+    .field .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .checks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+    .checks label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+    }
+    .checks input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    /* Tree view */
+    .tree-wrap {
+      padding: 20px;
+    }
+    .tree-wrap h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 14px;
+    }
+    .tree {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .tree .dir { color: var(--accent-blue); font-weight: 600; }
+    .tree .file { color: var(--text-primary); }
+    .tree .gen { color: var(--accent-green); }
+
+    /* Preview section */
+    .preview-sec {
+      padding: 20px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .preview-sec h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .preview-sec h3 .copy-btn {
+      font-size: 11px;
+      padding: 2px 8px;
+      border: 1px solid var(--border-medium);
+      border-radius: 4px;
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .preview-sec h3 .copy-btn:hover { color: var(--text-primary); border-color: var(--accent-blue); }
+
+    pre.code {
+      background: var(--bg-input);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: var(--text-primary);
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      margin: 0;
+    }
+
+    /* Action buttons */
+    .actions {
+      padding: 20px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+    .btn:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #2563eb; border-color: #2563eb; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .btn-secondary {
+      background: var(--bg-secondary);
+      border-color: var(--border-subtle);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-medium);
+    }
+
+    /* Lint bar */
+    .lint-bar {
+      padding: 16px 20px;
+      font-size: 12px;
+      font-weight: 500;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 16px;
+      color: var(--text-muted);
+    }
+    .lint-bar .issues { color: var(--accent-red); }
+    .lint-bar .warnings { color: var(--accent-yellow); }
+    .lint-bar .ok { color: var(--accent-green); }
+
+    /* Guide modal */
+    .guide-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .guide-overlay.visible { display: flex; }
+    .guide-modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: 12px;
+      width: 90vw;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+    }
+    .guide-header h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .guide-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .guide-close:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+    .guide-body {
+      overflow-y: auto;
+      padding: 24px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+    .guide-body::-webkit-scrollbar { width: 10px; }
+    .guide-body::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .guide-body::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    .guide-body h3 {
+      color: var(--text-primary);
+      font-size: 15px;
+      margin: 28px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-body h3:first-child { margin-top: 0; }
+    .guide-body p { margin: 0 0 10px; }
+    .guide-body ul, .guide-body ol { margin: 0 0 10px; padding-left: 20px; }
+    .guide-body li { margin-bottom: 4px; }
+    .guide-body code {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      background: var(--bg-input);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .guide-body pre {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0 0 12px;
+      height: auto;
+    }
+    .guide-body table {
+      margin: 8px 0 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      overflow: hidden;
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .guide-body th {
+      background: var(--bg-tertiary);
+      padding: 8px 12px;
+      text-align: left;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .guide-body td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="btn-home" style="text-decoration:none; margin-right: 15px;">
+    &larr; Project Omen
+  </a>
+  
+  <span class="t">modScaffold</span>
+  <span class="pill">B42 Mod Folder Generator</span>
+  <button class="guide-btn" onclick="toggleGuide()">Guide &amp; Reference</button>
+</header>
+
+<main>
+  <!-- LEFT: Form -->
+  <div class="panel">
+
+    <div class="section">
+      <h2>Mod Identity</h2>
+      <div class="field">
+        <label>Mod Name</label>
+        <input id="fModName" placeholder="Survivor's Toolkit" oninput="onModNameChange()">
+      </div>
+      <div class="field">
+        <label>Mod ID</label>
+        <input id="fModId" placeholder="SurvivorsToolkit">
+        <div class="hint">Auto-generated from name. Letters, numbers, underscores only.</div>
+      </div>
+      <div class="field">
+        <label>Author</label>
+        <input id="fAuthor" placeholder="Your name">
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="fDescription" placeholder="What does your mod do?"></textarea>
+      </div>
+      <div class="field">
+        <label>Mod Version</label>
+        <input id="fModVersion" value="1.0.0" placeholder="1.0.0">
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Game Version</h2>
+      <div class="field">
+        <label>Minimum Game Version</label>
+        <input id="fVersionMin" placeholder="42.0.0">
+        <div class="hint">Leave blank if no minimum required.</div>
+      </div>
+      <div class="field">
+        <label>Maximum Game Version</label>
+        <input id="fVersionMax" placeholder="">
+        <div class="hint">Leave blank if no maximum.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Dependencies</h2>
+      <div class="field">
+        <label>Required Mods</label>
+        <input id="fRequire" placeholder="ModID1,ModID2">
+        <div class="hint">Comma-separated mod IDs that must be loaded.</div>
+      </div>
+      <div class="field">
+        <label>Incompatible Mods</label>
+        <input id="fIncompatible" placeholder="">
+        <div class="hint">Comma-separated mod IDs that conflict.</div>
+      </div>
+      <div class="field">
+        <label>Load After</label>
+        <input id="fLoadAfter" placeholder="">
+        <div class="hint">Mod IDs that should load before this mod.</div>
+      </div>
+      <div class="field">
+        <label>Load Before</label>
+        <input id="fLoadBefore" placeholder="">
+        <div class="hint">Mod IDs that should load after this mod.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Features</h2>
+      <div class="checks">
+        <label><input type="checkbox" id="chkScriptsItems" checked onchange="renderAll()"> Item Scripts</label>
+        <label><input type="checkbox" id="chkScriptsRecipes" checked onchange="renderAll()"> Recipe Scripts</label>
+        <label><input type="checkbox" id="chkLuaClient" onchange="renderAll()"> Lua (Client)</label>
+        <label><input type="checkbox" id="chkLuaServer" onchange="renderAll()"> Lua (Server)</label>
+        <label><input type="checkbox" id="chkLuaShared" onchange="renderAll()"> Lua (Shared)</label>
+        <label><input type="checkbox" id="chkTranslations" checked onchange="renderAll()"> Translations (EN)</label>
+        <label><input type="checkbox" id="chkTextures" onchange="renderAll()"> Textures</label>
+        <label><input type="checkbox" id="chkModels" onchange="renderAll()"> Models</label>
+        <label><input type="checkbox" id="chkSounds" onchange="renderAll()"> Sounds</label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Advanced</h2>
+      <div class="field">
+        <label>Category</label>
+        <input id="fCategory" placeholder="">
+      </div>
+      <div class="field">
+        <label>Poster Filename</label>
+        <input id="fPoster" value="poster.png" placeholder="poster.png">
+      </div>
+      <div class="field">
+        <label>Pack</label>
+        <input id="fPack" placeholder="">
+        <div class="hint">Texture pack name, if applicable.</div>
+      </div>
+      <div class="field">
+        <label>Tiledef</label>
+        <input id="fTiledef" placeholder="">
+        <div class="hint">Tiledef name and ID, e.g. "MyTiles 1"</div>
+      </div>
+    </div>
+
+    <div id="lintBar" class="lint-bar"></div>
+
+  </div>
+
+  <!-- RIGHT: Preview -->
+  <div class="panel" style="background: var(--bg-primary);">
+
+    <div class="tree-wrap">
+      <h3>Folder Structure</h3>
+      <div id="treeView" class="tree"></div>
+    </div>
+
+    <div class="preview-sec">
+      <h3>mod.info <button class="copy-btn" onclick="copyModInfo()">Copy</button></h3>
+      <pre id="modInfoPreview" class="code"></pre>
+    </div>
+
+    <div id="scriptPreviewSec" class="preview-sec" style="display:none;">
+      <h3>items.txt <button class="copy-btn" onclick="copyText('scriptPreview')">Copy</button></h3>
+      <pre id="scriptPreview" class="code"></pre>
+    </div>
+
+    <div id="recipePreviewSec" class="preview-sec" style="display:none;">
+      <h3>recipes.txt <button class="copy-btn" onclick="copyText('recipePreview')">Copy</button></h3>
+      <pre id="recipePreview" class="code"></pre>
+    </div>
+
+    <div id="transItemsPreviewSec" class="preview-sec" style="display:none;">
+      <h3>Items_EN.txt <button class="copy-btn" onclick="copyText('transItemsPreview')">Copy</button></h3>
+      <pre id="transItemsPreview" class="code"></pre>
+    </div>
+
+    <div id="transRecipesPreviewSec" class="preview-sec" style="display:none;">
+      <h3>Recipes_EN.txt <button class="copy-btn" onclick="copyText('transRecipesPreview')">Copy</button></h3>
+      <pre id="transRecipesPreview" class="code"></pre>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="downloadZip()">Download ZIP</button>
+      <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
+    </div>
+
+  </div>
+</main>
+
+<!-- Guide Modal -->
+<div id="guideOverlay" class="guide-overlay" onclick="if(event.target===this)toggleGuide()">
+  <div class="guide-modal">
+    <div class="guide-header">
+      <h2>Mod Structure Guide</h2>
+      <button class="guide-close" onclick="toggleGuide()">&times;</button>
+    </div>
+    <div class="guide-body">
+      <p style="color: var(--text-muted); text-align: center;">Loading guide...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── helpers ── */
+function copyModInfo() {
+  copyToClipboard(buildModInfo());
+}
+
+function copyText(id) {
+  copyToClipboard(document.getElementById(id).textContent);
+}
+
+function toggleGuide() {
+  document.getElementById('guideOverlay').classList.toggle('visible');
+}
+
+/* ── state helpers ── */
+function val(id) { return document.getElementById(id).value.trim(); }
+function chk(id) { return document.getElementById(id).checked; }
+
+function toModId(name) {
+  return name.replace(/[^A-Za-z0-9_ ]/g, '').replace(/\s+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+}
+
+function onModNameChange() {
+  const name = val('fModName');
+  const idField = document.getElementById('fModId');
+  if (!idField._userEdited) {
+    idField.value = toModId(name);
+  }
+  renderAll();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('fModId').addEventListener('input', function() {
+    this._userEdited = this.value.trim().length > 0;
+    renderAll();
+  });
+
+  const inputs = document.querySelectorAll('input, textarea, select');
+  inputs.forEach(el => {
+    if (el.id !== 'fModName' && el.id !== 'fModId' && el.type !== 'checkbox') {
+      el.addEventListener('input', renderAll);
+    }
+  });
+
+  renderAll();
+});
+
+/* ── build mod.info ── */
+function buildModInfo() {
+  const lines = [];
+  const modName = val('fModName');
+  const modId = val('fModId');
+  const author = val('fAuthor');
+  const desc = val('fDescription');
+  const poster = val('fPoster');
+  const modVer = val('fModVersion');
+  const vMin = val('fVersionMin');
+  const vMax = val('fVersionMax');
+  const req = val('fRequire');
+  const incompat = val('fIncompatible');
+  const loadAfter = val('fLoadAfter');
+  const loadBefore = val('fLoadBefore');
+  const category = val('fCategory');
+  const pack = val('fPack');
+  const tiledef = val('fTiledef');
+
+  if (modName) lines.push('name=' + modName);
+  if (modId) lines.push('id=' + modId);
+  if (author) lines.push('author=' + author);
+  if (desc) lines.push('description=' + desc);
+  if (poster) lines.push('poster=' + poster);
+  if (modVer) lines.push('modversion=' + modVer);
+  if (vMin) lines.push('versionMin=' + vMin);
+  if (vMax) lines.push('versionMax=' + vMax);
+  if (req) lines.push('require=' + req);
+  if (incompat) lines.push('incompatible=' + incompat);
+  if (loadAfter) lines.push('loadModAfter=' + loadAfter);
+  if (loadBefore) lines.push('loadModBefore=' + loadBefore);
+  if (category) lines.push('category=' + category);
+  if (pack) lines.push('pack=' + pack);
+  if (tiledef) lines.push('tiledef=' + tiledef);
+
+  return lines.join('\n');
+}
+
+/* ── build folder tree ── */
+function buildTree() {
+  const modId = val('fModId') || 'MyMod';
+  const lines = [];
+
+  function dir(indent, name) { lines.push(indent + '<span class="dir">' + escapeHtml(name) + '/</span>'); }
+  function file(indent, name, generated) {
+    const cls = generated ? 'gen' : 'file';
+    lines.push(indent + '<span class="' + cls + '">' + escapeHtml(name) + '</span>');
+  }
+
+  dir('', modId);
+  dir('  ', '42');
+  file('    ', 'mod.info', true);
+  file('    ', val('fPoster') || 'poster.png', false);
+  dir('    ', 'media');
+
+  if (chk('chkScriptsItems') || chk('chkScriptsRecipes')) {
+    dir('      ', 'scripts');
+    if (chk('chkScriptsItems')) file('        ', 'items.txt', true);
+    if (chk('chkScriptsRecipes')) file('        ', 'recipes.txt', true);
+  }
+
+  const anyLua = chk('chkLuaClient') || chk('chkLuaServer') || chk('chkLuaShared') || chk('chkTranslations');
+  if (anyLua) {
+    dir('      ', 'lua');
+    if (chk('chkLuaClient')) {
+      dir('        ', 'client');
+      file('          ', '.gitkeep', false);
+    }
+    if (chk('chkLuaServer')) {
+      dir('        ', 'server');
+      file('          ', '.gitkeep', false);
+    }
+    if (chk('chkLuaShared') || chk('chkTranslations')) {
+      dir('        ', 'shared');
+      if (chk('chkLuaShared')) file('          ', '.gitkeep', false);
+      if (chk('chkTranslations')) {
+        dir('          ', 'Translate');
+        dir('            ', 'EN');
+        if (chk('chkScriptsItems')) file('              ', 'Items_EN.txt', true);
+        if (chk('chkScriptsRecipes')) file('              ', 'Recipes_EN.txt', true);
+      }
+    }
+  }
+
+  if (chk('chkTextures')) {
+    dir('      ', 'textures');
+    file('        ', '.gitkeep', false);
+  }
+  if (chk('chkModels')) {
+    dir('      ', 'models');
+    file('        ', '.gitkeep', false);
+  }
+  if (chk('chkSounds')) {
+    dir('      ', 'sound');
+    file('        ', '.gitkeep', false);
+  }
+
+  dir('  ', 'common');
+
+  return lines.join('\n');
+}
+
+/* ── boilerplate file contents ── */
+function buildItemsScript() {
+  const modId = val('fModId') || 'MyMod';
+  return 'module ' + modId + ' {\n\n    /* Define your items here */\n\n}';
+}
+
+function buildRecipesScript() {
+  const modId = val('fModId') || 'MyMod';
+  return 'module ' + modId + ' {\n\n    /* Define your recipes here */\n\n}';
+}
+
+function buildItemsTranslation() {
+  return 'Items_EN = {\n    /* ItemName_YourItem = "Display Name", */\n}';
+}
+
+function buildRecipesTranslation() {
+  return 'Recipes_EN = {\n    /* Recipe_YourRecipe = "Recipe Name", */\n}';
+}
+
+/* ── linter ── */
+function lint() {
+  const issues = [];
+  const warnings = [];
+
+  if (!val('fModName')) issues.push('Mod name is required.');
+  if (!val('fModId')) issues.push('Mod ID is required.');
+
+  const modId = val('fModId');
+  if (modId && !/^[A-Za-z][A-Za-z0-9_]*$/.test(modId)) {
+    issues.push('Mod ID should start with a letter and contain only letters, numbers, underscores.');
+  }
+
+  if (!val('fAuthor')) warnings.push('No author specified.');
+  if (!val('fDescription')) warnings.push('No description specified.');
+
+  const noFeatures = !chk('chkScriptsItems') && !chk('chkScriptsRecipes') && !chk('chkLuaClient') &&
+    !chk('chkLuaServer') && !chk('chkLuaShared') && !chk('chkTranslations') &&
+    !chk('chkTextures') && !chk('chkModels') && !chk('chkSounds');
+  if (noFeatures) warnings.push('No features selected. The mod will only contain mod.info.');
+
+  if (chk('chkTranslations') && !chk('chkScriptsItems') && !chk('chkScriptsRecipes')) {
+    warnings.push('Translations enabled but no scripts selected. Translation files will have no entries to reference.');
+  }
+
+  const bar = document.getElementById('lintBar');
+  if (issues.length > 0) {
+    bar.innerHTML = '<span class="issues">' + issues.length + ' issue' + (issues.length > 1 ? 's' : '') + ': ' + escapeHtml(issues[0]) + '</span>';
+  } else if (warnings.length > 0) {
+    bar.innerHTML = '<span class="warnings">' + warnings.length + ' warning' + (warnings.length > 1 ? 's' : '') + ': ' + escapeHtml(warnings[0]) + '</span>';
+  } else {
+    bar.innerHTML = '<span class="ok">Ready to generate</span>';
+  }
+
+  return issues;
+}
+
+/* ── render ── */
+function renderAll() {
+  document.getElementById('treeView').innerHTML = buildTree();
+  document.getElementById('modInfoPreview').textContent = buildModInfo();
+
+  const showItems = chk('chkScriptsItems');
+  const showRecipes = chk('chkScriptsRecipes');
+  const showTransItems = chk('chkTranslations') && chk('chkScriptsItems');
+  const showTransRecipes = chk('chkTranslations') && chk('chkScriptsRecipes');
+
+  document.getElementById('scriptPreviewSec').style.display = showItems ? '' : 'none';
+  document.getElementById('recipePreviewSec').style.display = showRecipes ? '' : 'none';
+  document.getElementById('transItemsPreviewSec').style.display = showTransItems ? '' : 'none';
+  document.getElementById('transRecipesPreviewSec').style.display = showTransRecipes ? '' : 'none';
+
+  if (showItems) document.getElementById('scriptPreview').textContent = buildItemsScript();
+  if (showRecipes) document.getElementById('recipePreview').textContent = buildRecipesScript();
+  if (showTransItems) document.getElementById('transItemsPreview').textContent = buildItemsTranslation();
+  if (showTransRecipes) document.getElementById('transRecipesPreview').textContent = buildRecipesTranslation();
+
+  lint();
+}
+
+/* ── example ── */
+function loadExample() {
+  document.getElementById('fModName').value = "Survivor's Toolkit";
+  const idField = document.getElementById('fModId');
+  idField.value = 'SurvivorsToolkit';
+  idField._userEdited = true;
+  document.getElementById('fAuthor').value = 'ProjectOmen';
+  document.getElementById('fDescription').value = 'Adds craftable tools and repair kits for the apocalypse.';
+  document.getElementById('fModVersion').value = '1.0.0';
+  document.getElementById('fVersionMin').value = '42.0.0';
+  document.getElementById('fVersionMax').value = '';
+  document.getElementById('fRequire').value = '';
+  document.getElementById('fIncompatible').value = '';
+  document.getElementById('fLoadAfter').value = '';
+  document.getElementById('fLoadBefore').value = '';
+  document.getElementById('fCategory').value = '';
+  document.getElementById('fPoster').value = 'poster.png';
+  document.getElementById('fPack').value = '';
+  document.getElementById('fTiledef').value = '';
+
+  document.getElementById('chkScriptsItems').checked = true;
+  document.getElementById('chkScriptsRecipes').checked = true;
+  document.getElementById('chkLuaClient').checked = false;
+  document.getElementById('chkLuaServer').checked = false;
+  document.getElementById('chkLuaShared').checked = true;
+  document.getElementById('chkTranslations').checked = true;
+  document.getElementById('chkTextures').checked = true;
+  document.getElementById('chkModels').checked = false;
+  document.getElementById('chkSounds').checked = false;
+
+  renderAll();
+}
+
+/* ── ZIP generation (inline JSZip) ── */
+function downloadZip() {
+  const issues = lint();
+  if (issues.length > 0) {
+    alert('Fix issues before downloading:\n\n' + issues.join('\n'));
+    return;
+  }
+
+  const modId = val('fModId') || 'MyMod';
+  const base = modId + '/42/';
+  const mediaBase = base + 'media/';
+
+  /* Build file map */
+  const files = {};
+  files[base + 'mod.info'] = buildModInfo();
+  files[modId + '/common/.gitkeep'] = '';
+
+  if (chk('chkScriptsItems')) {
+    files[mediaBase + 'scripts/items.txt'] = buildItemsScript();
+  }
+  if (chk('chkScriptsRecipes')) {
+    files[mediaBase + 'scripts/recipes.txt'] = buildRecipesScript();
+  }
+  if (chk('chkLuaClient')) {
+    files[mediaBase + 'lua/client/.gitkeep'] = '';
+  }
+  if (chk('chkLuaServer')) {
+    files[mediaBase + 'lua/server/.gitkeep'] = '';
+  }
+  if (chk('chkLuaShared')) {
+    files[mediaBase + 'lua/shared/.gitkeep'] = '';
+  }
+  if (chk('chkTranslations')) {
+    if (chk('chkScriptsItems')) {
+      files[mediaBase + 'lua/shared/Translate/EN/Items_EN.txt'] = buildItemsTranslation();
+    }
+    if (chk('chkScriptsRecipes')) {
+      files[mediaBase + 'lua/shared/Translate/EN/Recipes_EN.txt'] = buildRecipesTranslation();
+    }
+  }
+  if (chk('chkTextures')) {
+    files[mediaBase + 'textures/.gitkeep'] = '';
+  }
+  if (chk('chkModels')) {
+    files[mediaBase + 'models/.gitkeep'] = '';
+  }
+  if (chk('chkSounds')) {
+    files[mediaBase + 'sound/.gitkeep'] = '';
+  }
+
+  /* Generate ZIP using minimal inline implementation */
+  generateZip(files, modId + '.zip');
+}
+
+/*
+ * Minimal ZIP generator — no dependencies.
+ * Produces a valid ZIP with Store (no compression) method.
+ * Good enough for small text boilerplate files.
+ */
+function generateZip(fileMap, zipName) {
+  const entries = Object.entries(fileMap);
+  const parts = [];
+  const centralDir = [];
+  let offset = 0;
+
+  const encoder = new TextEncoder();
+
+  for (const [path, content] of entries) {
+    const nameBytes = encoder.encode(path);
+    const dataBytes = encoder.encode(content);
+    const crc = crc32(dataBytes);
+
+    /* Local file header */
+    const local = new ArrayBuffer(30 + nameBytes.length + dataBytes.length);
+    const lv = new DataView(local);
+    const lu = new Uint8Array(local);
+
+    lv.setUint32(0, 0x04034b50, true);  /* signature */
+    lv.setUint16(4, 20, true);          /* version needed */
+    lv.setUint16(6, 0, true);           /* flags */
+    lv.setUint16(8, 0, true);           /* compression: store */
+    lv.setUint16(10, 0, true);          /* mod time */
+    lv.setUint16(12, 0, true);          /* mod date */
+    lv.setUint32(14, crc, true);        /* crc32 */
+    lv.setUint32(18, dataBytes.length, true); /* compressed size */
+    lv.setUint32(22, dataBytes.length, true); /* uncompressed size */
+    lv.setUint16(26, nameBytes.length, true); /* name length */
+    lv.setUint16(28, 0, true);          /* extra length */
+    lu.set(nameBytes, 30);
+    lu.set(dataBytes, 30 + nameBytes.length);
+
+    parts.push(lu);
+
+    /* Central directory entry */
+    const central = new ArrayBuffer(46 + nameBytes.length);
+    const cv = new DataView(central);
+    const cu = new Uint8Array(central);
+
+    cv.setUint32(0, 0x02014b50, true);  /* signature */
+    cv.setUint16(4, 20, true);          /* version made by */
+    cv.setUint16(6, 20, true);          /* version needed */
+    cv.setUint16(8, 0, true);           /* flags */
+    cv.setUint16(10, 0, true);          /* compression */
+    cv.setUint16(12, 0, true);          /* mod time */
+    cv.setUint16(14, 0, true);          /* mod date */
+    cv.setUint32(16, crc, true);        /* crc32 */
+    cv.setUint32(20, dataBytes.length, true);
+    cv.setUint32(24, dataBytes.length, true);
+    cv.setUint16(28, nameBytes.length, true);
+    cv.setUint16(30, 0, true);          /* extra length */
+    cv.setUint16(32, 0, true);          /* comment length */
+    cv.setUint16(34, 0, true);          /* disk start */
+    cv.setUint16(36, 0, true);          /* internal attrs */
+    cv.setUint32(38, 0, true);          /* external attrs */
+    cv.setUint32(42, offset, true);     /* offset of local header */
+    cu.set(nameBytes, 46);
+
+    centralDir.push(cu);
+    offset += lu.length;
+  }
+
+  /* End of central directory */
+  let centralSize = 0;
+  centralDir.forEach(c => centralSize += c.length);
+
+  const eocd = new ArrayBuffer(22);
+  const ev = new DataView(eocd);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(4, 0, true);
+  ev.setUint16(6, 0, true);
+  ev.setUint16(8, entries.length, true);
+  ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, offset, true);
+  ev.setUint16(20, 0, true);
+
+  const blob = new Blob([...parts, ...centralDir, new Uint8Array(eocd)], { type: 'application/zip' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = zipName;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* CRC32 lookup table */
+const crc32Table = new Uint32Array(256);
+for (let i = 0; i < 256; i++) {
+  let c = i;
+  for (let j = 0; j < 8; j++) {
+    c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+  }
+  crc32Table[i] = c;
+}
+
+function crc32(bytes) {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) {
+    crc = crc32Table[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+</script>
+<script src="assets/utils.js"></script>
+<script>
+  // Load guide content
+  loadGuide('modScaffold');
+</script>
+
+</body>
+</html>

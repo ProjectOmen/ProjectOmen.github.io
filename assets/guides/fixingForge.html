@@ -1,0 +1,46 @@
+
+      <h3>Getting Started</h3>
+      <p>fixingForge helps you build Project Zomboid Build 42 <code>fixing</code> script blocks. Fixing blocks define how items can be repaired &mdash; what materials are needed, what skills are required, and how much condition is restored.</p>
+      <h4>Quick Workflow</h4>
+      <ol>
+        <li><b>Load</b> an existing fixing script file (optional) &mdash; browse and edit existing fixing blocks.</li>
+        <li><b>Build</b> your fixing block &mdash; set the name, the item to repair, and add Fixer rows for each repair material.</li>
+        <li><b>Save</b> to your session &mdash; click "Save Current Fixing" to add it to the list.</li>
+        <li><b>Export</b> &mdash; copy or download your fixing block(s).</li>
+      </ol>
+
+      <h3>Fields Explained</h3>
+      <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>Fixing Name</code></td><td>The name of the fixing block (e.g. <code>Fix Wood Axe</code>). Can contain spaces.</td></tr>
+        <tr><td><code>Require</code></td><td>The item ID to be repaired (e.g. <code>WoodAxe</code>).</td></tr>
+        <tr><td><code>GlobalItem</code></td><td>An additional item always needed for repair, consumed in the process. Format: <code>Item=Qty</code></td></tr>
+        <tr><td><code>ConditionModifier</code></td><td>Multiplier for how much condition is restored per repair (default 1.0). Lower = less repair per fix.</td></tr>
+      </table>
+
+      <h3>Fixer Rows</h3>
+      <p>Each Fixer row represents one way to repair the item. The player only needs <b>one</b> of the listed fixers to perform the repair.</p>
+      <table>
+        <tr><th>Part</th><th>Description</th></tr>
+        <tr><td><code>Material</code></td><td>The item used for repair (e.g. <code>Woodglue</code>, <code>DuctTape</code>, <code>Nails</code>)</td></tr>
+        <tr><td><code>Quantity</code></td><td>How many of the material are consumed. Leave empty for 1.</td></tr>
+        <tr><td><code>Skill</code></td><td>Optional skill required for this repair method (e.g. <code>Woodwork</code>)</td></tr>
+        <tr><td><code>Skill Level</code></td><td>Level required for the skill. Only used if Skill is set.</td></tr>
+      </table>
+
+      <h3>Available Skills</h3>
+      <p>Axe, Blunt, SmallBlunt, LongBlade, SmallBlade, Spear, Maintenance, Aiming, Reloading, Woodwork, Cooking, Farming, Doctor, Electricity, MetalWelding, Mechanics, Tailoring, Fishing, Trapping, PlantScavenging, Fitness, Strength, Sprinting, Lightfoot, Nimble, Sneak</p>
+
+      <h3>Output Format</h3>
+      <pre>fixing Fix Wood Axe
+{
+    Require : WoodAxe,
+
+    Fixer : Woodglue=2; Woodwork=2,
+    Fixer : DuctTape=2,
+    Fixer : Glue=2,
+    Fixer : Scotchtape=4,
+}</pre>
+      <p>Fixing script files go in your mod's <code>media/scripts/</code> folder.</p>
+
+    

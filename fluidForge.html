@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>fluidForge</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: #0a0e13;
+      --bg-secondary: #0f1419;
+      --bg-tertiary: #151b23;
+      --bg-input: #1a2332;
+      --border-subtle: #1c2531;
+      --border-medium: #2d3748;
+      --border-active: #3b82f6;
+      --text-primary: #e9ecf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-yellow: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    header .t {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .pill {
+      font-size: 12px;
+      padding: 4px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .guide-btn {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .guide-btn:hover {
+      background: linear-gradient(135deg, #264d7a 0%, #1e3044 100%);
+      color: #93c5fd;
+      transform: translateY(-1px);
+    }
+    .hdr-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .hdr-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+    .hdr-btn + .guide-btn { margin-left: auto; }
+
+    main {
+      display: grid;
+      grid-template-columns: 280px 1fr 1fr;
+      height: calc(100vh - 57px);
+    }
+
+    @media (max-width: 1200px) {
+      main { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: auto; min-height: calc(100vh - 57px); }
+      main > .panel:first-child { grid-column: 1 / -1; max-height: 260px; }
+    }
+    @media (max-width: 768px) {
+      main { grid-template-columns: 1fr; grid-template-rows: auto; }
+      main > .panel:first-child { max-height: none; }
+    }
+
+    .panel {
+      overflow: auto;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-medium);
+    }
+    .panel:last-child { border-right: none; }
+
+    .panel::-webkit-scrollbar { width: 10px; }
+    .panel::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .panel::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    .panel::-webkit-scrollbar-thumb:hover { background: #3d4a5c; }
+
+    /* Left panel */
+    .left-head { padding: 16px; border-bottom: 1px solid var(--border-subtle); }
+    .left-head h3 { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 10px; }
+
+    .load-area { padding: 16px; border-bottom: 1px solid var(--border-subtle); }
+    .load-area input[type="file"] { display: none; }
+    .load-btn {
+      display: inline-block; padding: 9px 14px; font-size: 12px; font-weight: 500;
+      border: 1px dashed var(--border-medium); border-radius: 8px; background: var(--bg-tertiary);
+      color: var(--text-secondary); cursor: pointer; transition: all .15s; width: 100%; text-align: center;
+    }
+    .load-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+
+    .fluid-list { list-style: none; padding: 0; margin: 0; }
+    .fluid-list li {
+      padding: 10px 16px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-subtle);
+      display: flex; justify-content: space-between; align-items: center; transition: background .1s;
+    }
+    .fluid-list li:hover { background: var(--bg-tertiary); }
+    .fluid-list li.active { background: var(--bg-tertiary); border-left: 3px solid var(--accent-blue); }
+    .fluid-list .name { font-weight: 500; }
+    .fluid-list .del {
+      font-size: 11px; color: var(--text-muted); background: none; border: 1px solid var(--border-medium);
+      border-radius: 4px; padding: 2px 7px; cursor: pointer; opacity: 0; transition: opacity .15s;
+    }
+    .fluid-list li:hover .del { opacity: 1; }
+    .fluid-list .del:hover { border-color: var(--accent-red); color: var(--accent-red); }
+
+    .left-actions { padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .left-actions button {
+      flex: 1; min-width: 80px; padding: 9px 10px; font-size: 12px; font-weight: 500;
+      border: 1px solid var(--border-medium); border-radius: 8px; background: var(--bg-tertiary);
+      color: var(--text-secondary); cursor: pointer; transition: all 0.15s ease; font-family: inherit;
+    }
+    .left-actions button:hover { background: #1f2937; border-color: #3d4a5c; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .left-actions button:active { transform: translateY(0); }
+
+    /* Sections */
+    .section { padding: 20px; border-bottom: 1px solid var(--border-subtle); }
+    .section h2 {
+      font-size: 13px; font-weight: 600; margin: 0 0 16px; color: var(--text-primary);
+      text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9;
+    }
+
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 9px 12px; font-size: 13px; font-family: inherit;
+      background: var(--bg-input); border: 1px solid var(--border-medium); border-radius: 8px;
+      color: var(--text-primary); outline: none; transition: all 0.15s ease;
+    }
+    .field input:hover, .field select:hover, .field textarea:hover { border-color: #3d4a5c; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    .field .hint { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    .field-row { display: flex; gap: 10px; }
+    .field-row .field { flex: 1; }
+
+    /* Color preview */
+    .color-swatch {
+      display: inline-block; width: 28px; height: 28px; border-radius: 6px;
+      border: 1px solid var(--border-medium); vertical-align: middle; margin-left: 8px;
+    }
+
+    /* Tag input for categories */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .tag {
+      display: flex; align-items: center; gap: 4px; padding: 3px 10px; font-size: 12px;
+      background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: 999px;
+      color: var(--text-primary);
+    }
+    .tag .tag-x {
+      font-size: 14px; cursor: pointer; color: var(--text-muted); line-height: 1;
+    }
+    .tag .tag-x:hover { color: var(--accent-red); }
+
+    .add-row { display: flex; gap: 6px; }
+    .add-row input { flex: 1; }
+    .add-row button {
+      padding: 9px 12px; font-size: 12px; font-weight: 600; border: 1px solid var(--border-medium);
+      border-radius: 8px; background: var(--bg-tertiary); color: var(--text-secondary);
+      cursor: pointer; font-family: inherit; white-space: nowrap; transition: all 0.15s ease;
+    }
+    .add-row button:hover { background: #1f2937; border-color: #3d4a5c; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .add-row button:active { transform: translateY(0); }
+
+    /* Blend rows */
+    .blend-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+    .blend-row input { flex: 1; }
+    .blend-row .rm-btn {
+      padding: 4px 8px; font-size: 14px; background: none; border: 1px solid var(--border-medium);
+      border-radius: 4px; color: var(--text-muted); cursor: pointer;
+    }
+    .blend-row .rm-btn:hover { border-color: var(--accent-red); color: var(--accent-red); }
+
+    /* Details (collapsible) */
+    details { margin-top: 14px; }
+    details > summary {
+      cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 0; user-select: none;
+    }
+    details > summary:hover { color: var(--text-primary); }
+    details[open] > summary { color: var(--accent-blue); }
+    .detail-body { padding: 4px 0 0; }
+
+    /* Preview */
+    .preview-panel { background: var(--bg-primary); }
+    pre.code {
+      margin: 0; padding: 20px; font-size: 13px; line-height: 1.6;
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      color: var(--text-primary); white-space: pre; overflow: auto; height: 100%;
+      background: var(--bg-primary);
+    }
+    pre.code::-webkit-scrollbar { width: 10px; height: 10px; }
+    pre.code::-webkit-scrollbar-track { background: var(--bg-primary); }
+    pre.code::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    pre.code .kw { color: var(--accent-blue); }
+    pre.code .cm { color: var(--text-muted); }
+    pre.code .vl { color: var(--accent-green); }
+    pre.code .st { color: #f59e0b; }
+
+    /* Lint bar */
+    .lint-bar {
+      position: sticky; bottom: 0; padding: 16px 20px; font-size: 12px; font-weight: 500;
+      background: var(--bg-secondary); border-top: 1px solid var(--border-subtle);
+      display: flex; gap: 16px; color: var(--text-muted); z-index: 5; line-height: 1.6;
+    }
+    .lint-bar .issues { color: var(--accent-red); }
+    .lint-bar .warnings { color: var(--accent-yellow); }
+    .lint-bar .ok { color: var(--accent-green); font-weight: 500; }
+
+    /* Guide modal */
+    .guide-overlay {
+      position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center;
+    }
+    .guide-overlay.visible { display: flex; }
+    .guide-modal {
+      background: var(--bg-secondary); border: 1px solid var(--border-medium); border-radius: 12px;
+      width: 90vw; max-width: 800px; max-height: 85vh;
+      display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .guide-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; border-bottom: 1px solid var(--border-medium);
+    }
+    .guide-header h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .guide-close {
+      background: none; border: none; color: var(--text-muted); font-size: 20px;
+      cursor: pointer; padding: 4px 8px; border-radius: 6px;
+    }
+    .guide-close:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+    .guide-body {
+      overflow-y: auto; padding: 24px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);
+    }
+    .guide-body::-webkit-scrollbar { width: 10px; }
+    .guide-body::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .guide-body::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    .guide-body h3 {
+      color: var(--text-primary); font-size: 15px; margin: 28px 0 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-body h3:first-child { margin-top: 0; }
+    .guide-body p { margin: 0 0 10px; }
+    .guide-body ul, .guide-body ol { margin: 0 0 10px; padding-left: 20px; }
+    .guide-body li { margin-bottom: 4px; }
+    .guide-body code {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      background: var(--bg-input); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--text-primary);
+    }
+    .guide-body pre {
+      background: var(--bg-primary); border: 1px solid var(--border-medium); border-radius: 8px;
+      padding: 14px; overflow-x: auto; font-size: 12px; line-height: 1.6; margin: 0 0 12px; height: auto;
+    }
+    .guide-body table { margin: 8px 0 14px; border: 1px solid var(--border-medium); border-radius: 8px; overflow: hidden; width: 100%; border-collapse: collapse; font-size: 13px; }
+    .guide-body th { background: var(--bg-tertiary); padding: 8px 12px; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 12px; }
+    .guide-body td { padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="btn-home" style="text-decoration:none; margin-right: 15px;">
+    &larr; Project Omen
+  </a>
+  
+  <span class="t">fluidForge</span>
+  <span class="pill">B42 Fluid Script Builder</span>
+  <button class="guide-btn" onclick="toggleGuide()">Guide &amp; Reference</button>
+</header>
+
+<main>
+  <!-- LEFT: File / List -->
+  <div class="panel">
+    <div class="load-area">
+      <label class="load-btn" for="fileInput">Load fluid script file&hellip;</label>
+      <input type="file" id="fileInput" accept=".txt,.script" onchange="handleFile(event)">
+    </div>
+    <ul id="fluidList" class="fluid-list"></ul>
+    <div class="left-actions">
+      <button onclick="newFluid()">+ New</button>
+      <button onclick="exportAll()">Export All</button>
+      <button onclick="copyAll()">Copy All</button>
+    </div>
+  </div>
+
+  <!-- MIDDLE: Form -->
+  <div class="panel" id="formPanel">
+
+    <div class="section">
+      <h2>Identity</h2>
+      <div class="field">
+        <label>Fluid Name</label>
+        <input id="fName" placeholder="e.g. TomatoJuice" oninput="sync()">
+      </div>
+      <div class="field">
+        <label>Display Name</label>
+        <input id="fDisplayName" placeholder="e.g. FLUID_TOMATO_JUICE" oninput="sync()">
+        <div class="hint">Translation key for the fluid name.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Color <span id="colorSwatch" class="color-swatch"></span></h2>
+      <div class="field-row">
+        <div class="field">
+          <label>R (0&ndash;1)</label>
+          <input id="fColorR" type="number" min="0" max="1" step="0.001" value="" placeholder="1.000" oninput="sync()">
+        </div>
+        <div class="field">
+          <label>G (0&ndash;1)</label>
+          <input id="fColorG" type="number" min="0" max="1" step="0.001" value="" placeholder="0.894" oninput="sync()">
+        </div>
+        <div class="field">
+          <label>B (0&ndash;1)</label>
+          <input id="fColorB" type="number" min="0" max="1" step="0.001" value="" placeholder="0.769" oninput="sync()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Color Reference</label>
+        <input id="fColorRef" placeholder="e.g. Red" oninput="sync()" list="colorRefList">
+        <div class="hint">Plaintext color name. Use either RGB values or a reference, not both.</div>
+      </div>
+      <datalist id="colorRefList">
+        <option value="Red"><option value="Green"><option value="Blue"><option value="Yellow">
+        <option value="Orange"><option value="Purple"><option value="White"><option value="Black">
+        <option value="Brown"><option value="Pink"><option value="Cyan">
+      </datalist>
+    </div>
+
+    <div class="section">
+      <h2>Categories</h2>
+      <div id="catTags" class="tag-list"></div>
+      <div class="add-row">
+        <input id="catInput" placeholder="e.g. Beverage" list="catSuggestions"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();addCategory();}">
+        <button onclick="addCategory()">Add</button>
+      </div>
+      <datalist id="catSuggestions">
+        <option value="Beverage"><option value="Industrial"><option value="Cooking">
+        <option value="Medical"><option value="Fuel"><option value="Cleaning">
+      </datalist>
+    </div>
+
+    <div class="section">
+      <h2>Properties</h2>
+      <details>
+        <summary>Nutrition &amp; Effects</summary>
+        <div class="detail-body">
+          <div class="field-row">
+            <div class="field"><label>hungerChange</label><input id="fHunger" type="number" step="any" placeholder="0" oninput="sync()"></div>
+            <div class="field"><label>thirstChange</label><input id="fThirst" type="number" step="any" placeholder="0" oninput="sync()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>calories</label><input id="fCalories" type="number" step="any" placeholder="0" oninput="sync()"></div>
+            <div class="field"><label>carbohydrates</label><input id="fCarbs" type="number" step="any" placeholder="0" oninput="sync()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>lipids</label><input id="fLipids" type="number" step="any" placeholder="0" oninput="sync()"></div>
+            <div class="field"><label>proteins</label><input id="fProteins" type="number" step="any" placeholder="0" oninput="sync()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>alcohol</label><input id="fAlcohol" type="number" step="any" placeholder="0" oninput="sync()"></div>
+            <div class="field"><label>fatigueChange</label><input id="fFatigue" type="number" step="any" placeholder="0" oninput="sync()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>stressChange</label><input id="fStress" type="number" step="any" placeholder="0" oninput="sync()"></div>
+            <div class="field"><label>unhappyChange</label><input id="fUnhappy" type="number" step="any" placeholder="0" oninput="sync()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>enduranceChange</label><input id="fEndurance" type="number" step="any" placeholder="0" oninput="sync()"></div>
+            <div class="field"><label>fluReduction</label><input id="fFluReduce" type="number" step="any" placeholder="0" oninput="sync()"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>painReduction</label><input id="fPainReduce" type="number" step="any" placeholder="0" oninput="sync()"></div>
+            <div class="field"><label>foodSicknessReduction</label><input id="fFoodSickReduce" type="number" step="any" placeholder="0" oninput="sync()"></div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="section">
+      <h2>Poison</h2>
+      <details>
+        <summary>Poison Settings</summary>
+        <div class="detail-body">
+          <div class="field">
+            <label>maxEffect</label>
+            <select id="fPoisonMax" onchange="sync()">
+              <option value="">None</option>
+              <option value="None">None</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="Extreme">Extreme</option>
+              <option value="Deadly">Deadly</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>minAmount</label>
+              <input id="fPoisonMin" type="number" min="0" max="1" step="0.01" placeholder="0" oninput="sync()">
+              <div class="hint">0 to 1.0</div>
+            </div>
+            <div class="field">
+              <label>diluteRatio</label>
+              <input id="fPoisonDilute" type="number" min="0" step="0.01" placeholder="0" oninput="sync()">
+              <div class="hint">How much poison dilutes when blended.</div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="section">
+      <h2>Blend Rules</h2>
+      <details>
+        <summary>Blend White List</summary>
+        <div class="detail-body">
+          <div class="field">
+            <label>Script Reference</label>
+            <input id="fBlendWLRef" placeholder="e.g. MyFluidFilter" oninput="sync()">
+            <div class="hint">Reference a filter script by name. Or define inline below.</div>
+          </div>
+          <div class="field">
+            <label>Inline &mdash; Fluids</label>
+            <div id="blendWLFluids"></div>
+            <div class="add-row" style="margin-top:6px;">
+              <input id="blendWLFluidInput" placeholder="Fluid name"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addBlendItem('WL','Fluids');}">
+              <button onclick="addBlendItem('WL','Fluids')">Add</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Inline &mdash; Categories</label>
+            <div id="blendWLCats"></div>
+            <div class="add-row" style="margin-top:6px;">
+              <input id="blendWLCatInput" placeholder="Category name"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addBlendItem('WL','Cats');}">
+              <button onclick="addBlendItem('WL','Cats')">Add</button>
+            </div>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary>Blend Black List</summary>
+        <div class="detail-body">
+          <div class="field">
+            <label>Script Reference</label>
+            <input id="fBlendBLRef" placeholder="e.g. MyFluidFilter" oninput="sync()">
+            <div class="hint">Reference a filter script by name. Or define inline below.</div>
+          </div>
+          <div class="field">
+            <label>Inline &mdash; Fluids</label>
+            <div id="blendBLFluids"></div>
+            <div class="add-row" style="margin-top:6px;">
+              <input id="blendBLFluidInput" placeholder="Fluid name"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addBlendItem('BL','Fluids');}">
+              <button onclick="addBlendItem('BL','Fluids')">Add</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Inline &mdash; Categories</label>
+            <div id="blendBLCats"></div>
+            <div class="add-row" style="margin-top:6px;">
+              <input id="blendBLCatInput" placeholder="Category name"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addBlendItem('BL','Cats');}">
+              <button onclick="addBlendItem('BL','Cats')">Add</button>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div id="lintBar" class="lint-bar"></div>
+  </div>
+
+  <!-- RIGHT: Preview -->
+  <div class="panel preview-panel">
+    <pre id="preview" class="code"></pre>
+  </div>
+</main>
+
+<!-- Guide Modal -->
+<div id="guideOverlay" class="guide-overlay" onclick="if(event.target===this)toggleGuide()">
+  <div class="guide-modal">
+    <div class="guide-header">
+      <h2>Fluid Script Reference</h2>
+      <button class="guide-close" onclick="toggleGuide()">&times;</button>
+    </div>
+    <div class="guide-body">
+      <p style="color: var(--text-muted); text-align: center;">Loading guide...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── State ── */
+let fluids = [];
+let activeIdx = -1;
+
+function blank() {
+  return {
+    name: '', displayName: '',
+    colorR: '', colorG: '', colorB: '', colorRef: '',
+    categories: [],
+    props: { hungerChange:'', thirstChange:'', calories:'', carbohydrates:'', lipids:'', proteins:'',
+             alcohol:'', fatigueChange:'', stressChange:'', unhappyChange:'', enduranceChange:'',
+             fluReduction:'', painReduction:'', foodSicknessReduction:'' },
+    poison: { maxEffect:'', minAmount:'', diluteRatio:'' },
+    blendWL: { ref:'', fluids:[], cats:[] },
+    blendBL: { ref:'', fluids:[], cats:[] },
+  };
+}
+
+/* ── Helpers ── */
+function toggleGuide() { document.getElementById('guideOverlay').classList.toggle('visible'); }
+
+/* ── Sync form → model ── */
+function sync() {
+  if (activeIdx < 0) return;
+  const f = fluids[activeIdx];
+  f.name = document.getElementById('fName').value.trim();
+  f.displayName = document.getElementById('fDisplayName').value.trim();
+  f.colorR = document.getElementById('fColorR').value.trim();
+  f.colorG = document.getElementById('fColorG').value.trim();
+  f.colorB = document.getElementById('fColorB').value.trim();
+  f.colorRef = document.getElementById('fColorRef').value.trim();
+
+  const propMap = {
+    hungerChange:'fHunger', thirstChange:'fThirst', calories:'fCalories', carbohydrates:'fCarbs',
+    lipids:'fLipids', proteins:'fProteins', alcohol:'fAlcohol', fatigueChange:'fFatigue',
+    stressChange:'fStress', unhappyChange:'fUnhappy', enduranceChange:'fEndurance',
+    fluReduction:'fFluReduce', painReduction:'fPainReduce', foodSicknessReduction:'fFoodSickReduce'
+  };
+  for (const [k, id] of Object.entries(propMap)) {
+    f.props[k] = document.getElementById(id).value.trim();
+  }
+
+  f.poison.maxEffect = document.getElementById('fPoisonMax').value;
+  f.poison.minAmount = document.getElementById('fPoisonMin').value.trim();
+  f.poison.diluteRatio = document.getElementById('fPoisonDilute').value.trim();
+
+  f.blendWL.ref = document.getElementById('fBlendWLRef').value.trim();
+  f.blendBL.ref = document.getElementById('fBlendBLRef').value.trim();
+
+  updateSwatch();
+  renderList();
+  renderPreview();
+  lint();
+}
+
+/* ── Sync model → form ── */
+function load() {
+  if (activeIdx < 0) return;
+  const f = fluids[activeIdx];
+  document.getElementById('fName').value = f.name;
+  document.getElementById('fDisplayName').value = f.displayName;
+  document.getElementById('fColorR').value = f.colorR;
+  document.getElementById('fColorG').value = f.colorG;
+  document.getElementById('fColorB').value = f.colorB;
+  document.getElementById('fColorRef').value = f.colorRef;
+
+  const propMap = {
+    hungerChange:'fHunger', thirstChange:'fThirst', calories:'fCalories', carbohydrates:'fCarbs',
+    lipids:'fLipids', proteins:'fProteins', alcohol:'fAlcohol', fatigueChange:'fFatigue',
+    stressChange:'fStress', unhappyChange:'fUnhappy', enduranceChange:'fEndurance',
+    fluReduction:'fFluReduce', painReduction:'fPainReduce', foodSicknessReduction:'fFoodSickReduce'
+  };
+  for (const [k, id] of Object.entries(propMap)) {
+    document.getElementById(id).value = f.props[k];
+  }
+
+  document.getElementById('fPoisonMax').value = f.poison.maxEffect;
+  document.getElementById('fPoisonMin').value = f.poison.minAmount;
+  document.getElementById('fPoisonDilute').value = f.poison.diluteRatio;
+
+  document.getElementById('fBlendWLRef').value = f.blendWL.ref;
+  document.getElementById('fBlendBLRef').value = f.blendBL.ref;
+
+  renderCategories();
+  renderBlendItems('WL', 'Fluids');
+  renderBlendItems('WL', 'Cats');
+  renderBlendItems('BL', 'Fluids');
+  renderBlendItems('BL', 'Cats');
+  updateSwatch();
+  renderPreview();
+  lint();
+}
+
+/* ── Color swatch ── */
+function updateSwatch() {
+  const sw = document.getElementById('colorSwatch');
+  if (activeIdx < 0) { sw.style.background = 'transparent'; return; }
+  const f = fluids[activeIdx];
+  const r = parseFloat(f.colorR), g = parseFloat(f.colorG), b = parseFloat(f.colorB);
+  if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+    sw.style.background = `rgb(${Math.round(r*255)},${Math.round(g*255)},${Math.round(b*255)})`;
+  } else {
+    sw.style.background = f.colorRef || 'transparent';
+  }
+}
+
+/* ── Categories ── */
+function renderCategories() {
+  if (activeIdx < 0) return;
+  const el = document.getElementById('catTags');
+  el.innerHTML = fluids[activeIdx].categories.map((c, i) =>
+    `<span class="tag">${escapeHtml(c)}<span class="tag-x" onclick="removeCategory(${i})">&times;</span></span>`
+  ).join('');
+}
+
+function addCategory() {
+  if (activeIdx < 0) return;
+  const inp = document.getElementById('catInput');
+  const v = inp.value.trim();
+  if (!v) return;
+  fluids[activeIdx].categories.push(v);
+  inp.value = '';
+  renderCategories(); renderPreview(); lint();
+}
+
+function removeCategory(i) {
+  if (activeIdx < 0) return;
+  fluids[activeIdx].categories.splice(i, 1);
+  renderCategories(); renderPreview(); lint();
+}
+
+/* ── Blend items ── */
+function getBlendArr(listType, subType) {
+  if (activeIdx < 0) return [];
+  const key = listType === 'WL' ? 'blendWL' : 'blendBL';
+  const sub = subType === 'Fluids' ? 'fluids' : 'cats';
+  return fluids[activeIdx][key][sub];
+}
+
+function renderBlendItems(listType, subType) {
+  const arr = getBlendArr(listType, subType);
+  const containerId = `blend${listType}${subType}`;
+  const el = document.getElementById(containerId);
+  el.innerHTML = arr.map((v, i) =>
+    `<div class="blend-row"><input value="${escapeHtml(v)}" onchange="updateBlendItem('${listType}','${subType}',${i},this.value)"><button class="rm-btn" onclick="removeBlendItem('${listType}','${subType}',${i})">&times;</button></div>`
+  ).join('');
+}
+
+function addBlendItem(listType, subType) {
+  const inputId = `blend${listType}${subType === 'Fluids' ? 'Fluid' : 'Cat'}Input`;
+  const inp = document.getElementById(inputId);
+  const v = inp.value.trim();
+  if (!v) return;
+  getBlendArr(listType, subType).push(v);
+  inp.value = '';
+  renderBlendItems(listType, subType); renderPreview(); lint();
+}
+
+function updateBlendItem(listType, subType, idx, val) {
+  getBlendArr(listType, subType)[idx] = val.trim();
+  renderPreview();
+}
+
+function removeBlendItem(listType, subType, idx) {
+  getBlendArr(listType, subType).splice(idx, 1);
+  renderBlendItems(listType, subType); renderPreview(); lint();
+}
+
+/* ── List panel ── */
+function renderList() {
+  const ul = document.getElementById('fluidList');
+  ul.innerHTML = fluids.map((f, i) =>
+    `<li class="${i === activeIdx ? 'active' : ''}" onclick="selectFluid(${i})">` +
+    `<span class="name">${escapeHtml(f.name || '(unnamed)')}</span>` +
+    `<button class="del" onclick="event.stopPropagation();deleteFluid(${i})">Del</button></li>`
+  ).join('');
+}
+
+function selectFluid(i) {
+  activeIdx = i;
+  renderList();
+  load();
+}
+
+function newFluid() {
+  fluids.push(blank());
+  activeIdx = fluids.length - 1;
+  renderList();
+  load();
+}
+
+function deleteFluid(i) {
+  fluids.splice(i, 1);
+  if (activeIdx >= fluids.length) activeIdx = fluids.length - 1;
+  renderList();
+  if (activeIdx >= 0) load(); else clearForm();
+  renderPreview(); lint();
+}
+
+function clearForm() {
+  document.querySelectorAll('#formPanel input, #formPanel textarea, #formPanel select').forEach(el => {
+    if (el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+  document.getElementById('catTags').innerHTML = '';
+  ['blendWLFluids','blendWLCats','blendBLFluids','blendBLCats'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  updateSwatch();
+}
+
+/* ── Emitter ── */
+function emitOne(f) {
+  const lines = [];
+  const T = '    ';
+  const TT = '        ';
+
+  lines.push(`fluid ${f.name || 'Unnamed'}`);
+  lines.push('{');
+
+  /* Color */
+  if (f.colorR !== '' && f.colorG !== '' && f.colorB !== '') {
+    const fmt = v => parseFloat(v).toFixed(3);
+    lines.push(`${T}Color           = ${fmt(f.colorR)} : ${fmt(f.colorG)} : ${fmt(f.colorB)},`);
+  }
+  if (f.colorRef) {
+    lines.push(`${T}ColorReference  = ${f.colorRef},`);
+  }
+
+  /* DisplayName */
+  if (f.displayName) {
+    lines.push(`${T}DisplayName     = ${f.displayName},`);
+  }
+
+  /* Categories */
+  if (f.categories.length > 0) {
+    lines.push('');
+    lines.push(`${T}Categories`);
+    lines.push(`${T}{`);
+    f.categories.forEach(c => lines.push(`${TT}${c},`));
+    lines.push(`${T}}`);
+  }
+
+  /* Blend WhiteList */
+  const wlHasInline = f.blendWL.fluids.length > 0 || f.blendWL.cats.length > 0;
+  if (f.blendWL.ref && !wlHasInline) {
+    lines.push('');
+    lines.push(`${T}BlendWhiteList  = ${f.blendWL.ref},`);
+  }
+  if (wlHasInline) {
+    lines.push('');
+    lines.push(`${T}BlendWhiteList`);
+    lines.push(`${T}{`);
+    lines.push(`${TT}whitelist = true,`);
+    if (f.blendWL.fluids.length > 0) {
+      lines.push(`${TT}fluids`);
+      lines.push(`${TT}{`);
+      f.blendWL.fluids.forEach(fl => lines.push(`${TT}    ${fl},`));
+      lines.push(`${TT}}`);
+    }
+    if (f.blendWL.cats.length > 0) {
+      lines.push(`${TT}categories`);
+      lines.push(`${TT}{`);
+      f.blendWL.cats.forEach(c => lines.push(`${TT}    ${c},`));
+      lines.push(`${TT}}`);
+    }
+    lines.push(`${T}}`);
+  }
+
+  /* Blend BlackList */
+  const blHasInline = f.blendBL.fluids.length > 0 || f.blendBL.cats.length > 0;
+  if (f.blendBL.ref && !blHasInline) {
+    lines.push('');
+    lines.push(`${T}BlendBlackList  = ${f.blendBL.ref},`);
+  }
+  if (blHasInline) {
+    lines.push('');
+    lines.push(`${T}BlendBlackList`);
+    lines.push(`${T}{`);
+    lines.push(`${TT}whitelist = false,`);
+    if (f.blendBL.fluids.length > 0) {
+      lines.push(`${TT}fluids`);
+      lines.push(`${TT}{`);
+      f.blendBL.fluids.forEach(fl => lines.push(`${TT}    ${fl},`));
+      lines.push(`${TT}}`);
+    }
+    if (f.blendBL.cats.length > 0) {
+      lines.push(`${TT}categories`);
+      lines.push(`${TT}{`);
+      f.blendBL.cats.forEach(c => lines.push(`${TT}    ${c},`));
+      lines.push(`${TT}}`);
+    }
+    lines.push(`${T}}`);
+  }
+
+  /* Properties */
+  const propEntries = Object.entries(f.props).filter(([, v]) => v !== '' && v !== '0' && parseFloat(v) !== 0);
+  if (propEntries.length > 0) {
+    lines.push('');
+    lines.push(`${T}Properties`);
+    lines.push(`${T}{`);
+    const maxKey = Math.max(...propEntries.map(([k]) => k.length));
+    propEntries.forEach(([k, v]) => {
+      lines.push(`${TT}${k.padEnd(maxKey + 4)}= ${v},`);
+    });
+    lines.push(`${T}}`);
+  }
+
+  /* Poison */
+  const hasPoison = (f.poison.maxEffect && f.poison.maxEffect !== 'None') || f.poison.minAmount || f.poison.diluteRatio;
+  if (hasPoison) {
+    lines.push('');
+    lines.push(`${T}Poison`);
+    lines.push(`${T}{`);
+    if (f.poison.maxEffect) lines.push(`${TT}maxEffect       = ${f.poison.maxEffect},`);
+    if (f.poison.minAmount) lines.push(`${TT}minAmount       = ${f.poison.minAmount},`);
+    if (f.poison.diluteRatio) lines.push(`${TT}diluteRatio     = ${f.poison.diluteRatio},`);
+    lines.push(`${T}}`);
+  }
+
+  lines.push('}');
+  return lines.join('\n');
+}
+
+function emitAll() {
+  return fluids.map(f => emitOne(f)).join('\n\n');
+}
+
+/* ── Preview ── */
+function renderPreview() {
+  const raw = activeIdx >= 0 ? emitOne(fluids[activeIdx]) : '';
+  document.getElementById('preview').innerHTML = highlightSyntax(raw);
+}
+
+function highlightSyntax(code) {
+  return escapeHtml(code)
+    .replace(/^(fluid\s+)(\S+)/gm, '<span class="kw">$1</span><span class="st">$2</span>')
+    .replace(/(Categories|Properties|Poison|BlendWhiteList|BlendBlackList|fluids|categories)/g, '<span class="kw">$1</span>')
+    .replace(/(--[^\n]*)/g, '<span class="cm">$1</span>')
+    .replace(/=\s*([^,\n]+)/g, '= <span class="vl">$1</span>');
+}
+
+/* ── Linter ── */
+function lint() {
+  const bar = document.getElementById('lintBar');
+  if (activeIdx < 0) { bar.innerHTML = '<span class="ok">No fluid selected</span>'; return; }
+  const f = fluids[activeIdx];
+  const issues = [];
+  const warnings = [];
+
+  if (!f.name) issues.push('Fluid name is required.');
+  if (f.name && !/^[A-Za-z_][A-Za-z0-9_]*$/.test(f.name)) issues.push('Fluid name should be a valid identifier (letters, numbers, underscores).');
+  if (!f.displayName) warnings.push('No DisplayName set.');
+
+  const hasColor = f.colorR !== '' || f.colorG !== '' || f.colorB !== '';
+  const hasRef = !!f.colorRef;
+  if (!hasColor && !hasRef) warnings.push('No color defined.');
+  if (hasColor && hasRef) warnings.push('Both Color RGB and ColorReference set. Use one or the other.');
+  if (hasColor) {
+    ['colorR','colorG','colorB'].forEach(k => {
+      const v = parseFloat(f[k]);
+      if (f[k] !== '' && (isNaN(v) || v < 0 || v > 1)) issues.push(`Color value out of range (0-1).`);
+    });
+  }
+
+  if (f.categories.length === 0) warnings.push('No categories defined.');
+
+  if (issues.length > 0) {
+    bar.innerHTML = `<span class="issues">${issues.length} issue${issues.length>1?'s':''}: ${escapeHtml(issues[0])}</span>`;
+  } else if (warnings.length > 0) {
+    bar.innerHTML = `<span class="warnings">${warnings.length} warning${warnings.length>1?'s':''}: ${escapeHtml(warnings[0])}</span>`;
+  } else {
+    bar.innerHTML = '<span class="ok">Looks good</span>';
+  }
+}
+
+/* ── Parser ── */
+function parseAllFluids(text) {
+  const results = [];
+  const re = /\bfluid\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const startBrace = m.index + m[0].length - 1;
+    const body = extractBlock(text, startBrace);
+    if (!body) continue;
+    const f = blank();
+    f.name = m[1];
+
+    /* DisplayName */
+    const dn = body.match(/DisplayName\s*=\s*([^,\n]+)/);
+    if (dn) f.displayName = dn[1].trim();
+
+    /* Color */
+    const col = body.match(/Color\s*=\s*([\d.]+)\s*:\s*([\d.]+)\s*:\s*([\d.]+)/);
+    if (col) { f.colorR = col[1]; f.colorG = col[2]; f.colorB = col[3]; }
+
+    /* ColorReference */
+    const cr = body.match(/ColorReference\s*=\s*([^,\n]+)/);
+    if (cr) f.colorRef = cr[1].trim();
+
+    /* Categories */
+    const catBlock = extractNamedBlock(body, 'Categories');
+    if (catBlock) {
+      catBlock.split(',').map(s => s.replace(/--.*/, '').trim()).filter(Boolean).forEach(c => f.categories.push(c));
+    }
+
+    /* Properties */
+    const propBlock = extractNamedBlock(body, 'Properties');
+    if (propBlock) {
+      const propRe = /(\w+)\s*=\s*([^,\n]+)/g;
+      let pm;
+      while ((pm = propRe.exec(propBlock)) !== null) {
+        if (f.props.hasOwnProperty(pm[1])) f.props[pm[1]] = pm[2].trim();
+      }
+    }
+
+    /* Poison */
+    const poisonBlock = extractNamedBlock(body, 'Poison');
+    if (poisonBlock) {
+      const pe = poisonBlock.match(/maxEffect\s*=\s*([^,\n]+)/);
+      if (pe) f.poison.maxEffect = pe[1].trim();
+      const pmin = poisonBlock.match(/minAmount\s*=\s*([^,\n]+)/);
+      if (pmin) f.poison.minAmount = pmin[1].trim();
+      const pd = poisonBlock.match(/diluteRatio\s*=\s*([^,\n]+)/);
+      if (pd) f.poison.diluteRatio = pd[1].trim();
+    }
+
+    /* Blend lists */
+    parseBlendList(body, 'BlendWhiteList', f.blendWL);
+    parseBlendList(body, 'BlendBlackList', f.blendBL);
+
+    /* Simple ref form (BlendWhiteList = Name,) only if no inline block parsed */
+    if (f.blendWL.fluids.length === 0 && f.blendWL.cats.length === 0) {
+      const wlRef = body.match(/BlendWhiteList\s*=\s*([^,\n{]+)/);
+      if (wlRef) f.blendWL.ref = wlRef[1].trim();
+    }
+    if (f.blendBL.fluids.length === 0 && f.blendBL.cats.length === 0) {
+      const blRef = body.match(/BlendBlackList\s*=\s*([^,\n{]+)/);
+      if (blRef) f.blendBL.ref = blRef[1].trim();
+    }
+
+    results.push(f);
+  }
+  return results;
+}
+
+function parseBlendList(body, keyword, target) {
+  const block = extractNamedBlock(body, keyword);
+  if (!block) return;
+  const fluidsBlock = extractNamedBlock(block, 'fluids');
+  if (fluidsBlock) {
+    fluidsBlock.split(',').map(s => s.replace(/--.*/, '').trim()).filter(Boolean).forEach(f => target.fluids.push(f));
+  }
+  const catsBlock = extractNamedBlock(block, 'categories');
+  if (catsBlock) {
+    catsBlock.split(',').map(s => s.replace(/--.*/, '').trim()).filter(Boolean).forEach(c => target.cats.push(c));
+  }
+}
+
+function extractBlock(text, openIdx) {
+  let depth = 0;
+  for (let i = openIdx; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}') { depth--; if (depth === 0) return text.substring(openIdx + 1, i); }
+  }
+  return null;
+}
+
+function extractNamedBlock(text, name) {
+  const re = new RegExp(name + '\\s*\\{', 'g');
+  const m = re.exec(text);
+  if (!m) return null;
+  const startBrace = m.index + m[0].length - 1;
+  return extractBlock(text, startBrace);
+}
+
+/* ── File handling ── */
+function handleFile(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const parsed = parseAllFluids(e.target.result);
+    if (parsed.length === 0) { alert('No fluid blocks found in file.'); return; }
+    fluids = fluids.concat(parsed);
+    activeIdx = fluids.length - parsed.length;
+    renderList(); load();
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
+}
+
+/* ── Export ── */
+function exportAll() {
+  if (fluids.length === 0) { alert('No fluids to export.'); return; }
+  downloadFile('fluids.txt', emitAll());
+}
+
+function copyAll() {
+  if (fluids.length === 0) { alert('No fluids to copy.'); return; }
+  copyToClipboard(emitAll());
+}
+
+/* ── Example ── */
+function loadExample() {
+  const ex = blank();
+  ex.name = 'TomatoJuice';
+  ex.displayName = 'FLUID_TOMATO_JUICE';
+  ex.colorR = '0.900';
+  ex.colorG = '0.200';
+  ex.colorB = '0.150';
+  ex.categories = ['Beverage'];
+  ex.props.hungerChange = '-5';
+  ex.props.thirstChange = '-20';
+  ex.props.calories = '30';
+  ex.props.carbohydrates = '5';
+  ex.props.proteins = '1';
+  ex.blendWL.fluids = ['Water'];
+  ex.blendWL.cats = ['Beverage'];
+
+  fluids.push(ex);
+  activeIdx = fluids.length - 1;
+  renderList(); load();
+}
+
+/* ── Init ── */
+renderList();
+renderPreview();
+lint();
+</script>
+<script src="assets/utils.js"></script>
+<script>
+  // Load guide content
+  loadGuide('fluidForge');
+</script>

@@ -1,0 +1,61 @@
+<h3>Getting Started</h3>
+<p>ItemForge helps you build Project Zomboid Build 42 <code>item</code> script blocks without writing code by hand. Fill in a form, and it generates correctly formatted item scripts for your mod.</p>
+<h4>Quick Workflow</h4>
+<ol>
+  <li><b>Load</b> an existing item script file (optional) &mdash; browse and edit existing items.</li>
+  <li><b>Build</b> your item &mdash; pick a Type, fill in the fields that appear. Different types show different property sections.</li>
+  <li><b>Save</b> to your session &mdash; click "Save Current Item" to add it to the list. Build multiple items per session.</li>
+  <li><b>Export</b> &mdash; copy or download your item(s). Translation lines for <code>Items_EN.txt</code> are auto-generated.</li>
+</ol>
+
+<h3>Item Types</h3>
+<p>PZ supports 14 item types. Each type exposes different properties:</p>
+<ul>
+  <li><b>Normal</b> &mdash; Generic items (tools, parts, materials)</li>
+  <li><b>Weapon</b> &mdash; Melee and ranged weapons (~65 properties)</li>
+  <li><b>Food</b> &mdash; Edible items with nutrition, freshness, cooking (~40 properties)</li>
+  <li><b>Literature</b> &mdash; Books, magazines, skill trainers</li>
+  <li><b>Drainable</b> &mdash; Items with a use bar (lighters, medical supplies)</li>
+  <li><b>Clothing</b> &mdash; Wearable items with defense, insulation</li>
+  <li><b>Container</b> &mdash; Bags, boxes with capacity</li>
+  <li><b>WeaponPart</b> &mdash; Attachments for weapons</li>
+  <li><b>Key</b> &mdash; Keys and padlocks</li>
+  <li><b>Moveable</b> &mdash; Furniture and placeable objects</li>
+  <li><b>Radio</b> &mdash; Radios and communication devices</li>
+  <li><b>AlarmClock</b> &mdash; Alarm clock items</li>
+  <li><b>AlarmClockClothing</b> &mdash; Wearable alarm (like a watch)</li>
+  <li><b>Map</b> &mdash; Map items</li>
+</ul>
+
+<h3>Common Fields (All Types)</h3>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td><code>ItemID</code></td><td>Unique identifier with no spaces (e.g. <code>MyCustomSword</code>)</td></tr>
+  <tr><td><code>DisplayName</code></td><td>The name players see in-game</td></tr>
+  <tr><td><code>Type</code></td><td>One of the 14 item types listed above</td></tr>
+  <tr><td><code>Weight</code></td><td>Item weight in kilograms</td></tr>
+  <tr><td><code>Icon</code></td><td>Icon texture name</td></tr>
+  <tr><td><code>DisplayCategory</code></td><td>Category shown in inventory UI</td></tr>
+  <tr><td><code>Tags</code></td><td>Semicolon-separated tags for recipe matching</td></tr>
+</table>
+
+<h3>Custom Properties (ModData)</h3>
+<p>Any property not recognized by the game engine is automatically written to the item's <code>ModData</code>. You can add custom key-value properties in the "Custom Properties" section. Access them in Lua with <code>item:getModData().YourKey</code>.</p>
+
+<h3>Translation Lines</h3>
+<p>Each item needs a translation entry in <code>Items_EN.txt</code>:</p>
+<pre>DisplayName_YourItemID = "Display Name Here",</pre>
+
+<h3>Output Format</h3>
+<pre>module Base
+{
+    item MyItem
+    {
+        DisplayName = My Custom Item,
+        Type = Normal,
+        Weight = 1.0,
+        Icon = MyIcon,
+        Tags = TagA;TagB,
+    }
+}</pre>
+<p>Item script files go in your mod's <code>media/scripts/</code> folder. Translation entries go in <code>media/lua/shared/Translate/EN/Items_EN.txt</code>.</p>

@@ -1,0 +1,2577 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>craftRecipeForge</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    header .t {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .pill {
+      font-size: 12px;
+      padding: 4px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 340px 500px 1fr;
+      height: calc(100vh - 57px);
+    }
+
+    @media (max-width: 1200px) {
+      main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        height: auto;
+        min-height: calc(100vh - 57px);
+      }
+      main > .panel:last-child {
+        grid-column: 1 / -1;
+        min-height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      main > .panel:last-child {
+        grid-column: 1;
+        min-height: 350px;
+      }
+    }
+
+    .panel {
+      overflow: auto;
+      background: var(--bg-secondary);
+    }
+
+    .panel.b1, .panel.b2 {
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .panel::-webkit-scrollbar { width: 10px; }
+    .panel::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .panel::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 5px;
+    }
+    .panel::-webkit-scrollbar-thumb:hover { background: #3d4a5c; }
+
+    .section {
+      padding: 20px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .section h2 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 16px;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.9;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    input:hover, select:hover, textarea:hover {
+      border-color: #3d4a5c;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 90px;
+      resize: vertical;
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      line-height: 1.5;
+    }
+
+    .row { margin-bottom: 14px; }
+    .row:last-child { margin-bottom: 0; }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btnrow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    button:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: var(--bg-secondary);
+      border-color: var(--border-subtle);
+    }
+
+    button.secondary:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-medium);
+    }
+
+    button.danger {
+      background: #1f1315;
+      border-color: #4b1b1b;
+      color: #fca5a5;
+    }
+
+    button.danger:hover {
+      background: #2d1215;
+      border-color: #7c2d2d;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .mono {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px;
+      height: 100%;
+      overflow: auto;
+      white-space: pre;
+      tab-size: 2;
+      font-size: 13px;
+      line-height: 1.6;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    }
+
+    pre::-webkit-scrollbar { width: 10px; height: 10px; }
+    pre::-webkit-scrollbar-track { background: var(--bg-primary); }
+    pre::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 5px;
+    }
+
+    .lint {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .ok { color: var(--accent-green); font-weight: 500; }
+    .bad { color: var(--accent-red); }
+    .warn { color: var(--accent-yellow); }
+    .muted { color: var(--text-muted); }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .itembtn {
+      text-align: left;
+      padding: 10px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+      color: var(--text-primary);
+    }
+
+    .itembtn:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+      transform: translateX(2px);
+    }
+
+    .itembtn.active {
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--bg-tertiary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 12px;
+      vertical-align: middle;
+    }
+
+    th {
+      text-align: left;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 11px;
+    }
+
+    td input, td select {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-right: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+    }
+
+    td button {
+      padding: 6px 12px;
+      font-size: 11px;
+      width: 100%;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+      accent-color: var(--accent-blue);
+    }
+
+    details { margin-top: 14px; }
+    details > summary {
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 8px 0;
+      user-select: none;
+    }
+    details > summary:hover { color: var(--text-primary); }
+    details[open] > summary { color: var(--accent-blue); }
+
+    .flags-popup {
+      position: absolute;
+      z-index: 100;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: var(--shadow-md);
+      display: none;
+      min-width: 220px;
+    }
+    .flags-popup.visible { display: block; }
+    .flags-popup label {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-primary);
+      padding: 4px 0;
+      cursor: pointer;
+      margin-bottom: 0;
+    }
+    .flags-popup label:hover { color: var(--accent-blue); }
+
+    .translation-line {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .translation-line code {
+      flex: 1;
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .translation-line button {
+      padding: 4px 10px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .built-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .built-item .built-label {
+      flex: 1;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .built-item .built-del {
+      padding: 2px 8px;
+      font-size: 10px;
+      min-width: 0;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
+
+    .section h2 .badge {
+      display: inline-block;
+      background: var(--accent-blue);
+      color: #fff;
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-left: 8px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    /* Guide modal */
+    .guide-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .guide-overlay.visible { display: flex; }
+    .guide-modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: 12px;
+      width: 90vw;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+    }
+    .guide-header h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .guide-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .guide-close:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+    .guide-body {
+      overflow-y: auto;
+      padding: 24px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+    .guide-body::-webkit-scrollbar { width: 10px; }
+    .guide-body::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .guide-body::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    .guide-body h3 {
+      color: var(--text-primary);
+      font-size: 15px;
+      margin: 28px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-body h3:first-child { margin-top: 0; }
+    .guide-body h4 {
+      color: var(--accent-blue);
+      font-size: 13px;
+      margin: 18px 0 6px;
+    }
+    .guide-body p { margin: 0 0 10px; }
+    .guide-body ul, .guide-body ol { margin: 0 0 10px; padding-left: 20px; }
+    .guide-body li { margin-bottom: 4px; }
+    .guide-body code {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      background: var(--bg-input);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .guide-body pre {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0 0 12px;
+      height: auto;
+    }
+    .guide-body table {
+      margin: 8px 0 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .guide-body th {
+      background: var(--bg-tertiary);
+      padding: 8px 12px;
+    }
+    .guide-body td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-btn {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .guide-btn:hover {
+      background: linear-gradient(135deg, #264d7a 0%, #1e3044 100%);
+      color: #93c5fd;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="btn-home" style="text-decoration:none; margin-right: 15px;">
+    &larr; Project Omen
+  </a>
+  
+  <div class="t">craftRecipeForge</div>
+  <span class="pill">Build &rarr; Export</span>
+  
+  <button id="openGuide" class="guide-btn">Guide &amp; Reference</button>
+</header>
+
+
+<!-- Guide / User Manual Modal -->
+<div id="guideOverlay" class="guide-overlay">
+  <div class="guide-modal">
+    <div class="guide-header">
+      <h2>craftRecipeForge &mdash; User Guide &amp; B42 Reference</h2>
+      <button id="closeGuide" class="guide-close">&times;</button>
+    </div>
+    <div class="guide-body">
+      <p style="color: var(--text-muted); text-align: center;">Loading guide...</p>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- LEFT: LOADER + LIST -->
+  <div class="panel b1">
+    <div class="section">
+      <h2>Load Recipe File</h2>
+      <div class="row">
+        <input id="fileInput" type="file" accept=".txt" />
+        <div class="hint">
+          Loads into memory only &mdash; nothing is written back. Use Export to copy or download.
+        </div>
+      </div>
+      <div class="row">
+        <label for="filter">Filter</label>
+        <input id="filter" placeholder="type to filter recipe IDs..." />
+      </div>
+      <div class="row">
+        <div class="chip"><span class="muted">Loaded:</span> <span id="loadedName" class="mono small">(none)</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Your Recipes <span id="builtBadge" class="badge" style="display:none;">0</span></h2>
+      <div class="btnrow" style="margin-bottom:10px;">
+        <button id="saveRecipeBtn">Save Current Recipe</button>
+        <button id="newRecipeBtn" class="secondary">New Recipe</button>
+      </div>
+      <div id="builtList" class="list"></div>
+      <div id="builtEmpty" class="hint">No recipes saved yet. Build one in the form and click "Save Current Recipe".</div>
+      <div class="btnrow" style="margin-top:10px;">
+        <button id="exportAllBtn" class="secondary" style="display:none;">Export All Recipes</button>
+        <button id="dlAllBtn" class="secondary" style="display:none;">Download All Recipes</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Categories</h2>
+      <div class="btnrow" style="margin-bottom:10px;">
+        <button id="newCategoryBtn" class="secondary">+ New Category</button>
+      </div>
+      <div id="catList" class="list"></div>
+      <div class="hint" style="margin-top:10px;">
+        Extracted from loaded recipes and your saved recipes.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Loaded File Recipes</h2>
+      <div id="recipeList" class="list"></div>
+    </div>
+  </div>
+
+  <!-- MIDDLE: NEW RECIPE FORM -->
+  <div class="panel b2">
+    <div class="section">
+      <h2>Recipe Builder</h2>
+      <div class="grid2">
+        <div class="row">
+          <label for="moduleName">Module (locked)</label>
+          <input id="moduleName" value="Base" readonly style="opacity:0.6; cursor:not-allowed;" />
+          <div class="hint">Must be <span class="mono">Base</span> for multiplayer. Custom modules are a known TIS bug.</div>
+        </div>
+        <div class="row">
+          <label for="recipeId">Recipe ID</label>
+          <input id="recipeId" placeholder="MyCraftSomething" />
+          <div class="hint">Unique identifier, no spaces. Used in translation files.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="displayName">Display Name (for Recipes_EN.txt)</label>
+        <input id="displayName" placeholder="Craft Small Steel Sheet" />
+        <div class="hint">The name players see in-game. Generates: <span class="mono">Recipe_YourID = "This Name",</span></div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="timedAction">timedAction</label>
+          <input id="timedAction" placeholder="Welding_Surface" list="timedActionDatalist" />
+          <datalist id="timedActionDatalist">
+            <option value="ApplyAlcohol">
+            <option value="ApplyGlaze">
+            <option value="BuildBarbedWireFence">
+            <option value="BuildByTyingHigh">
+            <option value="BuildByTyingLow">
+            <option value="BuildByTyingMedium">
+            <option value="BuildCairn">
+            <option value="BuildCampfire">
+            <option value="BuildLowHammer">
+            <option value="BuildLowMetal">
+            <option value="BuildLowNoTool">
+            <option value="BuildMetalStructureMedium">
+            <option value="BuildMetalStructureScrap">
+            <option value="BuildMetalStructureSmall">
+            <option value="BuildPoleFence">
+            <option value="BuildPoleFenceSmall">
+            <option value="BuildSandbagWall">
+            <option value="BuildWallHammer">
+            <option value="BuildWallMetal">
+            <option value="BuildWallNoTool">
+            <option value="BuildWireFence">
+            <option value="BuildWoodenStructureMedium">
+            <option value="BuildWoodenStructureSmall">
+            <option value="Chisel_Surface">
+            <option value="ChoppingBlock_Hammer">
+            <option value="Craft_Glassmaking">
+            <option value="Craft_PotteryBench">
+            <option value="Craft_PotteryWheel">
+            <option value="CraftArmourPiece">
+            <option value="CraftKnifeSpear">
+            <option value="CraftWeapon1H">
+            <option value="CraftWeapon2H">
+            <option value="CrushLimestone">
+            <option value="CrushWatermelon">
+            <option value="CutClothing">
+            <option value="CutWire">
+            <option value="Dismantle">
+            <option value="DismantleElectrical">
+            <option value="DrawCard">
+            <option value="EmptyBag">
+            <option value="EmptyPan">
+            <option value="Knitting">
+            <option value="Make_With_Brick">
+            <option value="Make_With_Brick_Low">
+            <option value="MakeChum">
+            <option value="MakeCoffee">
+            <option value="MakeSheetSlingBag">
+            <option value="Making">
+            <option value="Making_Surface">
+            <option value="Making_With_Kiln">
+            <option value="MakingElectrical">
+            <option value="MakingHammer_Surface">
+            <option value="MakingJewellery">
+            <option value="MixingBowl">
+            <option value="MixingBucket">
+            <option value="MixingMortarPestle">
+            <option value="OpenAmmoBox">
+            <option value="OpenBeerBottle">
+            <option value="OpenChampagne">
+            <option value="OpenPopCan">
+            <option value="OpenShellsBox">
+            <option value="OpenTinCan">
+            <option value="OpenTinCanWithKnife">
+            <option value="PackingBox">
+            <option value="PackingBox_Small">
+            <option value="Paint">
+            <option value="PlaceAmmoInBox">
+            <option value="PutInBag">
+            <option value="PutInSmallBag">
+            <option value="PutSeedsInPacket">
+            <option value="RipClothing">
+            <option value="RollDice">
+            <option value="SawLogs">
+            <option value="SawOffShotgun">
+            <option value="SawSmallItemMetal">
+            <option value="ScrubClothWithSoap">
+            <option value="Sew">
+            <option value="SewingCloth">
+            <option value="SharpenBlade">
+            <option value="SharpenStakeBone">
+            <option value="SharpenStakeWood">
+            <option value="SliceBread_Surface">
+            <option value="SliceFish">
+            <option value="SliceFood">
+            <option value="SliceFood_Surface">
+            <option value="SliceMeat">
+            <option value="SliceMeat_Surface">
+            <option value="SmashBottle">
+            <option value="SmithingHammer">
+            <option value="Take_Off_Rack_Mid">
+            <option value="TanLeatherBarrel">
+            <option value="Threshing">
+            <option value="UncorkBottle">
+            <option value="UnPackBox">
+            <option value="UnPackBox_Small">
+            <option value="UnPackSack">
+            <option value="UnPackSmallBag">
+            <option value="Untie_High">
+            <option value="Untie_Low">
+            <option value="Untie_Mid">
+            <option value="UseBandsaw">
+            <option value="UseGrindingSlab">
+            <option value="UseGrindingStone">
+            <option value="UseHandPress">
+            <option value="UseLathe">
+            <option value="UseLoom">
+            <option value="UseSpinningWheel">
+            <option value="UseStandingDrill">
+            <option value="UseStoneQuern">
+            <option value="Welding">
+            <option value="Welding_Surface">
+          </datalist>
+          <div class="hint">Specifies an animation played during the crafting process, as well as sounds and the calorie burn and body heat generation rates.</div>
+        </div>
+        <div class="row">
+          <label for="time">time</label>
+          <input id="time" placeholder="120" value="120" inputmode="numeric" />
+          <div class="hint">Crafting duration in ticks. Default: 50. Higher = longer craft.</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="tags">tags</label>
+          <input id="tags" placeholder="AnySurfaceCraft" list="tagsDatalist" />
+          <datalist id="tagsDatalist">
+            <option value="AnySurfaceCraft">
+            <option value="AnySurfaceCraft;CanBeDoneFromFloor">
+            <option value="Campfire">
+            <option value="CanBeDoneFromFloor">
+            <option value="CanBeDoneInDark">
+            <option value="Forge">
+            <option value="InHandCraft">
+            <option value="InHandCraft;CanBeDoneFromFloor">
+            <option value="InHandCraft;CanBeDoneInDark">
+            <option value="Survivalist">
+          </datalist>
+          <div class="hint">Crafting conditions. Must include at least one bench tag (e.g. <span class="mono">AnySurfaceCraft</span>). Separate multiple with <span class="mono">;</span></div>
+        </div>
+        <div class="row">
+          <label for="category">category</label>
+          <input id="category" placeholder="ASID Crafting" list="categoryDatalist" />
+          <datalist id="categoryDatalist"></datalist>
+          <datalist id="skillsDatalist">
+            <option value="Aiming">
+            <option value="Blacksmith">
+            <option value="Butchering">
+            <option value="Carving">
+            <option value="Cooking">
+            <option value="Doctor">
+            <option value="Electrical">
+            <option value="Farming">
+            <option value="Fishing">
+            <option value="Flintknapping">
+            <option value="Glassmaking">
+            <option value="Husbandry">
+            <option value="LongBlade">
+            <option value="Maintenance">
+            <option value="Masonry">
+            <option value="Mechanics">
+            <option value="MetalWelding">
+            <option value="PlantScavenging">
+            <option value="Pottery">
+            <option value="Reloading">
+            <option value="Tailoring">
+            <option value="Tracking">
+            <option value="Trapping">
+            <option value="Woodwork">
+          </datalist>
+          <div class="hint">Specifies the category of the crafting recipe. This helps to organize and identify recipes in the crafting menu..</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="fileSection">File Section (for file organization)</label>
+        <input id="fileSection" placeholder="Consumables" list="fileSectionDatalist" />
+        <datalist id="fileSectionDatalist"></datalist>
+        <div class="hint">Which <span class="mono">/**** Section ****/</span> block to place this recipe under when exporting to a file. This is <b>not</b> the in-game category &mdash; it controls where the recipe appears in the script file.</div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="skillRequired">SkillRequired (optional)</label>
+          <input id="skillRequired" placeholder="Mechanics:2;Electrical:2" list="skillsDatalist" />
+          <div class="hint">Specifies the skill level required to perform this crafting action.</div>
+        </div>
+        <div class="row">
+          <label for="xpAward">xpAward (optional)</label>
+          <input id="xpAward" placeholder="MetalWelding:10" list="skillsDatalist" />
+          <div class="hint">XP given on completion. Format: <span class="mono">Skill:Amount</span></div>
+        </div>
+      </div>
+
+      <!-- Advanced Properties -->
+      <details id="advancedDetails">
+        <summary>Advanced Properties</summary>
+        <div class="grid2">
+          <div class="row">
+            <label for="toolTip">ToolTip (optional)</label>
+            <input id="toolTip" placeholder="Description text" />
+            <div class="hint">Description shown in the crafting menu.</div>
+          </div>
+          <div class="row">
+            <label for="icon">Icon (optional)</label>
+            <input id="icon" placeholder="IconName" />
+            <div class="hint">Icon associated with this recipe in the menu.</div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="row">
+            <label for="onCreate">OnCreate (optional)</label>
+            <input id="onCreate" placeholder="Recipe.OnCreate.FuncName" />
+            <div class="hint">Lua function called when crafting finishes.</div>
+          </div>
+          <div class="row">
+            <label for="onTest">OnTest (optional)</label>
+            <input id="onTest" placeholder="Recipe.OnTest.FuncName" />
+            <div class="hint">Lua function to check if recipe can be crafted.</div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="row">
+            <label for="autoLearnAll">AutoLearnAll (optional)</label>
+            <input id="autoLearnAll" placeholder="Mechanics:4;Electrical:3" list="skillsDatalist" />
+            <div class="hint">ALL listed skills must reach the level to auto-learn.</div>
+          </div>
+          <div class="row">
+            <label for="autoLearnAny">AutoLearnAny (optional)</label>
+            <input id="autoLearnAny" placeholder="Carving:8" list="skillsDatalist" />
+            <div class="hint">ANY one listed skill at the level auto-learns the recipe.</div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="row">
+            <label for="metaRecipe">MetaRecipe (optional)</label>
+            <input id="metaRecipe" placeholder="LinkedRecipeId" />
+            <div class="hint">Links to another recipe &mdash; if meta is known, this one is too.</div>
+          </div>
+          <div class="row" style="padding-top: 20px;">
+            <label style="display:inline-flex; align-items:center; cursor:pointer;">
+              <input type="checkbox" id="needToBeLearn" /> needToBeLearn
+            </label>
+            <div class="hint">Player must learn this recipe before they can craft it.</div>
+          </div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="allowBatchCraft" /> AllowBatchCraft
+          </label>
+          <div class="hint">Allows this recipe to be crafted in batches.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="section">
+      <h2>Inputs</h2>
+      <div class="btnrow">
+        <button id="addInput">+ Add Input</button>
+        <button id="addTool" class="secondary">+ Add Tool (Keep)</button>
+        <button id="addFluid" class="secondary">+ Add Fluid</button>
+        <button id="clearInputs" class="danger">Clear All</button>
+      </div>
+
+      <table id="inputsTable">
+        <thead>
+          <tr>
+            <th style="width:90px;">Type</th>
+            <th style="width:60px;">Qty</th>
+            <th>Specification</th>
+            <th style="width:110px;">Mode</th>
+            <th>Flags</th>
+            <th style="width:50px;"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="hint" style="margin-top:8px;">
+        <b>Spec formats:</b>
+        <span class="mono">[Base.Item]</span> single item,
+        <span class="mono">[Base.A;Base.B]</span> any of,
+        <span class="mono">tags[TagName]</span> by tag,
+        <span class="mono">[*]</span> any item.
+        For fluids: <span class="mono">[Petrol]</span>, <span class="mono">[Alcohol]</span>, etc.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Outputs</h2>
+      <div class="btnrow">
+        <button id="addOutput">+ Add Output</button>
+        <button id="addFluidOutput" class="secondary">+ Add Fluid Output</button>
+        <button id="clearOutputs" class="danger">Clear All</button>
+      </div>
+
+      <table id="outputsTable">
+        <thead>
+          <tr>
+            <th style="width:90px;">Type</th>
+            <th style="width:60px;">Qty</th>
+            <th>Specification</th>
+            <th style="width:50px;"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- itemMapper builder -->
+    <div class="section">
+      <details id="itemMapperDetails">
+        <summary>itemMapper (Advanced)</summary>
+        <div class="hint" style="margin-bottom:10px;">Maps input items to specific output items. Used when one recipe handles multiple item variants.</div>
+        <details style="margin-bottom:12px; margin-top:0;">
+          <summary style="font-size:12px; color:var(--accent-blue); text-transform:none; letter-spacing:normal; font-weight:500;">How does itemMapper work?</summary>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.7; padding:10px 0;">
+            <p style="margin:0 0 8px;"><b>Problem:</b> Your recipe accepts multiple item variants as input (e.g. 5 types of lantern), but you need the output to match whichever one the player used.</p>
+            <p style="margin:0 0 8px;"><b>Solution:</b> An itemMapper links each possible input to its correct output.</p>
+            <p style="margin:0 0 8px;"><b>How to set it up:</b></p>
+            <ol style="margin:0 0 8px; padding-left:20px;">
+              <li>Give your mapper a <b>name</b> (e.g. "LampMapper")</li>
+              <li>In the <b>Inputs</b> table above, your input item spec should list all the variants: <span class="mono">[Base.ItemA;Base.ItemB;Base.ItemC]</span></li>
+              <li>Add <b>mappings</b> below &mdash; one row per variant: input item on the left, the output it should produce on the right</li>
+              <li>Set a <b>default</b> item as a fallback in case nothing matches</li>
+              <li>In the <b>Outputs</b> table above, use <span class="mono">mapper:YourMapperName</span> as the spec instead of a specific item</li>
+            </ol>
+            <p style="margin:0; color:var(--text-muted);">Example: Player crafts with a Copper Lantern &rarr; mapper sees <span class="mono">Base.Lantern_Copper</span> &rarr; outputs <span class="mono">Base.Lantern_Copper</span> (same type back). Unknown variant &rarr; default output.</p>
+          </div>
+        </details>
+        <div class="row">
+          <label for="itemMapperName">Mapper Name</label>
+          <input id="itemMapperName" placeholder="MyMapper" />
+        </div>
+        <div class="btnrow">
+          <button id="addMapperRow">+ Add Mapping</button>
+          <button id="clearMapperRows" class="danger">Clear</button>
+        </div>
+        <table id="itemMapperTable">
+          <thead>
+            <tr>
+              <th>Input Item</th>
+              <th>= Output Item</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row" style="margin-top:8px;">
+          <label for="itemMapperDefault">default (optional)</label>
+          <input id="itemMapperDefault" placeholder="Base.DefaultItem" />
+          <div class="hint">Fallback output if no mapping matches.</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- overlayMapper builder -->
+    <div class="section">
+      <details id="overlayMapperDetails">
+        <summary>overlayMapper (Advanced)</summary>
+        <div class="hint" style="margin-bottom:10px;">Maps input items to overlay names for visual display.</div>
+        <details style="margin-bottom:10px;">
+          <summary style="font-size:12px; color:var(--accent-blue); text-transform:none; letter-spacing:normal; font-weight:500;">How does overlayMapper work?</summary>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.7; padding:10px 0;">
+            <p style="margin:0 0 8px;"><b>Problem:</b> Your recipe produces an output that should <em>look different</em> depending on which input variant the player used &mdash; but the actual item stays the same.</p>
+            <p style="margin:0 0 8px;"><b>Solution:</b> An overlayMapper tells the game which <b>visual overlay</b> (texture/icon) to apply to the output item based on the input.</p>
+            <p style="margin:0 0 8px;"><b>How to set it up:</b></p>
+            <ol style="margin:0 0 8px; padding-left:20px;">
+              <li>In the table below, add one row per input variant</li>
+              <li><b>Input Item</b> (left) is the full item ID the player might use, e.g. <span class="mono">Base.RaccoonLeather_Spiffo_Fur_Tan_Wet</span></li>
+              <li><b>Overlay Name</b> (right) is the name of the visual overlay to apply, e.g. <span class="mono">DeerLeather</span></li>
+            </ol>
+            <p style="margin:0 0 8px;"><b>When is this useful?</b> Typically for recipes where the output item is the same type regardless of input, but its <em>appearance</em> should change. For example, tanning different animal hides produces the same "leather" item, but each hide should display with its own texture.</p>
+            <p style="margin:0; color:var(--text-muted);">Note: overlayMapper is separate from itemMapper. Use itemMapper when the <em>output item itself</em> changes; use overlayMapper when only the <em>visual appearance</em> changes.</p>
+          </div>
+        </details>
+        <div class="btnrow">
+          <button id="addOverlayRow">+ Add Overlay</button>
+          <button id="clearOverlayRows" class="danger">Clear</button>
+        </div>
+        <table id="overlayMapperTable">
+          <thead>
+            <tr>
+              <th>Input Item</th>
+              <th>= Overlay Name</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </details>
+    </div>
+
+    <div class="section">
+      <h2>Export</h2>
+      <div class="row">
+        <label style="display:inline-flex; align-items:center; cursor:pointer;">
+          <input type="checkbox" id="wrapModule" /> Wrap in <span class="mono" style="margin-left:4px;">module Base { }</span>
+        </label>
+        <div class="hint">Include the module wrapper. Useful when starting a new recipe file.</div>
+      </div>
+      <div class="btnrow">
+        <button id="copyNewBlock">Copy Recipe Block</button>
+        <button id="copyFullAppend" class="secondary">Copy Full File + Recipe</button>
+        <button id="dlRecipeBlock" class="secondary">Download Recipe</button>
+        <button id="dlFullFile" class="secondary">Download Full File</button>
+      </div>
+      <div class="btnrow" style="margin-top:8px;">
+        <button id="loadSidExample" class="secondary">Load Example</button>
+        <button id="resetNew" class="danger">Reset Form</button>
+      </div>
+      <div class="hint" style="margin-top:10px;">
+        "Full File" options require loading a file first. Download saves a .txt file directly.
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW + LINT -->
+  <div class="panel" style="display:grid; grid-template-rows: 1fr auto auto;">
+    <div style="display:flex; flex-direction:column; height:100%;">
+      <div style="padding: 12px 20px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-tertiary);">
+        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Preview Output</div>
+        <div id="previewLabel" class="mono" style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">(no recipe)</div>
+      </div>
+      <pre id="previewNew" class="mono" style="flex: 1; height: auto;"></pre>
+    </div>
+    <div id="translationArea" style="padding: 12px 20px; border-top: 1px solid var(--border-subtle); background: var(--bg-secondary); display: none;">
+      <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 6px;">Translation Line (Recipes_EN.txt)</div>
+      <div class="translation-line">
+        <code id="translationCode"></code>
+        <button id="copyTranslation" style="padding:4px 10px; font-size:11px;">Copy</button>
+      </div>
+    </div>
+    <div id="lint" class="lint mono"></div>
+  </div>
+</main>
+
+<!-- Flags popup (shared, repositioned per-row) -->
+<div id="flagsPopup" class="flags-popup"></div>
+
+<script>
+  // --- Constants ---
+  const KNOWN_FLAGS = [
+    "AllowDestroyedItem", "AllowFavorite", "InheritFavorite",
+    "ItemCount", "MayDegrade", "MayDegradeLight",
+    "NotFull", "Prop1", "Prop2"
+  ];
+
+  const RX_IDENT = /^[A-Za-z_][A-Za-z0-9_]*$/;
+  const RX_INT = /^-?\d+$/;
+  const RX_NUM = /^-?\d+(\.\d+)?$/;
+  const RX_SKILLS = /^([A-Za-z_][A-Za-z0-9_]*:\d+)(;[A-Za-z_][A-Za-z0-9_]*:\d+)*$/;
+  const RX_XP = /^([A-Za-z_][A-Za-z0-9_]*:\d+)(;[A-Za-z_][A-Za-z0-9_]*:\d+)*$/;
+  const RX_SPEC = /^(\[.*\]|tags\[.*\]|[A-Za-z_][A-Za-z0-9_.]*|mapper:\w+)$/;
+
+  const el = (id) => document.getElementById(id);
+
+  const catListEl = el("catList");
+  const recipeListEl = el("recipeList");
+  const loadedNameEl = el("loadedName");
+  const filterEl = el("filter");
+  const previewNewEl = el("previewNew");
+  const previewLabel = el("previewLabel");
+  const lintEl = el("lint");
+  const categoryDatalist = el("categoryDatalist");
+  const fileSectionDatalist = el("fileSectionDatalist");
+  const translationArea = el("translationArea");
+  const translationCode = el("translationCode");
+  const flagsPopupEl = el("flagsPopup");
+
+  const inputsBody = el("inputsTable").querySelector("tbody");
+  const outputsBody = el("outputsTable").querySelector("tbody");
+  const mapperBody = el("itemMapperTable").querySelector("tbody");
+  const overlayBody = el("overlayMapperTable").querySelector("tbody");
+  const builtListEl = el("builtList");
+  const builtEmptyEl = el("builtEmpty");
+  const builtBadgeEl = el("builtBadge");
+
+  // --- App state ---
+  const state = {
+    loadedText: "",
+    loadedFilename: "",
+    recipes: [],
+    categories: [],
+    selectedCategory: "",
+    selectedRecipeId: "",
+    builtRecipes: [],       // recipes saved this session [{snapshot, id, category}]
+    editingBuiltIndex: -1,  // index into builtRecipes if editing, else -1
+    customCategories: [],   // user-created category names
+    fileSections: [],       // parsed from /**** Name ****/ comment separators [{name, position}]
+  };
+
+  const model = {
+    moduleName: "Base",
+    recipeId: "",
+    timedAction: "",
+    time: "120",
+    tags: "",
+    category: "",
+    skillRequired: "",
+    xpAward: "",
+    toolTip: "",
+    icon: "",
+    onCreate: "",
+    onTest: "",
+    needToBeLearn: false,
+    allowBatchCraft: false,
+    autoLearnAll: "",
+    autoLearnAny: "",
+    metaRecipe: "",
+    displayName: "",
+    inputs: [],
+    outputs: [],
+    itemMapperName: "",
+    itemMapperRows: [],
+    itemMapperDefault: "",
+    overlayMapperRows: [],
+    fileSection: "",
+  };
+
+  // --- LocalStorage persistence ---
+  const STORAGE_KEY = 'craftRecipeForge_session';
+
+  function saveToStorage() {
+    try {
+      const data = {
+        builtRecipes: state.builtRecipes,
+        customCategories: state.customCategories,
+        model: JSON.parse(JSON.stringify(model)),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch(e) { /* quota exceeded or private mode */ }
+  }
+
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      if (data.builtRecipes && data.builtRecipes.length > 0) {
+        state.builtRecipes = data.builtRecipes;
+        state.customCategories = data.customCategories || [];
+      }
+      if (data.model) {
+        restoreModelFromSnapshot(data.model);
+      }
+      return state.builtRecipes.length > 0 || (data.model && data.model.recipeId);
+    } catch(e) { return false; }
+  }
+
+  function clearStorage() {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  // --- Utility ---
+  function escapeRegExp(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  // --- Brace-depth block extraction ---
+  function extractBlock(text, keyword) {
+    const re = new RegExp("\\b" + escapeRegExp(keyword) + "(?:\\s+\\w+)?\\s*\\{");
+    const m = re.exec(text);
+    if (!m) return null;
+    const start = text.indexOf("{", m.index + keyword.length);
+    if (start === -1) return null;
+    let depth = 0;
+    for (let i = start; i < text.length; i++) {
+      if (text[i] === "{") depth++;
+      else if (text[i] === "}") {
+        depth--;
+        if (depth === 0) return text.slice(start + 1, i);
+      }
+    }
+    return null;
+  }
+
+  // --- Parser ---
+  function parseFileSections(text) {
+    const results = [];
+    const re = /\/\*{10,}\s+(.+?)\s+\*{10,}\//g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      results.push({ name: m[1].trim(), position: m.index, end: re.lastIndex });
+    }
+    return results;
+  }
+
+  function parseAllCraftRecipes(text) {
+    const src = String(text || "");
+    const results = [];
+    const re = /\bcraftRecipe\s+([A-Za-z_][A-Za-z0-9_]*)/g;
+    let m;
+    while ((m = re.exec(src)) !== null) {
+      const id = m[1];
+      const headerIndex = m.index;
+      const braceOpen = src.indexOf("{", re.lastIndex);
+      if (braceOpen === -1) continue;
+
+      let depth = 0, i = braceOpen;
+      for (; i < src.length; i++) {
+        if (src[i] === "{") depth++;
+        else if (src[i] === "}") {
+          depth--;
+          if (depth === 0) { i++; break; }
+        }
+      }
+      if (depth !== 0) continue;
+
+      const raw = src.slice(headerIndex, i).trimEnd();
+      const category = extractField(raw, "category") || "";
+      const moduleName = extractModuleAround(src, headerIndex) || "";
+
+      results.push({
+        id,
+        category: category.trim(),
+        module: moduleName.trim(),
+        raw,
+        start: headerIndex,
+        end: i
+      });
+    }
+    return results;
+  }
+
+  function extractField(blockText, key) {
+    const re = new RegExp("\\b" + escapeRegExp(key) + "\\s*=\\s*([^,\\n\\r]+)", "i");
+    const m = re.exec(blockText);
+    return m ? m[1].trim() : "";
+  }
+
+  function extractBoolField(blockText, key) {
+    const re = new RegExp("\\b" + escapeRegExp(key) + "\\s*=\\s*(true|false)", "i");
+    const m = re.exec(blockText);
+    return m ? m[1].toLowerCase() === "true" : false;
+  }
+
+  function extractModuleAround(fullText, index) {
+    const before = fullText.slice(0, index);
+    const re = /\bmodule\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/g;
+    let last = "", m;
+    while ((m = re.exec(before)) !== null) last = m[1];
+    return last;
+  }
+
+  function parseInputLines(blockContent) {
+    const results = [];
+    if (!blockContent) return results;
+    const lines = blockContent.split("\n");
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("//") || trimmed.startsWith("/*")) continue;
+      const parts = trimmed.match(/^(item|fluid|-fluid)\s+([0-9.]+)\s+(\S+)(.*)$/);
+      if (!parts) continue;
+      const type = parts[1];
+      const qty = parts[2];
+      const spec = parts[3].replace(/,$/, "");
+      const rest = parts[4];
+
+      let mode = "";
+      const modeMatch = rest.match(/mode:(keep|destroy)/);
+      if (modeMatch) mode = "mode:" + modeMatch[1];
+
+      let flags = "";
+      const flagsMatch = rest.match(/flags\[([^\]]+)\]/);
+      if (flagsMatch) flags = flagsMatch[1];
+
+      let mappers = "";
+      const mappersMatch = rest.match(/mappers\[([^\]]+)\]/);
+      if (mappersMatch) mappers = mappersMatch[1];
+
+      results.push({ type, qty, spec, mode, flags, mappers });
+    }
+    return results;
+  }
+
+  function parseOutputLines(blockContent) {
+    const results = [];
+    if (!blockContent) return results;
+    const lines = blockContent.split("\n");
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("//") || trimmed.startsWith("/*")) continue;
+      const parts = trimmed.match(/^(item|fluid)\s+([0-9.]+)\s+(\S+)/);
+      if (!parts) continue;
+      results.push({
+        type: parts[1],
+        qty: parts[2],
+        spec: parts[3].replace(/,$/, "")
+      });
+    }
+    return results;
+  }
+
+  function parseMapperBlock(blockContent) {
+    const rows = [];
+    let defaultVal = "";
+    if (!blockContent) return { rows, defaultVal };
+    const lines = blockContent.split("\n");
+    for (const line of lines) {
+      const trimmed = line.trim().replace(/,$/, "");
+      if (!trimmed || trimmed.startsWith("//") || trimmed.startsWith("/*")) continue;
+      const parts = trimmed.match(/^(\S+)\s*=\s*(\S+)$/);
+      if (parts) {
+        if (parts[1] === "default") defaultVal = parts[2];
+        else rows.push({ input: parts[1], output: parts[2] });
+      }
+    }
+    return { rows, defaultVal };
+  }
+
+  // --- Built recipes management ---
+  function snapshotModel() {
+    syncNewForm();
+    return JSON.parse(JSON.stringify(model));
+  }
+
+  function restoreModelFromSnapshot(snap) {
+    Object.assign(model, snap);
+    // Restore all form fields from model
+    el("moduleName").value = model.moduleName;
+    el("recipeId").value = model.recipeId;
+    el("timedAction").value = model.timedAction;
+    el("time").value = model.time;
+    el("tags").value = model.tags;
+    el("category").value = model.category;
+    el("skillRequired").value = model.skillRequired;
+    el("xpAward").value = model.xpAward;
+    el("toolTip").value = model.toolTip;
+    el("icon").value = model.icon;
+    el("onCreate").value = model.onCreate;
+    el("onTest").value = model.onTest;
+    el("needToBeLearn").checked = model.needToBeLearn;
+    el("allowBatchCraft").checked = model.allowBatchCraft;
+    el("autoLearnAll").value = model.autoLearnAll;
+    el("autoLearnAny").value = model.autoLearnAny;
+    el("metaRecipe").value = model.metaRecipe;
+    el("displayName").value = model.displayName || "";
+    el("fileSection").value = model.fileSection || "";
+    el("itemMapperName").value = model.itemMapperName;
+    el("itemMapperDefault").value = model.itemMapperDefault;
+    const hasAdvanced = model.toolTip || model.icon || model.onCreate ||
+      model.onTest || model.needToBeLearn || model.allowBatchCraft ||
+      model.autoLearnAll || model.autoLearnAny || model.metaRecipe;
+    if (hasAdvanced) el("advancedDetails").open = true;
+    renderTables();
+    renderAll();
+  }
+
+  function saveCurrentRecipe() {
+    syncNewForm();
+    const { issues } = lintNew(model);
+    if (!model.recipeId) {
+      flashLint(`<span class="bad">Cannot save</span> &mdash; Recipe ID is required.`);
+      return;
+    }
+    // Check for duplicate ID in built recipes (unless we're editing that one)
+    const dupeIdx = state.builtRecipes.findIndex(r => r.id === model.recipeId);
+    if (dupeIdx >= 0 && dupeIdx !== state.editingBuiltIndex) {
+      flashLint(`<span class="bad">Cannot save</span> &mdash; Recipe ID "${model.recipeId}" already exists in your saved recipes.`);
+      return;
+    }
+
+    const snap = snapshotModel();
+    if (state.editingBuiltIndex >= 0) {
+      // Update existing
+      state.builtRecipes[state.editingBuiltIndex] = {
+        snapshot: snap,
+        id: model.recipeId,
+        category: model.category,
+        fileSection: model.fileSection,
+      };
+      state.editingBuiltIndex = -1;
+      flashLint(`<span class="ok">&#10003; Updated</span> &mdash; "${model.recipeId}" saved.`);
+    } else {
+      // Add new
+      state.builtRecipes.push({
+        snapshot: snap,
+        id: model.recipeId,
+        category: model.category,
+        fileSection: model.fileSection,
+      });
+      flashLint(`<span class="ok">&#10003; Saved</span> &mdash; "${model.recipeId}" added. ${state.builtRecipes.length} recipe(s) total.`);
+    }
+    rebuildBuiltList();
+    rebuildCategoryList();
+    saveToStorage();
+  }
+
+  function clearFormForNewRecipe() {
+    state.editingBuiltIndex = -1;
+    state.selectedRecipeId = "";
+    el("recipeId").value = "";
+    el("timedAction").value = "";
+    el("time").value = "120";
+    el("tags").value = "";
+    // Keep the category from the last recipe for convenience
+    el("skillRequired").value = "";
+    el("xpAward").value = "";
+    el("toolTip").value = "";
+    el("icon").value = "";
+    el("onCreate").value = "";
+    el("onTest").value = "";
+    el("needToBeLearn").checked = false;
+    el("allowBatchCraft").checked = false;
+    el("autoLearnAll").value = "";
+    el("autoLearnAny").value = "";
+    el("metaRecipe").value = "";
+    el("displayName").value = "";
+    el("itemMapperName").value = "";
+    el("itemMapperDefault").value = "";
+    model.inputs = [];
+    model.outputs = [];
+    model.itemMapperName = "";
+    model.itemMapperRows = [];
+    model.itemMapperDefault = "";
+    model.overlayMapperRows = [];
+    addInputRow({ type:"item", qty:"1", spec:"[Base.ItemHere]" });
+    addOutputRow({ type:"item", qty:"1", spec:"Base.ItemHere" });
+    rebuildBuiltList();
+    rebuildRecipeList();
+  }
+
+  function editBuiltRecipe(index) {
+    state.editingBuiltIndex = index;
+    const entry = state.builtRecipes[index];
+    restoreModelFromSnapshot(entry.snapshot);
+    rebuildBuiltList();
+  }
+
+  function deleteBuiltRecipe(index) {
+    state.builtRecipes.splice(index, 1);
+    if (state.editingBuiltIndex === index) {
+      state.editingBuiltIndex = -1;
+    } else if (state.editingBuiltIndex > index) {
+      state.editingBuiltIndex--;
+    }
+    rebuildBuiltList();
+    rebuildCategoryList();
+    renderAll();
+    saveToStorage();
+  }
+
+  function rebuildBuiltList() {
+    builtListEl.innerHTML = "";
+    const count = state.builtRecipes.length;
+    builtEmptyEl.style.display = count === 0 ? "" : "none";
+    builtBadgeEl.style.display = count > 0 ? "" : "none";
+    builtBadgeEl.textContent = count;
+    el("exportAllBtn").style.display = count > 0 ? "" : "none";
+    el("dlAllBtn").style.display = count > 0 ? "" : "none";
+
+    state.builtRecipes.forEach((entry, i) => {
+      const b = document.createElement("button");
+      b.className = "itembtn" + (state.editingBuiltIndex === i ? " active" : "");
+      const wrapper = document.createElement("div");
+      wrapper.className = "built-item";
+
+      const label = document.createElement("span");
+      label.className = "built-label";
+      const labelParts = [entry.id];
+      if (entry.fileSection) labelParts.push(`[${entry.fileSection}]`);
+      else if (entry.category) labelParts.push(entry.category);
+      label.textContent = labelParts.join("  —  ");
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "X";
+      delBtn.className = "danger built-del";
+      delBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        deleteBuiltRecipe(i);
+      });
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(delBtn);
+      b.appendChild(wrapper);
+      b.addEventListener("click", () => editBuiltRecipe(i));
+      builtListEl.appendChild(b);
+    });
+  }
+
+  function makeCategorySeparator(name, indent) {
+    const pad = "*".repeat(48);
+    return `${indent}/${pad} ${name} ${pad}/`;
+  }
+
+  function emitAllBuiltRecipes() {
+    const moduleName = model.moduleName || "Base";
+    const grouped = {};
+    state.builtRecipes.forEach(entry => {
+      const section = entry.fileSection || entry.category || "(Uncategorized)";
+      if (!grouped[section]) grouped[section] = [];
+      grouped[section].push(entry);
+    });
+
+    const lines = [];
+    lines.push(`module ${moduleName}\n{`);
+    const cats = Object.keys(grouped).sort();
+    cats.forEach((cat, ci) => {
+      lines.push("");
+      lines.push(makeCategorySeparator(cat, "    "));
+      lines.push("");
+      grouped[cat].forEach(entry => {
+        // Emit the recipe block without module wrapper, indented one level
+        const savedWrap = el("wrapModule").checked;
+        el("wrapModule").checked = false;
+        const block = emitNewRecipeBlock(entry.snapshot);
+        el("wrapModule").checked = savedWrap;
+        // Indent each line by one tab (inside the module block)
+        const indented = block.split("\n").map(l => "\t" + l).join("\n");
+        lines.push(indented);
+        lines.push("");
+      });
+    });
+    lines.push("}");
+    return lines.join("\n");
+  }
+
+  function emitAllTranslationLines() {
+    const lines = [];
+    state.builtRecipes.forEach(entry => {
+      const rid = entry.id;
+      const snap = entry.snapshot;
+      const displayName = snap.displayName
+        || rid.replace(/^[A-Z]*?(craft|scrap|recycle)/i, "").replace(/([A-Z])/g, " $1").trim()
+        || rid;
+      lines.push(`\tRecipe_${rid} = "${displayName}",`);
+    });
+    return lines.join("\n");
+  }
+
+  // --- UI: Category and Recipe lists ---
+  function rebuildCategoryList() {
+    // Merge categories from loaded file, built recipes, and custom categories
+    const allCats = new Set();
+    state.recipes.forEach(r => { if (r.category) allCats.add(r.category); });
+    state.builtRecipes.forEach(r => { if (r.category) allCats.add(r.category); });
+    state.customCategories.forEach(c => allCats.add(c));
+    const cats = Array.from(allCats).sort((a,b) => a.localeCompare(b));
+    state.categories = cats;
+    categoryDatalist.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}"></option>`).join("");
+
+    catListEl.innerHTML = "";
+    catListEl.appendChild(makeListButton("(All)", "", state.selectedCategory === ""));
+    cats.forEach(c => {
+      catListEl.appendChild(makeListButton(c, c, state.selectedCategory === c));
+    });
+  }
+
+  let filterTimer;
+  function rebuildRecipeList() {
+    const filter = filterEl.value.trim().toLowerCase();
+    const cat = state.selectedCategory;
+    const list = state.recipes
+      .filter(r => !cat || r.category === cat)
+      .filter(r => !filter || r.id.toLowerCase().includes(filter))
+      .sort((a,b) => a.id.localeCompare(b.id));
+
+    recipeListEl.innerHTML = "";
+    list.forEach(r => {
+      const label = r.category ? `${r.id}  —  ${r.category}` : r.id;
+      recipeListEl.appendChild(makeRecipeButton(label, r.id, state.selectedRecipeId === r.id));
+    });
+    if (list.length === 0) {
+      recipeListEl.innerHTML = `<div class="hint">No recipes match current filter/category.</div>`;
+    }
+  }
+
+  function makeListButton(label, categoryValue, active) {
+    const b = document.createElement("button");
+    b.className = "itembtn" + (active ? " active" : "");
+    b.textContent = label;
+    b.addEventListener("click", () => {
+      state.selectedCategory = categoryValue;
+      state.selectedRecipeId = "";
+      rebuildCategoryList();
+      rebuildRecipeList();
+    });
+    return b;
+  }
+
+  function makeRecipeButton(label, recipeId, active) {
+    const b = document.createElement("button");
+    b.className = "itembtn" + (active ? " active" : "");
+    b.textContent = label;
+    b.addEventListener("click", () => {
+      state.selectedRecipeId = recipeId;
+      const r = state.recipes.find(x => x.id === recipeId);
+      if (r) {
+        el("recipeId").value = r.id;
+        loadRecipeIntoForm(r.raw, r.start);
+      }
+      rebuildRecipeList();
+    });
+    return b;
+  }
+
+  // --- Load recipe into form ---
+  function loadRecipeIntoForm(raw, startPosition) {
+    el("moduleName").value = extractField(raw, "module") || "Base";
+    el("timedAction").value = extractField(raw, "timedAction") || "";
+    el("time").value = extractField(raw, "time") || "120";
+    el("tags").value = extractField(raw, "tags") || "";
+    el("category").value = extractField(raw, "category") || "";
+    el("skillRequired").value = extractField(raw, "SkillRequired") || "";
+    el("xpAward").value = extractField(raw, "xpAward") || "";
+
+    // Advanced
+    el("toolTip").value = extractField(raw, "ToolTip") || "";
+    el("icon").value = extractField(raw, "Icon") || "";
+    el("onCreate").value = extractField(raw, "OnCreate") || "";
+    el("onTest").value = extractField(raw, "OnTest") || "";
+    el("needToBeLearn").checked = extractBoolField(raw, "needTobeLearn") || extractBoolField(raw, "needToBeLearn");
+    el("allowBatchCraft").checked = extractBoolField(raw, "AllowBatchCraft");
+    el("autoLearnAll").value = extractField(raw, "AutoLearnAll") || "";
+    el("autoLearnAny").value = extractField(raw, "AutoLearnAny") || "";
+    el("metaRecipe").value = extractField(raw, "MetaRecipe") || "";
+    el("displayName").value = ""; // not stored in recipe files, user fills manually
+
+    // Determine file section from position in loaded file
+    if (startPosition !== undefined && state.fileSections.length > 0) {
+      let section = "";
+      for (const s of state.fileSections) {
+        if (s.position <= startPosition) section = s.name;
+      }
+      el("fileSection").value = section;
+    } else {
+      el("fileSection").value = "";
+    }
+
+    // Open advanced details if any advanced field has a value
+    const hasAdvanced = el("toolTip").value || el("icon").value || el("onCreate").value ||
+      el("onTest").value || el("needToBeLearn").checked || el("allowBatchCraft").checked ||
+      el("autoLearnAll").value || el("autoLearnAny").value || el("metaRecipe").value;
+    if (hasAdvanced) el("advancedDetails").open = true;
+
+    // Inputs (brace-depth aware)
+    const inputsBlock = extractBlock(raw, "inputs");
+    model.inputs = parseInputLines(inputsBlock);
+
+    // Outputs (brace-depth aware)
+    const outputsBlock = extractBlock(raw, "outputs");
+    model.outputs = parseOutputLines(outputsBlock);
+
+    // itemMapper
+    model.itemMapperRows = [];
+    model.itemMapperDefault = "";
+    model.itemMapperName = "";
+    const mapperNameMatch = raw.match(/\bitemMapper\s+(\w+)\s*\{/);
+    if (mapperNameMatch) {
+      model.itemMapperName = mapperNameMatch[1];
+      const mapperBlock = extractBlock(raw, "itemMapper");
+      const parsed = parseMapperBlock(mapperBlock);
+      model.itemMapperRows = parsed.rows;
+      model.itemMapperDefault = parsed.defaultVal;
+      el("itemMapperName").value = model.itemMapperName;
+      el("itemMapperDefault").value = model.itemMapperDefault;
+      if (parsed.rows.length > 0) el("itemMapperDetails").open = true;
+    } else {
+      el("itemMapperName").value = "";
+      el("itemMapperDefault").value = "";
+    }
+
+    // overlayMapper
+    model.overlayMapperRows = [];
+    const overlayBlock = extractBlock(raw, "overlayMapper");
+    if (overlayBlock) {
+      const parsed = parseMapperBlock(overlayBlock);
+      model.overlayMapperRows = parsed.rows;
+      if (parsed.rows.length > 0) el("overlayMapperDetails").open = true;
+    }
+
+    renderTables();
+    renderAll();
+  }
+
+  // --- Input/output table rows ---
+  function addInputRow(row) {
+    model.inputs.push(Object.assign({
+      type: "item", qty: "1", spec: "", mode: "", flags: "", mappers: ""
+    }, row || {}));
+    renderTables(); renderAll();
+  }
+  function addOutputRow(row) {
+    model.outputs.push(Object.assign({ type: "item", qty: "1", spec: "" }, row || {}));
+    renderTables(); renderAll();
+  }
+  function delInput(i) { model.inputs.splice(i, 1); renderTables(); renderAll(); }
+  function delOutput(i) { model.outputs.splice(i, 1); renderTables(); renderAll(); }
+
+  // --- Flags popup ---
+  let activeFlagRow = null;
+
+  function showFlagsPopup(rowIndex, anchorEl) {
+    activeFlagRow = rowIndex;
+    const r = model.inputs[rowIndex];
+    const current = String(r.flags || "").split(";").filter(Boolean);
+
+    flagsPopupEl.innerHTML = "";
+    KNOWN_FLAGS.forEach(flag => {
+      const lbl = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = current.includes(flag);
+      cb.addEventListener("change", () => {
+        updateFlagsFromPopup(rowIndex);
+      });
+      lbl.appendChild(cb);
+      lbl.appendChild(document.createTextNode(flag));
+      flagsPopupEl.appendChild(lbl);
+    });
+
+    // Custom flags line
+    const customDiv = document.createElement("div");
+    customDiv.style.cssText = "margin-top:8px; padding-top:8px; border-top:1px solid var(--border-medium);";
+    const customLabel = document.createElement("div");
+    customLabel.style.cssText = "font-size:11px; color:var(--text-muted); margin-bottom:4px;";
+    customLabel.textContent = "Custom (semicolon-separated):";
+    const customInput = document.createElement("input");
+    customInput.style.cssText = "width:100%; font-size:11px; padding:4px 6px;";
+    const customFlags = current.filter(f => !KNOWN_FLAGS.includes(f));
+    customInput.value = customFlags.join(";");
+    customInput.id = "flagsCustomInput";
+    customInput.addEventListener("input", () => updateFlagsFromPopup(rowIndex));
+    customDiv.appendChild(customLabel);
+    customDiv.appendChild(customInput);
+    flagsPopupEl.appendChild(customDiv);
+
+    // Position
+    const rect = anchorEl.getBoundingClientRect();
+    flagsPopupEl.style.top = (rect.bottom + 4) + "px";
+    flagsPopupEl.style.left = Math.min(rect.left, window.innerWidth - 240) + "px";
+    flagsPopupEl.classList.add("visible");
+  }
+
+  function updateFlagsFromPopup(rowIndex) {
+    const checkboxes = flagsPopupEl.querySelectorAll('input[type="checkbox"]');
+    const selected = [];
+    checkboxes.forEach((cb, i) => {
+      if (cb.checked) selected.push(KNOWN_FLAGS[i]);
+    });
+    const customInput = el("flagsCustomInput");
+    if (customInput && customInput.value.trim()) {
+      selected.push(...customInput.value.trim().split(";").filter(Boolean));
+    }
+    model.inputs[rowIndex].flags = selected.join(";");
+    renderAll();
+  }
+
+  document.addEventListener("click", (e) => {
+    if (!flagsPopupEl.contains(e.target) && !e.target.classList.contains("flags-btn")) {
+      flagsPopupEl.classList.remove("visible");
+    }
+  });
+
+  // --- Render tables ---
+  function renderTables() {
+    // Inputs
+    inputsBody.innerHTML = "";
+    model.inputs.forEach((r, i) => {
+      const tr = document.createElement("tr");
+
+      // Type
+      const tdType = document.createElement("td");
+      const selType = document.createElement("select");
+      ["item","fluid","-fluid"].forEach(v => {
+        const op = document.createElement("option");
+        op.value = v; op.textContent = v;
+        selType.appendChild(op);
+      });
+      selType.value = r.type;
+      selType.addEventListener("change", () => { r.type = selType.value; renderAll(); });
+      tdType.appendChild(selType);
+
+      // Qty
+      const tdQty = document.createElement("td");
+      const inQty = document.createElement("input");
+      inQty.value = r.qty;
+      inQty.addEventListener("input", () => { r.qty = inQty.value; renderAll(); });
+      tdQty.appendChild(inQty);
+
+      // Spec
+      const tdSpec = document.createElement("td");
+      const inSpec = document.createElement("input");
+      inSpec.value = r.spec;
+      inSpec.placeholder = "[Base.ItemHere]";
+      inSpec.addEventListener("input", () => { r.spec = inSpec.value; renderAll(); });
+      tdSpec.appendChild(inSpec);
+
+      // Mode
+      const tdMode = document.createElement("td");
+      const selMode = document.createElement("select");
+      [
+        { v: "", label: "(consumed)" },
+        { v: "mode:keep", label: "keep" },
+        { v: "mode:destroy", label: "destroy" }
+      ].forEach(opt => {
+        const op = document.createElement("option");
+        op.value = opt.v; op.textContent = opt.label;
+        selMode.appendChild(op);
+      });
+      selMode.value = r.mode || "";
+      selMode.addEventListener("change", () => { r.mode = selMode.value; renderAll(); });
+      tdMode.appendChild(selMode);
+
+      // Flags (button that opens popup)
+      const tdFlags = document.createElement("td");
+      const flagsWrapper = document.createElement("div");
+      flagsWrapper.style.cssText = "display:flex; gap:4px; align-items:center;";
+      const flagsDisplay = document.createElement("input");
+      flagsDisplay.value = r.flags || "";
+      flagsDisplay.placeholder = "click to pick...";
+      flagsDisplay.style.cssText = "flex:1;";
+      flagsDisplay.addEventListener("input", () => { r.flags = flagsDisplay.value; renderAll(); });
+      const flagsBtn = document.createElement("button");
+      flagsBtn.textContent = "...";
+      flagsBtn.className = "flags-btn";
+      flagsBtn.style.cssText = "padding:4px 8px; font-size:11px; width:auto; min-width:28px;";
+      flagsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showFlagsPopup(i, flagsBtn);
+      });
+      flagsWrapper.appendChild(flagsDisplay);
+      flagsWrapper.appendChild(flagsBtn);
+      tdFlags.appendChild(flagsWrapper);
+
+      // Delete
+      const tdDel = document.createElement("td");
+      const bDel = document.createElement("button");
+      bDel.textContent = "X";
+      bDel.className = "danger";
+      bDel.addEventListener("click", () => delInput(i));
+      tdDel.appendChild(bDel);
+
+      tr.appendChild(tdType);
+      tr.appendChild(tdQty);
+      tr.appendChild(tdSpec);
+      tr.appendChild(tdMode);
+      tr.appendChild(tdFlags);
+      tr.appendChild(tdDel);
+      inputsBody.appendChild(tr);
+    });
+
+    // Outputs
+    outputsBody.innerHTML = "";
+    model.outputs.forEach((r, i) => {
+      const tr = document.createElement("tr");
+
+      const tdType = document.createElement("td");
+      const selType = document.createElement("select");
+      ["item","fluid"].forEach(v => {
+        const op = document.createElement("option");
+        op.value = v; op.textContent = v;
+        selType.appendChild(op);
+      });
+      selType.value = r.type || "item";
+      selType.addEventListener("change", () => { r.type = selType.value; renderAll(); });
+      tdType.appendChild(selType);
+
+      const tdQty = document.createElement("td");
+      const inQty = document.createElement("input");
+      inQty.value = r.qty;
+      inQty.addEventListener("input", () => { r.qty = inQty.value; renderAll(); });
+      tdQty.appendChild(inQty);
+
+      const tdSpec = document.createElement("td");
+      const inSpec = document.createElement("input");
+      inSpec.value = r.spec;
+      inSpec.placeholder = "Base.ItemHere";
+      inSpec.addEventListener("input", () => { r.spec = inSpec.value; renderAll(); });
+      tdSpec.appendChild(inSpec);
+
+      const tdDel = document.createElement("td");
+      const bDel = document.createElement("button");
+      bDel.textContent = "X";
+      bDel.className = "danger";
+      bDel.addEventListener("click", () => delOutput(i));
+      tdDel.appendChild(bDel);
+
+      tr.appendChild(tdType);
+      tr.appendChild(tdQty);
+      tr.appendChild(tdSpec);
+      tr.appendChild(tdDel);
+      outputsBody.appendChild(tr);
+    });
+
+    // itemMapper rows
+    mapperBody.innerHTML = "";
+    model.itemMapperRows.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      const tdIn = document.createElement("td");
+      const inIn = document.createElement("input");
+      inIn.value = r.input;
+      inIn.placeholder = "Base.InputItem";
+      inIn.addEventListener("input", () => { r.input = inIn.value; renderAll(); });
+      tdIn.appendChild(inIn);
+
+      const tdOut = document.createElement("td");
+      const inOut = document.createElement("input");
+      inOut.value = r.output;
+      inOut.placeholder = "Base.OutputItem";
+      inOut.addEventListener("input", () => { r.output = inOut.value; renderAll(); });
+      tdOut.appendChild(inOut);
+
+      const tdDel = document.createElement("td");
+      const bDel = document.createElement("button");
+      bDel.textContent = "X";
+      bDel.className = "danger";
+      bDel.addEventListener("click", () => { model.itemMapperRows.splice(i, 1); renderTables(); renderAll(); });
+      tdDel.appendChild(bDel);
+
+      tr.appendChild(tdIn);
+      tr.appendChild(tdOut);
+      tr.appendChild(tdDel);
+      mapperBody.appendChild(tr);
+    });
+
+    // overlayMapper rows
+    overlayBody.innerHTML = "";
+    model.overlayMapperRows.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      const tdIn = document.createElement("td");
+      const inIn = document.createElement("input");
+      inIn.value = r.input;
+      inIn.placeholder = "Base.InputItem";
+      inIn.addEventListener("input", () => { r.input = inIn.value; renderAll(); });
+      tdIn.appendChild(inIn);
+
+      const tdOut = document.createElement("td");
+      const inOut = document.createElement("input");
+      inOut.value = r.output;
+      inOut.placeholder = "OverlayName";
+      inOut.addEventListener("input", () => { r.output = inOut.value; renderAll(); });
+      tdOut.appendChild(inOut);
+
+      const tdDel = document.createElement("td");
+      const bDel = document.createElement("button");
+      bDel.textContent = "X";
+      bDel.className = "danger";
+      bDel.addEventListener("click", () => { model.overlayMapperRows.splice(i, 1); renderTables(); renderAll(); });
+      tdDel.appendChild(bDel);
+
+      tr.appendChild(tdIn);
+      tr.appendChild(tdOut);
+      tr.appendChild(tdDel);
+      overlayBody.appendChild(tr);
+    });
+  }
+
+  // --- Sync form to model ---
+  function syncNewForm() {
+    model.moduleName = el("moduleName").value.trim() || "Base";
+    model.recipeId = el("recipeId").value.trim();
+    model.timedAction = el("timedAction").value.trim();
+    model.time = el("time").value.trim();
+    model.tags = el("tags").value.trim();
+    model.category = el("category").value.trim();
+    model.skillRequired = el("skillRequired").value.trim();
+    model.xpAward = el("xpAward").value.trim();
+    model.toolTip = el("toolTip").value.trim();
+    model.icon = el("icon").value.trim();
+    model.onCreate = el("onCreate").value.trim();
+    model.onTest = el("onTest").value.trim();
+    model.needToBeLearn = el("needToBeLearn").checked;
+    model.allowBatchCraft = el("allowBatchCraft").checked;
+    model.autoLearnAll = el("autoLearnAll").value.trim();
+    model.autoLearnAny = el("autoLearnAny").value.trim();
+    model.metaRecipe = el("metaRecipe").value.trim();
+    model.displayName = el("displayName").value.trim();
+    model.fileSection = el("fileSection").value.trim();
+    model.itemMapperName = el("itemMapperName").value.trim();
+    model.itemMapperDefault = el("itemMapperDefault").value.trim();
+  }
+
+  // --- Emit recipe block ---
+  function emitFlags(flagsRaw) {
+    const raw = String(flagsRaw || "").trim();
+    if (!raw) return "";
+    if (raw.startsWith("flags[")) return raw;
+    return `flags[${raw}]`;
+  }
+
+  function emitNewRecipeBlock(m) {
+    const rid = m.recipeId || "RecipeIdHere";
+    const wrap = el("wrapModule").checked;
+    const T = wrap ? "\t" : "";
+    const lines = [];
+
+    if (wrap) lines.push(`module ${m.moduleName || "Base"}\n{`);
+
+    lines.push(`${T}craftRecipe ${rid}`);
+    lines.push(`${T}\t{`);
+
+    if (m.timedAction) lines.push(`${T}\t\ttimedAction = ${m.timedAction},`);
+    if (m.time) lines.push(`${T}\t\ttime = ${m.time},`);
+    if (m.tags) lines.push(`${T}\t\ttags = ${m.tags},`);
+    if (m.category) lines.push(`${T}\t\tcategory = ${m.category},`);
+    if (m.skillRequired) lines.push(`${T}\t\tSkillRequired = ${m.skillRequired},`);
+    if (m.xpAward) lines.push(`${T}\t\txpAward = ${m.xpAward},`);
+    if (m.toolTip) lines.push(`${T}\t\tToolTip = ${m.toolTip},`);
+    if (m.icon) lines.push(`${T}\t\tIcon = ${m.icon},`);
+    if (m.onCreate) lines.push(`${T}\t\tOnCreate = ${m.onCreate},`);
+    if (m.onTest) lines.push(`${T}\t\tOnTest = ${m.onTest},`);
+    if (m.needToBeLearn) lines.push(`${T}\t\tneedTobeLearn = true,`);
+    if (m.allowBatchCraft) lines.push(`${T}\t\tAllowBatchCraft = true,`);
+    if (m.autoLearnAll) lines.push(`${T}\t\tAutoLearnAll = ${m.autoLearnAll},`);
+    if (m.autoLearnAny) lines.push(`${T}\t\tAutoLearnAny = ${m.autoLearnAny},`);
+    if (m.metaRecipe) lines.push(`${T}\t\tMetaRecipe = ${m.metaRecipe},`);
+
+    // Inputs
+    lines.push(`${T}\t\tinputs`);
+    lines.push(`${T}\t\t{`);
+    m.inputs.forEach(r => {
+      const type = String(r.type || "").trim();
+      const qty = String(r.qty || "").trim();
+      const spec = String(r.spec || "").trim();
+      const mode = String(r.mode || "").trim();
+      const flags = emitFlags(r.flags);
+      const mappers = String(r.mappers || "").trim();
+      if (!type || !qty || !spec) return;
+      let line = `${T}\t\t\t${type} ${qty} ${spec}`;
+      if (mode) line += ` ${mode}`;
+      if (flags) line += ` ${flags}`;
+      if (mappers) line += ` mappers[${mappers}]`;
+      line += `,`;
+      lines.push(line);
+    });
+    lines.push(`${T}\t\t}`);
+
+    // Outputs
+    lines.push(`${T}\t\toutputs`);
+    lines.push(`${T}\t\t{`);
+    m.outputs.forEach(r => {
+      const type = String(r.type || "item").trim();
+      const qty = String(r.qty || "").trim();
+      const spec = String(r.spec || "").trim();
+      if (!qty || !spec) return;
+      lines.push(`${T}\t\t\t${type} ${qty} ${spec},`);
+    });
+    lines.push(`${T}\t\t}`);
+
+    // itemMapper
+    if (m.itemMapperName && m.itemMapperRows.length > 0) {
+      lines.push(`${T}\t\titemMapper ${m.itemMapperName}`);
+      lines.push(`${T}\t\t{`);
+      m.itemMapperRows.forEach(r => {
+        if (r.input && r.output) lines.push(`${T}\t\t\t${r.input} = ${r.output},`);
+      });
+      if (m.itemMapperDefault) lines.push(`${T}\t\t\tdefault = ${m.itemMapperDefault},`);
+      lines.push(`${T}\t\t}`);
+    }
+
+    // overlayMapper
+    if (m.overlayMapperRows.length > 0) {
+      lines.push(`${T}\t\toverlayMapper`);
+      lines.push(`${T}\t\t{`);
+      m.overlayMapperRows.forEach(r => {
+        if (r.input && r.output) lines.push(`${T}\t\t\t${r.input} = ${r.output},`);
+      });
+      lines.push(`${T}\t\t}`);
+    }
+
+    lines.push(`${T}\t}`);
+    if (wrap) lines.push(`}`);
+
+    return lines.join("\n");
+  }
+
+  // --- Smart category insertion ---
+  function emitFullFileWithAppendedRecipe() {
+    if (!state.loadedText) return "";
+    const block = emitNewRecipeBlock(model);
+    const section = model.fileSection;
+    const cat = model.category;
+
+    // Priority 1: Insert into matching file section (comment separator block)
+    if (section && state.fileSections.length > 0) {
+      const sectionMatch = state.fileSections.find(s => s.name === section);
+      if (sectionMatch) {
+        // Find the next section after this one (to know the boundary)
+        const sectionIdx = state.fileSections.indexOf(sectionMatch);
+        const nextSection = state.fileSections[sectionIdx + 1];
+        const sectionEnd = nextSection ? nextSection.position : state.loadedText.lastIndexOf("}");
+
+        // Find the last recipe within this section's range
+        const recipesInSection = state.recipes
+          .filter(r => r.start >= sectionMatch.end && r.end <= sectionEnd)
+          .sort((a, b) => b.end - a.end);
+
+        if (recipesInSection.length > 0) {
+          // Insert after the last recipe in this section
+          const lastRecipe = recipesInSection[0];
+          const before = state.loadedText.slice(0, lastRecipe.end);
+          const after = state.loadedText.slice(lastRecipe.end);
+          return before + "\n\n" + block + after;
+        } else {
+          // Section exists but has no recipes — insert right after the separator
+          const before = state.loadedText.slice(0, sectionMatch.end);
+          const after = state.loadedText.slice(sectionMatch.end);
+          return before + "\n\n" + block + "\n" + after;
+        }
+      }
+    }
+
+    // Priority 2: Fall back to matching by in-game category
+    if (cat) {
+      const sameCategory = state.recipes
+        .filter(r => r.category === cat)
+        .sort((a, b) => b.end - a.end);
+      if (sameCategory.length > 0) {
+        const lastRecipe = sameCategory[0];
+        const before = state.loadedText.slice(0, lastRecipe.end);
+        const after = state.loadedText.slice(lastRecipe.end);
+        return before + "\n\n" + block + after;
+      }
+    }
+
+    // Fallback: insert before the final closing brace of the module block
+    const lastBrace = state.loadedText.lastIndexOf("}");
+    if (lastBrace > 0) {
+      const before = state.loadedText.slice(0, lastBrace);
+      const after = state.loadedText.slice(lastBrace);
+      const separator = `\n\n${makeCategorySeparator(section || cat || "New Recipes", "    ")}\n\n`;
+      return before + separator + block + "\n\n" + after;
+    }
+
+    // Last resort: append
+    return state.loadedText.replace(/\s*$/, "\n\n" + block + "\n");
+  }
+
+  // --- Linter ---
+  function lintNew(m) {
+    const issues = [];
+    const warnings = [];
+
+    if (!m.recipeId) issues.push("Recipe ID is required.");
+    else if (!RX_IDENT.test(m.recipeId)) issues.push("Recipe ID must be an identifier (no spaces/symbols).");
+
+    // Duplicate check against loaded file
+    if (m.recipeId && state.recipes.some(r => r.id === m.recipeId) && state.selectedRecipeId !== m.recipeId) {
+      warnings.push(`Recipe ID "${m.recipeId}" already exists in the loaded file.`);
+    }
+    // Duplicate check against built recipes (skip if editing that one)
+    const builtDupe = state.builtRecipes.findIndex(r => r.id === m.recipeId);
+    if (m.recipeId && builtDupe >= 0 && builtDupe !== state.editingBuiltIndex) {
+      warnings.push(`Recipe ID "${m.recipeId}" already exists in your saved recipes.`);
+    }
+
+    if (!m.timedAction) issues.push("timedAction is required.");
+    else if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(m.timedAction)) issues.push("timedAction should be an identifier token.");
+
+    if (!m.time) issues.push("time is required.");
+    else if (!RX_INT.test(m.time)) issues.push("time must be an integer.");
+
+    if (!m.tags) issues.push("tags is required (must include a bench tag like AnySurfaceCraft).");
+    if (!m.category) issues.push("category is required.");
+
+    if (m.skillRequired && !RX_SKILLS.test(m.skillRequired)) issues.push("SkillRequired format: Skill:Level;Skill:Level");
+    if (m.xpAward && !RX_XP.test(m.xpAward)) issues.push("xpAward format: Skill:Amount or Skill:Amount;Skill:Amount");
+    if (m.autoLearnAll && !RX_SKILLS.test(m.autoLearnAll)) issues.push("AutoLearnAll format: Skill:Level;Skill:Level");
+    if (m.autoLearnAny && !RX_SKILLS.test(m.autoLearnAny)) issues.push("AutoLearnAny format: Skill:Level;Skill:Level");
+
+    if (!m.inputs.length) issues.push("Add at least 1 input.");
+    if (!m.outputs.length) issues.push("Add at least 1 output.");
+
+    m.inputs.forEach((r, i) => {
+      const type = String(r.type || "").trim();
+      const qty = String(r.qty || "").trim();
+      const spec = String(r.spec || "").trim();
+      if (!["item","fluid","-fluid"].includes(type)) issues.push(`Input ${i+1}: type must be item/fluid/-fluid.`);
+      if (type === "item") { if (qty && !RX_INT.test(qty)) issues.push(`Input ${i+1}: item qty must be integer.`); }
+      else { if (qty && !RX_NUM.test(qty)) issues.push(`Input ${i+1}: fluid qty must be a number (e.g. 0.1).`); }
+      if (!spec) issues.push(`Input ${i+1}: specification is empty.`);
+      else if (!RX_SPEC.test(spec)) warnings.push(`Input ${i+1}: spec "${spec}" may not be a valid format.`);
+    });
+
+    m.outputs.forEach((r, i) => {
+      const qty = String(r.qty || "").trim();
+      const spec = String(r.spec || "").trim();
+      const type = String(r.type || "item").trim();
+      if (type === "item") { if (qty && !RX_INT.test(qty)) issues.push(`Output ${i+1}: item qty must be integer.`); }
+      else { if (qty && !RX_NUM.test(qty)) issues.push(`Output ${i+1}: fluid qty must be a number.`); }
+      if (!spec) issues.push(`Output ${i+1}: specification is empty.`);
+      else if (!RX_SPEC.test(spec)) warnings.push(`Output ${i+1}: spec "${spec}" may not be a valid format.`);
+    });
+
+    // itemMapper validation
+    if (m.itemMapperRows.length > 0 && !m.itemMapperName) {
+      issues.push("itemMapper has rows but no mapper name.");
+    }
+
+    return { issues, warnings };
+  }
+
+  // --- Render all ---
+  function renderAll() {
+    syncNewForm();
+    const newBlock = emitNewRecipeBlock(model);
+    previewNewEl.textContent = newBlock;
+
+    const recipeId = model.recipeId || "(unnamed)";
+    const isEditing = state.selectedRecipeId && state.selectedRecipeId === model.recipeId;
+    previewLabel.textContent = isEditing ? `Editing: ${recipeId}` : recipeId;
+
+    // Translation line
+    if (model.recipeId) {
+      translationArea.style.display = "";
+      const displayName = model.displayName
+        || model.recipeId
+          .replace(/^[A-Z]*?(craft|scrap|recycle)/i, "")
+          .replace(/([A-Z])/g, " $1")
+          .trim()
+        || model.recipeId;
+      translationCode.textContent = `Recipe_${model.recipeId} = "${displayName}",`;
+    } else {
+      translationArea.style.display = "none";
+    }
+
+    const { issues, warnings } = lintNew(model);
+    if (issues.length === 0 && warnings.length === 0) {
+      lintEl.innerHTML = `<span class="ok">&#10003; Recipe looks valid</span> &mdash; ready to export.`;
+    } else {
+      let html = "";
+      if (issues.length > 0) {
+        html += `<div class="bad"><b>Requirements:</b></div>` + issues.map(x => `<div class="bad">&bull; ${escapeHtml(x)}</div>`).join("");
+      }
+      if (warnings.length > 0) {
+        html += `<div class="warn" style="margin-top:${issues.length ? 6 : 0}px;"><b>Warnings:</b></div>` + warnings.map(x => `<div class="warn">&bull; ${escapeHtml(x)}</div>`).join("");
+      }
+      lintEl.innerHTML = html;
+    }
+  }
+
+  function flashLint(html) {
+    lintEl.innerHTML = html;
+    setTimeout(renderAll, 1200);
+  }
+
+  // --- Wire up: file load ---
+  el("fileInput").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const text = await f.text();
+    state.loadedText = text;
+    state.loadedFilename = f.name;
+    loadedNameEl.textContent = f.name;
+    state.recipes = parseAllCraftRecipes(text);
+    state.fileSections = parseFileSections(text);
+    fileSectionDatalist.innerHTML = state.fileSections
+      .map(s => `<option value="${escapeHtml(s.name)}"></option>`).join("");
+    state.selectedCategory = "";
+    state.selectedRecipeId = "";
+    rebuildCategoryList();
+    rebuildRecipeList();
+    renderAll();
+  });
+
+  // Filter with debounce
+  filterEl.addEventListener("input", () => {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(rebuildRecipeList, 150);
+  });
+
+  // --- Wire up: form fields ---
+  [
+    "moduleName","recipeId","displayName","timedAction","time","tags","category","fileSection","skillRequired","xpAward",
+    "toolTip","icon","onCreate","onTest","autoLearnAll","autoLearnAny","metaRecipe",
+    "itemMapperName","itemMapperDefault"
+  ].forEach(id => {
+    el(id).addEventListener("input", renderAll);
+  });
+  ["needToBeLearn","allowBatchCraft","wrapModule"].forEach(id => {
+    el(id).addEventListener("change", renderAll);
+  });
+
+  // --- Wire up: input/output controls ---
+  el("addInput").addEventListener("click", () => addInputRow({ type:"item", qty:"1", spec:"[Base.ItemHere]" }));
+  el("addTool").addEventListener("click", () => addInputRow({ type:"item", qty:"1", spec:"tags[ToolTagHere]", mode:"mode:keep", flags:"MayDegradeLight" }));
+  el("addFluid").addEventListener("click", () => addInputRow({ type:"-fluid", qty:"0.1", spec:"[Alcohol]" }));
+  el("clearInputs").addEventListener("click", () => { model.inputs = []; renderTables(); renderAll(); });
+
+  el("addOutput").addEventListener("click", () => addOutputRow({ type:"item", qty:"1", spec:"Base.ItemHere" }));
+  el("addFluidOutput").addEventListener("click", () => addOutputRow({ type:"fluid", qty:"1.0", spec:"[FluidName]" }));
+  el("clearOutputs").addEventListener("click", () => { model.outputs = []; renderTables(); renderAll(); });
+
+  // itemMapper controls
+  el("addMapperRow").addEventListener("click", () => {
+    model.itemMapperRows.push({ input: "", output: "" });
+    renderTables(); renderAll();
+  });
+  el("clearMapperRows").addEventListener("click", () => {
+    model.itemMapperRows = [];
+    renderTables(); renderAll();
+  });
+
+  // overlayMapper controls
+  el("addOverlayRow").addEventListener("click", () => {
+    model.overlayMapperRows.push({ input: "", output: "" });
+    renderTables(); renderAll();
+  });
+  el("clearOverlayRows").addEventListener("click", () => {
+    model.overlayMapperRows = [];
+    renderTables(); renderAll();
+  });
+
+  // --- Copy actions ---
+  el("copyNewBlock").addEventListener("click", async () => {
+    try {
+      await copyToClipboard(previewNewEl.textContent);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; Recipe block copied to clipboard.`);
+    } catch {
+      flashLint(`<span class="bad">Copy failed</span> &mdash; clipboard permission denied.`);
+    }
+  });
+
+  el("copyFullAppend").addEventListener("click", async () => {
+    if (!state.loadedText) {
+      flashLint(`<span class="bad">Load a file first</span> before using this option.`);
+      return;
+    }
+    try {
+      const full = emitFullFileWithAppendedRecipe();
+      await copyToClipboard(full);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; Full file + recipe copied to clipboard.`);
+    } catch {
+      flashLint(`<span class="bad">Copy failed</span> &mdash; clipboard permission denied.`);
+    }
+  });
+
+  el("copyTranslation").addEventListener("click", async () => {
+    try {
+      await copyToClipboard(translationCode.textContent);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; Translation line copied.`);
+    } catch {
+      flashLint(`<span class="bad">Copy failed</span>`);
+    }
+  });
+
+  // --- Download actions ---
+  el("dlRecipeBlock").addEventListener("click", () => {
+    const block = previewNewEl.textContent;
+    const name = model.recipeId || "recipe";
+    downloadFile(`${name}.txt`, block);
+    flashLint(`<span class="ok">&#10003; Downloaded</span> &mdash; ${name}.txt`);
+  });
+
+  el("dlFullFile").addEventListener("click", () => {
+    if (!state.loadedText) {
+      flashLint(`<span class="bad">Load a file first</span> before downloading the full file.`);
+      return;
+    }
+    const full = emitFullFileWithAppendedRecipe();
+    const base = state.loadedFilename.replace(/\.txt$/i, "");
+    downloadFile(`${base}_modified.txt`, full);
+    flashLint(`<span class="ok">&#10003; Downloaded</span> &mdash; ${base}_modified.txt`);
+  });
+
+  // --- Example + Reset ---
+  el("loadSidExample").addEventListener("click", () => {
+    el("moduleName").value = "Base";
+    el("recipeId").value = "ASIDcraftSmallSheetMetal";
+    el("timedAction").value = "Welding_Surface";
+    el("time").value = "120";
+    el("tags").value = "AnySurfaceCraft";
+    el("category").value = "ASID Crafting";
+    el("skillRequired").value = "";
+    el("xpAward").value = "";
+    el("toolTip").value = "";
+    el("icon").value = "";
+    el("onCreate").value = "";
+    el("onTest").value = "";
+    el("needToBeLearn").checked = false;
+    el("allowBatchCraft").checked = false;
+    el("autoLearnAll").value = "";
+    el("autoLearnAny").value = "";
+    el("metaRecipe").value = "";
+
+    model.inputs = [
+      { type:"item", qty:"20", spec:"[Base.ScrapMetal]", mode:"", flags:"", mappers:"" },
+      { type:"item", qty:"1", spec:"[Base.BlowTorch]", mode:"", flags:"", mappers:"" },
+      { type:"item", qty:"1", spec:"tags[WeldingMask]", mode:"mode:keep", flags:"", mappers:"" }
+    ];
+    model.outputs = [
+      { type:"item", qty:"1", spec:"Base.SmallSheetMetal" }
+    ];
+    model.itemMapperName = "";
+    model.itemMapperRows = [];
+    model.itemMapperDefault = "";
+    model.overlayMapperRows = [];
+    el("itemMapperName").value = "";
+    el("itemMapperDefault").value = "";
+    renderTables(); renderAll();
+  });
+
+  el("resetNew").addEventListener("click", () => {
+    el("recipeId").value = "";
+    el("timedAction").value = "";
+    el("time").value = "120";
+    el("tags").value = "";
+    el("category").value = "";
+    el("skillRequired").value = "";
+    el("xpAward").value = "";
+    el("toolTip").value = "";
+    el("icon").value = "";
+    el("onCreate").value = "";
+    el("onTest").value = "";
+    el("needToBeLearn").checked = false;
+    el("allowBatchCraft").checked = false;
+    el("autoLearnAll").value = "";
+    el("autoLearnAny").value = "";
+    el("metaRecipe").value = "";
+    el("displayName").value = "";
+    el("fileSection").value = "";
+    el("itemMapperName").value = "";
+    el("itemMapperDefault").value = "";
+    model.inputs = [];
+    model.outputs = [];
+    model.itemMapperName = "";
+    model.itemMapperRows = [];
+    model.itemMapperDefault = "";
+    model.overlayMapperRows = [];
+    state.selectedRecipeId = "";
+    rebuildRecipeList();
+    renderTables(); renderAll();
+  });
+
+  // --- Wire up: built recipes management ---
+  el("saveRecipeBtn").addEventListener("click", saveCurrentRecipe);
+  el("newRecipeBtn").addEventListener("click", clearFormForNewRecipe);
+
+  el("newCategoryBtn").addEventListener("click", () => {
+    const name = prompt("Enter new category name:");
+    if (name && name.trim()) {
+      const trimmed = name.trim();
+      if (!state.customCategories.includes(trimmed)) {
+        state.customCategories.push(trimmed);
+      }
+      el("category").value = trimmed;
+      rebuildCategoryList();
+      renderAll();
+    }
+  });
+
+  el("exportAllBtn").addEventListener("click", async () => {
+    if (state.builtRecipes.length === 0) {
+      flashLint(`<span class="bad">No saved recipes to export.</span>`);
+      return;
+    }
+    try {
+      const full = emitAllBuiltRecipes();
+      const translations = emitAllTranslationLines();
+      const output = full + "\n\n\n/* --- Recipes_EN.txt entries --- */\n/*\n" + translations + "\n*/";
+      await copyToClipboard(output);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; ${state.builtRecipes.length} recipe(s) + translation lines copied to clipboard.`);
+    } catch {
+      flashLint(`<span class="bad">Copy failed</span>`);
+    }
+  });
+
+  el("dlAllBtn").addEventListener("click", () => {
+    if (state.builtRecipes.length === 0) {
+      flashLint(`<span class="bad">No saved recipes to download.</span>`);
+      return;
+    }
+    const full = emitAllBuiltRecipes();
+    downloadFile("crafting_recipes.txt", full);
+
+    const translations = emitAllTranslationLines();
+    downloadFile("Recipes_EN_additions.txt", translations);
+
+    flashLint(`<span class="ok">&#10003; Downloaded</span> &mdash; crafting_recipes.txt + Recipes_EN_additions.txt`);
+  });
+
+  // --- Guide modal ---
+  el("openGuide").addEventListener("click", () => {
+    el("guideOverlay").classList.add("visible");
+  });
+  el("closeGuide").addEventListener("click", () => {
+    el("guideOverlay").classList.remove("visible");
+  });
+  el("guideOverlay").addEventListener("click", (e) => {
+    if (e.target === el("guideOverlay")) el("guideOverlay").classList.remove("visible");
+  });
+
+  // --- Initial state ---
+  addInputRow({ type:"item", qty:"1", spec:"[Base.ItemHere]" });
+  addOutputRow({ type:"item", qty:"1", spec:"Base.ItemHere" });
+  rebuildBuiltList();
+  renderAll();
+</script>
+<script src="assets/utils.js"></script>
+<script>
+  // Load guide content
+  loadGuide('craftRecipeForge');
+</script>
+</body>
+</html>

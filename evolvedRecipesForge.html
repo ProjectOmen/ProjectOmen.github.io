@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>evolvedRecipesForge</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-primary: #0a0e13;
+      --bg-secondary: #0f1419;
+      --bg-tertiary: #151b23;
+      --bg-input: #1a2332;
+      --border-subtle: #1c2531;
+      --border-medium: #2d3748;
+      --border-active: #3b82f6;
+      --text-primary: #e9ecf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-yellow: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    header .t {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .pill {
+      font-size: 12px;
+      padding: 4px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 340px 500px 1fr;
+      height: calc(100vh - 57px);
+    }
+
+    @media (max-width: 1200px) {
+      main {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        height: auto;
+        min-height: calc(100vh - 57px);
+      }
+      main > .panel:last-child {
+        grid-column: 1 / -1;
+        min-height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      main > .panel:last-child {
+        grid-column: 1;
+        min-height: 350px;
+      }
+    }
+
+    .panel {
+      overflow: auto;
+      background: var(--bg-secondary);
+    }
+
+    .panel.b1, .panel.b2 {
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .panel::-webkit-scrollbar { width: 10px; }
+    .panel::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .panel::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 5px;
+    }
+    .panel::-webkit-scrollbar-thumb:hover { background: #3d4a5c; }
+
+    .section {
+      padding: 20px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .section h2 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 16px;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.9;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    input:hover, select:hover, textarea:hover {
+      border-color: #3d4a5c;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .row { margin-bottom: 14px; }
+    .row:last-child { margin-bottom: 0; }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btnrow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    button:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: var(--bg-secondary);
+      border-color: var(--border-subtle);
+    }
+
+    button.secondary:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-medium);
+    }
+
+    button.danger {
+      background: #1f1315;
+      border-color: #4b1b1b;
+      color: #fca5a5;
+    }
+
+    button.danger:hover {
+      background: #2d1215;
+      border-color: #7c2d2d;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .mono {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px;
+      height: 100%;
+      overflow: auto;
+      white-space: pre;
+      tab-size: 2;
+      font-size: 13px;
+      line-height: 1.6;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    }
+
+    pre::-webkit-scrollbar { width: 10px; height: 10px; }
+    pre::-webkit-scrollbar-track { background: var(--bg-primary); }
+    pre::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 5px;
+    }
+
+    .lint {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .ok { color: var(--accent-green); font-weight: 500; }
+    .bad { color: var(--accent-red); }
+    .warn { color: var(--accent-yellow); }
+    .muted { color: var(--text-muted); }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .itembtn {
+      text-align: left;
+      padding: 10px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+      color: var(--text-primary);
+    }
+
+    .itembtn:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+      transform: translateX(2px);
+    }
+
+    .itembtn.active {
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--bg-tertiary);
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-right: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: #1f2937;
+      border-color: #3d4a5c;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+      accent-color: var(--accent-blue);
+    }
+
+    .built-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .built-item .built-label {
+      flex: 1;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .built-item .built-del {
+      padding: 2px 8px;
+      font-size: 10px;
+      min-width: 0;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
+
+    .section h2 .badge {
+      display: inline-block;
+      background: var(--accent-blue);
+      color: #fff;
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-left: 8px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    /* Guide modal */
+    .guide-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .guide-overlay.visible { display: flex; }
+    .guide-modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: 12px;
+      width: 90vw;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-medium);
+    }
+    .guide-header h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .guide-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .guide-close:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+    .guide-body {
+      overflow-y: auto;
+      padding: 24px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+    .guide-body::-webkit-scrollbar { width: 10px; }
+    .guide-body::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    .guide-body::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
+    .guide-body h3 {
+      color: var(--text-primary);
+      font-size: 15px;
+      margin: 28px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-body h3:first-child { margin-top: 0; }
+    .guide-body h4 {
+      color: var(--accent-blue);
+      font-size: 13px;
+      margin: 18px 0 6px;
+    }
+    .guide-body p { margin: 0 0 10px; }
+    .guide-body ul, .guide-body ol { margin: 0 0 10px; padding-left: 20px; }
+    .guide-body li { margin-bottom: 4px; }
+    .guide-body code {
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+      background: var(--bg-input);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .guide-body pre {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0 0 12px;
+      height: auto;
+    }
+    .guide-body table {
+      margin: 8px 0 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .guide-body th {
+      background: var(--bg-tertiary);
+      padding: 8px 12px;
+    }
+    .guide-body td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guide-btn {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .guide-btn:hover {
+      background: linear-gradient(135deg, #264d7a 0%, #1e3044 100%);
+      color: #93c5fd;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="btn-home" style="text-decoration:none; margin-right: 15px;">
+    &larr; Project Omen
+  </a>
+  
+  <div class="t">evolvedRecipesForge</div>
+  <span class="pill">Build &rarr; Export</span>
+  
+  <button id="openGuide" class="guide-btn">Guide &amp; Reference</button>
+</header>
+
+<!-- Guide Modal -->
+<div id="guideOverlay" class="guide-overlay">
+  <div class="guide-modal">
+    <div class="guide-header">
+      <h2>evolvedRecipesForge &mdash; User Guide &amp; B42 Reference</h2>
+      <button id="closeGuide" class="guide-close">&times;</button>
+    </div>
+    <div class="guide-body">
+      <p style="color: var(--text-muted); text-align: center;">Loading guide...</p>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- LEFT: LOADER + LIST -->
+  <div class="panel b1">
+    <div class="section">
+      <h2>Load Evolved Recipe File</h2>
+      <div class="row">
+        <input id="fileInput" type="file" accept=".txt" />
+        <div class="hint">
+          Loads into memory only &mdash; nothing is written back.
+        </div>
+      </div>
+      <div class="row">
+        <label for="filter">Filter</label>
+        <input id="filter" placeholder="type to filter recipe names..." />
+      </div>
+      <div class="row">
+        <div class="chip"><span class="muted">Loaded:</span> <span id="loadedName" class="mono small">(none)</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Your Recipes <span id="builtBadge" class="badge" style="display:none;">0</span></h2>
+      <div class="btnrow" style="margin-bottom:10px;">
+        <button id="saveBtn">Save Current Recipe</button>
+        <button id="newBtn" class="secondary">New Recipe</button>
+      </div>
+      <div id="builtList" class="list"></div>
+      <div id="builtEmpty" class="hint">No recipes saved yet. Build one and click "Save Current Recipe".</div>
+      <div class="btnrow" style="margin-top:10px;">
+        <button id="exportAllBtn" class="secondary" style="display:none;">Export All Recipes</button>
+        <button id="dlAllBtn" class="secondary" style="display:none;">Download All Recipes</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Loaded File Recipes</h2>
+      <div id="recipeList" class="list"></div>
+    </div>
+  </div>
+
+  <!-- MIDDLE: FORM -->
+  <div class="panel b2">
+    <div class="section">
+      <h2>Evolved Recipe Builder</h2>
+
+      <div class="row">
+        <label for="recipeName">Recipe Name</label>
+        <input id="recipeName" placeholder="Sandwich" style="width:100%;" />
+        <div class="hint">The identifier after <span class="mono">evolvedrecipe</span>. No spaces.</div>
+      </div>
+
+      <div class="row">
+        <label for="displayName">Name (display name)</label>
+        <input id="displayName" placeholder="Make Sandwich" style="width:100%;" />
+        <div class="hint">The name shown in the crafting menu. Can contain spaces.</div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="baseItem">BaseItem</label>
+          <input id="baseItem" placeholder="BreadSlices" />
+          <div class="hint">Starting item that gets transformed.</div>
+        </div>
+        <div class="row">
+          <label for="resultItem">ResultItem</label>
+          <input id="resultItem" placeholder="Sandwich" />
+          <div class="hint">Item produced after adding ingredients.</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label for="maxItems">MaxItems</label>
+          <input id="maxItems" placeholder="4" inputmode="numeric" />
+          <div class="hint">Max number of ingredients that can be added.</div>
+        </div>
+        <div class="row">
+          <label for="template">Template</label>
+          <input id="template" placeholder="Sandwich" />
+          <div class="hint">Template name ingredients reference via <span class="mono">EvolvedRecipe</span>.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="addIngredientSound">AddIngredientSound (optional)</label>
+        <input id="addIngredientSound" placeholder="AddItemInRecipe" style="width:100%;" />
+        <div class="hint">Sound played when adding an ingredient. Default: <span class="mono">AddItemInRecipe</span></div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="cookable" /> Cookable
+          </label>
+          <div class="hint">Result item can be cooked.</div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="addIngredientIfCooked" /> AddIngredientIfCooked
+          </label>
+          <div class="hint">Can add ingredients after cooking.</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="canAddSpicesEmpty" /> CanAddSpicesEmpty
+          </label>
+          <div class="hint">Allow spices before other ingredients.</div>
+        </div>
+        <div class="row">
+          <label style="display:inline-flex; align-items:center; cursor:pointer;">
+            <input type="checkbox" id="allowFrozenItem" /> AllowFrozenItem
+          </label>
+          <div class="hint">Allow frozen ingredients.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label style="display:inline-flex; align-items:center; cursor:pointer;">
+          <input type="checkbox" id="isHidden" /> IsHidden
+        </label>
+        <div class="hint">Hides recipe from the crafting menu.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Export</h2>
+      <div class="row">
+        <label style="display:inline-flex; align-items:center; cursor:pointer;">
+          <input type="checkbox" id="wrapModule" /> Wrap in <span class="mono" style="margin-left:4px;">module Base { }</span>
+        </label>
+        <div class="hint">Include the module wrapper if starting a new script file.</div>
+      </div>
+      <div class="btnrow">
+        <button id="copyBlock">Copy Recipe Block</button>
+        <button id="dlBlock" class="secondary">Download Recipe</button>
+      </div>
+      <div class="btnrow" style="margin-top:8px;">
+        <button id="loadExample" class="secondary">Load Example</button>
+        <button id="resetForm" class="danger">Reset Form</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW + LINT -->
+  <div class="panel" style="display:grid; grid-template-rows: 1fr auto;">
+    <div style="display:flex; flex-direction:column; height:100%;">
+      <div style="padding: 12px 20px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-tertiary);">
+        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Preview Output</div>
+        <div id="previewLabel" class="mono" style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">(no recipe)</div>
+      </div>
+      <pre id="preview" class="mono" style="flex: 1; height: auto;"></pre>
+    </div>
+    <div id="lint" class="lint mono"></div>
+  </div>
+</main>
+
+<script>
+  const el = (id) => document.getElementById(id);
+
+  // --- App State ---
+  const state = {
+    loadedText: "",
+    loadedFilename: "",
+    recipes: [],           // parsed from file [{name, raw, start, end}]
+    selectedRecipeName: "",
+    builtRecipes: [],      // saved [{snapshot, name}]
+    editingBuiltIndex: -1,
+  };
+
+  // --- Utility ---
+  function escapeRegExp(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  // --- Parser ---
+  function parseAllEvolvedRecipes(text) {
+    const src = String(text || "");
+    const results = [];
+    const re = /\bevolvedrecipe\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/gi;
+    let m;
+    while ((m = re.exec(src)) !== null) {
+      const name = m[1];
+      const headerIndex = m.index;
+      const braceOpen = src.indexOf("{", m.index + m[0].length - 1);
+      if (braceOpen === -1) continue;
+
+      let depth = 0, i = braceOpen;
+      for (; i < src.length; i++) {
+        if (src[i] === "{") depth++;
+        else if (src[i] === "}") {
+          depth--;
+          if (depth === 0) { i++; break; }
+        }
+      }
+      if (depth !== 0) continue;
+
+      const raw = src.slice(headerIndex, i).trimEnd();
+      results.push({ name, raw, start: headerIndex, end: i });
+    }
+    return results;
+  }
+
+  function extractEvolvedField(raw, key) {
+    const re = new RegExp("\\b" + escapeRegExp(key) + "\\s*:\\s*([^,\\n\\r]+)", "i");
+    const m = re.exec(raw);
+    return m ? m[1].trim() : "";
+  }
+
+  function extractEvolvedBool(raw, key) {
+    const val = extractEvolvedField(raw, key);
+    return val.toLowerCase() === "true";
+  }
+
+  // --- Gather form data ---
+  function gatherModel() {
+    return {
+      recipeName: el("recipeName").value.trim(),
+      displayName: el("displayName").value.trim(),
+      baseItem: el("baseItem").value.trim(),
+      resultItem: el("resultItem").value.trim(),
+      maxItems: el("maxItems").value.trim(),
+      template: el("template").value.trim(),
+      addIngredientSound: el("addIngredientSound").value.trim(),
+      cookable: el("cookable").checked,
+      addIngredientIfCooked: el("addIngredientIfCooked").checked,
+      canAddSpicesEmpty: el("canAddSpicesEmpty").checked,
+      allowFrozenItem: el("allowFrozenItem").checked,
+      isHidden: el("isHidden").checked,
+    };
+  }
+
+  // --- Emit evolved recipe block ---
+  function emitBlock(m) {
+    const name = m.recipeName || "RecipeNameHere";
+    const wrap = el("wrapModule").checked;
+    const T = wrap ? "\t" : "";
+    const lines = [];
+
+    if (wrap) lines.push(`module Base\n{`);
+
+    lines.push(`${T}evolvedrecipe ${name}`);
+    lines.push(`${T}{`);
+
+    if (m.baseItem) lines.push(`${T}\tBaseItem:${m.baseItem},`);
+    if (m.maxItems) lines.push(`${T}\tMaxItems:${m.maxItems},`);
+    if (m.resultItem) lines.push(`${T}\tResultItem:${m.resultItem},`);
+    if (m.displayName) lines.push(`${T}\tName:${m.displayName},`);
+    if (m.template) lines.push(`${T}\tTemplate:${m.template},`);
+    if (m.cookable) lines.push(`${T}\tCookable:true,`);
+    if (m.addIngredientIfCooked) lines.push(`${T}\tAddIngredientIfCooked:true,`);
+    if (m.canAddSpicesEmpty) lines.push(`${T}\tCanAddSpicesEmpty:true,`);
+    if (m.allowFrozenItem) lines.push(`${T}\tAllowFrozenItem:true,`);
+    if (m.isHidden) lines.push(`${T}\tIsHidden:true,`);
+    if (m.addIngredientSound) lines.push(`${T}\tAddIngredientSound:${m.addIngredientSound},`);
+
+    lines.push(`${T}}`);
+    if (wrap) lines.push(`}`);
+
+    return lines.join("\n");
+  }
+
+  // --- Linter ---
+  function lintRecipe(m) {
+    const issues = [];
+    const warnings = [];
+
+    if (!m.recipeName) issues.push("Recipe Name is required.");
+    else if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(m.recipeName)) issues.push("Recipe Name must be an identifier (no spaces).");
+
+    if (!m.baseItem) issues.push("BaseItem is required.");
+    if (!m.resultItem) issues.push("ResultItem is required.");
+    if (!m.displayName) warnings.push("Name (display name) is empty — players won't see a name in the menu.");
+
+    if (m.maxItems && !/^\d+$/.test(m.maxItems)) issues.push("MaxItems must be a whole number.");
+    if (!m.maxItems) warnings.push("MaxItems not set — defaults to unlimited.");
+
+    if (!m.template) warnings.push("Template not set — ingredient items won't know to reference this recipe.");
+
+    // Duplicate checks
+    if (m.recipeName && state.recipes.some(r => r.name === m.recipeName) && state.selectedRecipeName !== m.recipeName) {
+      warnings.push(`"${m.recipeName}" already exists in the loaded file.`);
+    }
+    const builtDupe = state.builtRecipes.findIndex(r => r.name === m.recipeName);
+    if (m.recipeName && builtDupe >= 0 && builtDupe !== state.editingBuiltIndex) {
+      warnings.push(`"${m.recipeName}" already exists in your saved recipes.`);
+    }
+
+    return { issues, warnings };
+  }
+
+  // --- Render all ---
+  function renderAll() {
+    const m = gatherModel();
+    const block = emitBlock(m);
+    el("preview").textContent = block;
+    el("previewLabel").textContent = m.recipeName || "(unnamed)";
+
+    const { issues, warnings } = lintRecipe(m);
+    if (issues.length === 0 && warnings.length === 0) {
+      el("lint").innerHTML = `<span class="ok">&#10003; Evolved recipe looks valid</span> &mdash; ready to export.`;
+    } else {
+      let html = "";
+      if (issues.length > 0) {
+        html += `<div class="bad"><b>Requirements:</b></div>` + issues.map(x => `<div class="bad">&bull; ${escapeHtml(x)}</div>`).join("");
+      }
+      if (warnings.length > 0) {
+        html += `<div class="warn" style="margin-top:${issues.length ? 6 : 0}px;"><b>Warnings:</b></div>` + warnings.map(x => `<div class="warn">&bull; ${escapeHtml(x)}</div>`).join("");
+      }
+      el("lint").innerHTML = html;
+    }
+  }
+
+  // --- Built recipes management ---
+  function snapshotForm() {
+    return gatherModel();
+  }
+
+  function restoreFromSnapshot(snap) {
+    el("recipeName").value = snap.recipeName || "";
+    el("displayName").value = snap.displayName || "";
+    el("baseItem").value = snap.baseItem || "";
+    el("resultItem").value = snap.resultItem || "";
+    el("maxItems").value = snap.maxItems || "";
+    el("template").value = snap.template || "";
+    el("addIngredientSound").value = snap.addIngredientSound || "";
+    el("cookable").checked = !!snap.cookable;
+    el("addIngredientIfCooked").checked = !!snap.addIngredientIfCooked;
+    el("canAddSpicesEmpty").checked = !!snap.canAddSpicesEmpty;
+    el("allowFrozenItem").checked = !!snap.allowFrozenItem;
+    el("isHidden").checked = !!snap.isHidden;
+    renderAll();
+  }
+
+  function saveCurrentRecipe() {
+    const m = gatherModel();
+    if (!m.recipeName) {
+      flashLint(`<span class="bad">Cannot save</span> &mdash; Recipe Name is required.`);
+      return;
+    }
+    const dupeIdx = state.builtRecipes.findIndex(r => r.name === m.recipeName);
+    if (dupeIdx >= 0 && dupeIdx !== state.editingBuiltIndex) {
+      flashLint(`<span class="bad">Cannot save</span> &mdash; "${m.recipeName}" already exists.`);
+      return;
+    }
+
+    const snap = snapshotForm();
+    if (state.editingBuiltIndex >= 0) {
+      state.builtRecipes[state.editingBuiltIndex] = { snapshot: snap, name: m.recipeName };
+      state.editingBuiltIndex = -1;
+      flashLint(`<span class="ok">&#10003; Updated</span> &mdash; "${m.recipeName}" saved.`);
+    } else {
+      state.builtRecipes.push({ snapshot: snap, name: m.recipeName });
+      flashLint(`<span class="ok">&#10003; Saved</span> &mdash; "${m.recipeName}" added. ${state.builtRecipes.length} recipe(s) total.`);
+    }
+    rebuildBuiltList();
+  }
+
+  function clearFormForNew() {
+    state.editingBuiltIndex = -1;
+    state.selectedRecipeName = "";
+    el("recipeName").value = "";
+    el("displayName").value = "";
+    el("baseItem").value = "";
+    el("resultItem").value = "";
+    el("maxItems").value = "";
+    el("template").value = "";
+    el("addIngredientSound").value = "";
+    el("cookable").checked = false;
+    el("addIngredientIfCooked").checked = false;
+    el("canAddSpicesEmpty").checked = false;
+    el("allowFrozenItem").checked = false;
+    el("isHidden").checked = false;
+    rebuildBuiltList();
+    rebuildRecipeList();
+    renderAll();
+  }
+
+  function editBuiltRecipe(index) {
+    state.editingBuiltIndex = index;
+    restoreFromSnapshot(state.builtRecipes[index].snapshot);
+    rebuildBuiltList();
+  }
+
+  function deleteBuiltRecipe(index) {
+    state.builtRecipes.splice(index, 1);
+    if (state.editingBuiltIndex === index) state.editingBuiltIndex = -1;
+    else if (state.editingBuiltIndex > index) state.editingBuiltIndex--;
+    rebuildBuiltList();
+    renderAll();
+  }
+
+  function rebuildBuiltList() {
+    const listEl = el("builtList");
+    listEl.innerHTML = "";
+    const count = state.builtRecipes.length;
+    el("builtEmpty").style.display = count === 0 ? "" : "none";
+    el("builtBadge").style.display = count > 0 ? "" : "none";
+    el("builtBadge").textContent = count;
+    el("exportAllBtn").style.display = count > 0 ? "" : "none";
+    el("dlAllBtn").style.display = count > 0 ? "" : "none";
+
+    state.builtRecipes.forEach((entry, i) => {
+      const b = document.createElement("button");
+      b.className = "itembtn" + (state.editingBuiltIndex === i ? " active" : "");
+      const wrapper = document.createElement("div");
+      wrapper.className = "built-item";
+
+      const label = document.createElement("span");
+      label.className = "built-label";
+      label.textContent = entry.name;
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "X";
+      delBtn.className = "danger built-del";
+      delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteBuiltRecipe(i); });
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(delBtn);
+      b.appendChild(wrapper);
+      b.addEventListener("click", () => editBuiltRecipe(i));
+      listEl.appendChild(b);
+    });
+  }
+
+  function emitAllBuiltRecipes() {
+    const lines = [];
+    lines.push(`module Base\n{`);
+    state.builtRecipes.forEach(entry => {
+      const savedWrap = el("wrapModule").checked;
+      el("wrapModule").checked = false;
+      const block = emitBlock(entry.snapshot);
+      el("wrapModule").checked = savedWrap;
+      const indented = block.split("\n").map(l => "\t" + l).join("\n");
+      lines.push("");
+      lines.push(indented);
+    });
+    lines.push("");
+    lines.push("}");
+    return lines.join("\n");
+  }
+
+  // --- Recipe list (loaded file) ---
+  let filterTimer;
+  function rebuildRecipeList() {
+    const filterText = el("filter").value.trim().toLowerCase();
+    const list = state.recipes
+      .filter(r => !filterText || r.name.toLowerCase().includes(filterText))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const listEl = el("recipeList");
+    listEl.innerHTML = "";
+    list.forEach(r => {
+      const baseItem = extractEvolvedField(r.raw, "BaseItem");
+      const b = document.createElement("button");
+      b.className = "itembtn" + (state.selectedRecipeName === r.name ? " active" : "");
+      b.textContent = baseItem ? `${r.name}  —  ${baseItem}` : r.name;
+      b.addEventListener("click", () => {
+        state.selectedRecipeName = r.name;
+        loadRecipeIntoForm(r);
+        rebuildRecipeList();
+      });
+      listEl.appendChild(b);
+    });
+    if (list.length === 0) {
+      listEl.innerHTML = `<div class="hint">No recipes match current filter.</div>`;
+    }
+  }
+
+  function loadRecipeIntoForm(recipe) {
+    el("recipeName").value = recipe.name;
+    el("displayName").value = extractEvolvedField(recipe.raw, "Name") || "";
+    el("baseItem").value = extractEvolvedField(recipe.raw, "BaseItem") || "";
+    el("resultItem").value = extractEvolvedField(recipe.raw, "ResultItem") || "";
+    el("maxItems").value = extractEvolvedField(recipe.raw, "MaxItems") || "";
+    el("template").value = extractEvolvedField(recipe.raw, "Template") || "";
+    el("addIngredientSound").value = extractEvolvedField(recipe.raw, "AddIngredientSound") || "";
+    el("cookable").checked = extractEvolvedBool(recipe.raw, "Cookable");
+    el("addIngredientIfCooked").checked = extractEvolvedBool(recipe.raw, "AddIngredientIfCooked");
+    el("canAddSpicesEmpty").checked = extractEvolvedBool(recipe.raw, "CanAddSpicesEmpty");
+    el("allowFrozenItem").checked = extractEvolvedBool(recipe.raw, "AllowFrozenItem");
+    el("isHidden").checked = extractEvolvedBool(recipe.raw, "IsHidden");
+    renderAll();
+  }
+
+  function flashLint(html) {
+    el("lint").innerHTML = html;
+    setTimeout(renderAll, 1200);
+  }
+
+  // --- Wire up: file load ---
+  el("fileInput").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const text = await f.text();
+    state.loadedText = text;
+    state.loadedFilename = f.name;
+    el("loadedName").textContent = f.name;
+    state.recipes = parseAllEvolvedRecipes(text);
+    state.selectedRecipeName = "";
+    rebuildRecipeList();
+    renderAll();
+  });
+
+  el("filter").addEventListener("input", () => {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(rebuildRecipeList, 150);
+  });
+
+  // --- Wire up: form fields ---
+  ["recipeName","displayName","baseItem","resultItem","maxItems","template","addIngredientSound"
+  ].forEach(id => {
+    el(id).addEventListener("input", renderAll);
+  });
+
+  ["cookable","addIngredientIfCooked","canAddSpicesEmpty","allowFrozenItem","isHidden","wrapModule"
+  ].forEach(id => {
+    el(id).addEventListener("change", renderAll);
+  });
+
+  // --- Wire up: built recipes ---
+  el("saveBtn").addEventListener("click", saveCurrentRecipe);
+  el("newBtn").addEventListener("click", clearFormForNew);
+
+  el("exportAllBtn").addEventListener("click", async () => {
+    if (state.builtRecipes.length === 0) { flashLint(`<span class="bad">No saved recipes.</span>`); return; }
+    try {
+      await copyToClipboard(emitAllBuiltRecipes());
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; ${state.builtRecipes.length} recipe(s) copied to clipboard.`);
+    } catch { flashLint(`<span class="bad">Copy failed</span>`); }
+  });
+
+  el("dlAllBtn").addEventListener("click", () => {
+    if (state.builtRecipes.length === 0) { flashLint(`<span class="bad">No saved recipes.</span>`); return; }
+    downloadFile("evolvedrecipes.txt", emitAllBuiltRecipes());
+    flashLint(`<span class="ok">&#10003; Downloaded</span> &mdash; evolvedrecipes.txt`);
+  });
+
+  // --- Wire up: copy/download ---
+  el("copyBlock").addEventListener("click", async () => {
+    try {
+      await copyToClipboard(el("preview").textContent);
+      flashLint(`<span class="ok">&#10003; Copied!</span> &mdash; Recipe block copied to clipboard.`);
+    } catch { flashLint(`<span class="bad">Copy failed</span>`); }
+  });
+
+  el("dlBlock").addEventListener("click", () => {
+    const m = gatherModel();
+    downloadFile(`${m.recipeName || "evolvedrecipe"}.txt`, el("preview").textContent);
+    flashLint(`<span class="ok">&#10003; Downloaded</span>`);
+  });
+
+  // --- Wire up: example + reset ---
+  el("loadExample").addEventListener("click", () => {
+    el("recipeName").value = "Sandwich";
+    el("displayName").value = "Make Sandwich";
+    el("baseItem").value = "BreadSlices";
+    el("resultItem").value = "Sandwich";
+    el("maxItems").value = "4";
+    el("template").value = "Sandwich";
+    el("addIngredientSound").value = "";
+    el("cookable").checked = false;
+    el("addIngredientIfCooked").checked = true;
+    el("canAddSpicesEmpty").checked = true;
+    el("allowFrozenItem").checked = false;
+    el("isHidden").checked = false;
+    renderAll();
+  });
+
+  el("resetForm").addEventListener("click", () => {
+    el("recipeName").value = "";
+    el("displayName").value = "";
+    el("baseItem").value = "";
+    el("resultItem").value = "";
+    el("maxItems").value = "";
+    el("template").value = "";
+    el("addIngredientSound").value = "";
+    el("cookable").checked = false;
+    el("addIngredientIfCooked").checked = false;
+    el("canAddSpicesEmpty").checked = false;
+    el("allowFrozenItem").checked = false;
+    el("isHidden").checked = false;
+    state.selectedRecipeName = "";
+    rebuildRecipeList();
+    renderAll();
+  });
+
+  // --- Guide modal ---
+  el("openGuide").addEventListener("click", () => {
+    el("guideOverlay").classList.add("visible");
+  });
+  el("closeGuide").addEventListener("click", () => {
+    el("guideOverlay").classList.remove("visible");
+  });
+  el("guideOverlay").addEventListener("click", (e) => {
+    if (e.target === el("guideOverlay")) el("guideOverlay").classList.remove("visible");
+  });
+
+  // --- Initial state ---
+  rebuildBuiltList();
+  renderAll();
+</script>
+<script src="assets/utils.js"></script>
+<script>
+  // Load guide content
+  loadGuide('evolvedRecipesForge');
+</script>
+
+</body>
+</html>

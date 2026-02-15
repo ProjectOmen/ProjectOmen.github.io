@@ -1,0 +1,58 @@
+
+    <h3>Overview</h3>
+    <p>Every PZ mod lives in its own folder. The game detects a mod by finding a <code>mod.info</code> file. Build 42 introduced <strong>versioned folders</strong> &mdash; your content goes inside a <code>42/</code> subdirectory so the game knows which build it targets.</p>
+
+    <h3>Version Folders</h3>
+    <ul>
+      <li><code>42/</code> &mdash; Build 42 content. The game loads the highest compatible version folder.</li>
+      <li><code>common/</code> &mdash; Resources shared across all game versions. Good for large assets (textures, models, sounds). Can be empty.</li>
+    </ul>
+
+    <h3>media/ Subdirectories</h3>
+    <table>
+      <tr><th>Directory</th><th>Contents</th></tr>
+      <tr><td><code>scripts/</code></td><td>Item definitions, recipes, vehicle scripts, fixing blocks.</td></tr>
+      <tr><td><code>lua/client/</code></td><td>Client-side: UI, context menus, timed actions.</td></tr>
+      <tr><td><code>lua/server/</code></td><td>Server-side: spawning, farming, weather events.</td></tr>
+      <tr><td><code>lua/shared/</code></td><td>Shared logic (loaded first). Translations live here.</td></tr>
+      <tr><td><code>textures/</code></td><td>PNG images. Item icons need the <code>Item_</code> prefix.</td></tr>
+      <tr><td><code>models/</code></td><td>3D model files for weapons, clothing, vehicles.</td></tr>
+      <tr><td><code>sound/</code></td><td>Audio in <code>.wav</code> or <code>.ogg</code> format.</td></tr>
+    </table>
+
+    <h3>mod.info Fields</h3>
+    <table>
+      <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+      <tr><td><code>name</code></td><td>Yes</td><td>Display name in the mod manager.</td></tr>
+      <tr><td><code>id</code></td><td>Yes</td><td>Unique identifier. Letters, numbers, underscores.</td></tr>
+      <tr><td><code>author</code></td><td>No</td><td>Creator name.</td></tr>
+      <tr><td><code>description</code></td><td>No</td><td>What the mod does.</td></tr>
+      <tr><td><code>poster</code></td><td>No</td><td>Preview image filename (e.g. poster.png).</td></tr>
+      <tr><td><code>icon</code></td><td>No</td><td>Small icon for the mod list.</td></tr>
+      <tr><td><code>url</code></td><td>No</td><td>Homepage or forum link.</td></tr>
+      <tr><td><code>modversion</code></td><td>No</td><td>Your mod's version string.</td></tr>
+      <tr><td><code>versionMin</code></td><td>No</td><td>Minimum game version required.</td></tr>
+      <tr><td><code>versionMax</code></td><td>No</td><td>Maximum game version supported.</td></tr>
+      <tr><td><code>require</code></td><td>No</td><td>Comma-separated dependency mod IDs.</td></tr>
+      <tr><td><code>incompatible</code></td><td>No</td><td>Comma-separated conflicting mod IDs.</td></tr>
+      <tr><td><code>loadModAfter</code></td><td>No</td><td>Mod IDs that should load first.</td></tr>
+      <tr><td><code>loadModBefore</code></td><td>No</td><td>Mod IDs that should load after.</td></tr>
+      <tr><td><code>category</code></td><td>No</td><td>Mod category for organization.</td></tr>
+      <tr><td><code>pack</code></td><td>No</td><td>Texture pack name.</td></tr>
+      <tr><td><code>tiledef</code></td><td>No</td><td>Tiledef name and ID.</td></tr>
+    </table>
+
+    <h3>Translation Files</h3>
+    <p>Live under <code>media/lua/shared/Translate/EN/</code>. Format:</p>
+    <pre>Items_EN = {
+    ItemName_MyItem = "My Custom Item",
+}</pre>
+    <p>Each language gets its own subfolder. The game falls back to EN if a translation is missing.</p>
+
+    <h3>Item Icon Naming</h3>
+    <p>Texture files for item icons must start with <code>Item_</code> &mdash; for example, <code>Item_MyItem.png</code>. Place them in the <code>textures/</code> folder.</p>
+
+    <h3>Testing Your Mod</h3>
+    <p>Place your mod folder in <code>%UserProfile%\Zomboid\mods\</code> or subscribe via the Steam Workshop. The game scans for <code>mod.info</code> files on startup.</p>
+
+    

@@ -1,0 +1,57 @@
+
+      <h3>What Are Evolved Recipes?</h3>
+      <p>Evolved recipes let players combine ingredients dynamically. Unlike regular <code>craftRecipe</code> blocks (which have fixed inputs and outputs), evolved recipes define a <b>base item</b> that can be transformed by adding ingredients to it.</p>
+      <p>Think sandwiches, soups, salads &mdash; any recipe where the player picks what to add from a pool of valid ingredients.</p>
+
+      <h3>How It Works (Two Parts)</h3>
+      <h4>Part 1: The evolvedrecipe Block</h4>
+      <p>This defines the recipe itself &mdash; what base item to start with, what the result is, and how many ingredients can be added.</p>
+      <h4>Part 2: The EvolvedRecipe Property on Items</h4>
+      <p>Each ingredient item needs an <code>EvolvedRecipe</code> property in its item script that says which evolved recipes it can be added to and at what weight. For example:</p>
+      <pre>EvolvedRecipe = Sandwich:6;Burger:6,</pre>
+      <p>This means the item can be added to any evolved recipe with <code>Template:Sandwich</code> (weight 6) or <code>Template:Burger</code> (weight 6).</p>
+
+      <h3>Fields Explained</h3>
+      <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>Recipe Name</code></td><td>The identifier after <code>evolvedrecipe</code> (e.g. <code>Sandwich</code>)</td></tr>
+        <tr><td><code>BaseItem</code></td><td>The starting item that gets transformed (e.g. <code>BreadSlices</code>)</td></tr>
+        <tr><td><code>ResultItem</code></td><td>The item produced after adding ingredients (e.g. <code>Sandwich</code>)</td></tr>
+        <tr><td><code>Name</code></td><td>Display name shown in the crafting menu (e.g. <code>Make Sandwich</code>)</td></tr>
+        <tr><td><code>MaxItems</code></td><td>Maximum number of ingredients that can be added</td></tr>
+        <tr><td><code>Template</code></td><td>Template name that ingredient items reference in their <code>EvolvedRecipe</code> property. Multiple recipes can share the same template.</td></tr>
+        <tr><td><code>Cookable</code></td><td>If true, the result can be cooked</td></tr>
+        <tr><td><code>AddIngredientIfCooked</code></td><td>If true, ingredients can be added even after the base/result is cooked</td></tr>
+        <tr><td><code>CanAddSpicesEmpty</code></td><td>If true, spices can be added before any other ingredients</td></tr>
+        <tr><td><code>AllowFrozenItem</code></td><td>If true, frozen ingredients can be used</td></tr>
+        <tr><td><code>IsHidden</code></td><td>If true, hides the recipe from the crafting menu</td></tr>
+        <tr><td><code>AddIngredientSound</code></td><td>Sound played when adding an ingredient (default: <code>AddItemInRecipe</code>)</td></tr>
+      </table>
+
+      <h3>Template System</h3>
+      <p>The <code>Template</code> field is the glue between the recipe and its ingredients. When an item has <code>EvolvedRecipe = Sandwich:6</code>, it can be added to any evolved recipe where <code>Template:Sandwich</code>. This means two different recipes (e.g. Sandwich and Baguette) can share the same ingredient pool by using the same template name.</p>
+
+      <h3>Output Format</h3>
+      <pre>evolvedrecipe Sandwich
+{
+    BaseItem:BreadSlices,
+    MaxItems:4,
+    ResultItem:Sandwich,
+    Name:Make Sandwich,
+    CanAddSpicesEmpty:true,
+    AddIngredientIfCooked:true,
+    Template:Sandwich,
+}</pre>
+      <p>Evolved recipe scripts go in your mod's <code>media/scripts/</code> folder alongside other script files.</p>
+
+      <h3>Ingredient Item Setup</h3>
+      <p>For each ingredient that can be used in your evolved recipe, add the <code>EvolvedRecipe</code> property to the item's script:</p>
+      <pre>item Tomato
+{
+    ...
+    EvolvedRecipe = Sandwich:6;Burger:6,
+    ...
+}</pre>
+      <p>The number after the colon is the "weight" &mdash; it affects how much hunger/nutrition the ingredient contributes. Use the <b>ItemForge</b> tool to build item scripts with the EvolvedRecipe property.</p>
+
+    

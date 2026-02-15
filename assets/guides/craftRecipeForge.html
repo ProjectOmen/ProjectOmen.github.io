@@ -1,0 +1,182 @@
+
+      <h3>Getting Started</h3>
+      <p>craftRecipeForge helps you build Project Zomboid Build 42 <code>craftRecipe</code> script blocks without writing code by hand. You fill in a form, and it generates the correctly formatted recipe text that you can paste into your mod's script files.</p>
+      <h4>Quick Workflow</h4>
+      <ol>
+        <li><b>Load</b> an existing recipe file (optional) &mdash; click "Load Recipe File" and select a <code>.txt</code> file from your mod. This lets you browse existing recipes, and also enables "Full File" export options.</li>
+        <li><b>Build</b> your recipe &mdash; fill in the form fields: Recipe ID, timedAction, time, tags, category, inputs, and outputs.</li>
+        <li><b>Save</b> to your session &mdash; click "Save Current Recipe" to add it to the "Your Recipes" list. You can save multiple recipes per session.</li>
+        <li><b>Export</b> &mdash; copy or download your recipe(s). Use "Copy Recipe Block" for a single recipe, or "Export All Recipes" / "Download All Recipes" for everything you've built.</li>
+      </ol>
+
+      <h3>Form Fields Explained</h3>
+
+      <h4>Required Fields</h4>
+      <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>Recipe ID</code></td><td>A unique identifier with no spaces (e.g. <code>MyCraftSword</code>). This is used internally and in translation files.</td></tr>
+        <tr><td><code>Display Name</code></td><td>The name players see in-game. Generates the <code>Recipes_EN.txt</code> translation line automatically.</td></tr>
+        <tr><td><code>timedAction</code></td><td>The animation played during crafting. Also controls sounds, calorie burn, and body heat generation. Start typing to see suggestions (e.g. <code>Making</code>, <code>Welding_Surface</code>).</td></tr>
+        <tr><td><code>time</code></td><td>Crafting duration in ticks. Default is 50. Higher = longer craft time.</td></tr>
+        <tr><td><code>tags</code></td><td>Crafting conditions. <b>Must include at least one bench tag</b> like <code>AnySurfaceCraft</code> or <code>InHandCraft</code>. Separate multiple tags with <code>;</code></td></tr>
+        <tr><td><code>category</code></td><td>The in-game crafting menu category (e.g. <code>Carpentry</code>, <code>ASID Crafting</code>). Helps players find recipes.</td></tr>
+      </table>
+
+      <h4>File Section (for file organization)</h4>
+      <p>This is <b>not</b> the same as the in-game category. When you load a recipe file, craftRecipeForge detects the <code>/**** Section Name ****/</code> comment separators. The File Section field controls which separator block your recipe gets placed under when exporting to a file. If you're building a new recipe to add to the "Consumables" section, set File Section to <code>Consumables</code>.</p>
+
+      <h4>Optional Fields</h4>
+      <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>SkillRequired</code></td><td>Skill level needed to craft. Format: <code>Skill:Level</code> (e.g. <code>Mechanics:2</code>)</td></tr>
+        <tr><td><code>xpAward</code></td><td>XP granted on completion. Format: <code>Skill:Amount</code> (e.g. <code>MetalWelding:10</code>)</td></tr>
+      </table>
+
+      <h4>Advanced Properties</h4>
+      <p>Click "Advanced Properties" to expand additional options:</p>
+      <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>ToolTip</code></td><td>Description text shown in the crafting menu.</td></tr>
+        <tr><td><code>Icon</code></td><td>Icon name displayed for this recipe.</td></tr>
+        <tr><td><code>OnCreate</code></td><td>A Lua function called when crafting finishes (e.g. <code>Recipe.OnCreate.RefillLantern</code>).</td></tr>
+        <tr><td><code>OnTest</code></td><td>A Lua function that checks if the recipe can be crafted.</td></tr>
+        <tr><td><code>needToBeLearn</code></td><td>If checked, the player must learn this recipe before they can craft it.</td></tr>
+        <tr><td><code>AllowBatchCraft</code></td><td>If checked, the recipe can be crafted multiple times in one action.</td></tr>
+        <tr><td><code>AutoLearnAll</code></td><td>The player auto-learns the recipe when <b>all</b> listed skills reach the required level.</td></tr>
+        <tr><td><code>AutoLearnAny</code></td><td>The player auto-learns the recipe when <b>any one</b> listed skill reaches the required level.</td></tr>
+        <tr><td><code>MetaRecipe</code></td><td>Links to another recipe &mdash; if the meta recipe is known, this one becomes known too.</td></tr>
+      </table>
+
+      <h3>Inputs</h3>
+      <p>Inputs are the ingredients and tools needed to craft the item.</p>
+
+      <h4>Input Types</h4>
+      <table>
+        <tr><th>Type</th><th>Description</th></tr>
+        <tr><td><code>item</code></td><td>A regular item ingredient. Quantity must be a whole number.</td></tr>
+        <tr><td><code>fluid</code></td><td>A fluid ingredient added to the recipe (quantity can be decimal, e.g. <code>0.1</code>).</td></tr>
+        <tr><td><code>-fluid</code></td><td>A fluid consumed from a container (e.g. <code>-fluid 0.1 [Alcohol]</code>).</td></tr>
+      </table>
+
+      <h4>Specification Formats</h4>
+      <table>
+        <tr><th>Format</th><th>Meaning</th><th>Example</th></tr>
+        <tr><td><code>[Base.Item]</code></td><td>A specific single item</td><td><code>[Base.Plank]</code></td></tr>
+        <tr><td><code>[Base.A;Base.B]</code></td><td>Any one of the listed items</td><td><code>[Base.Lantern_Hurricane;Base.Lantern_Copper]</code></td></tr>
+        <tr><td><code>tags[TagName]</code></td><td>Any item with the matching tag</td><td><code>tags[Saw]</code>, <code>tags[WeldingMask]</code></td></tr>
+        <tr><td><code>[*]</code></td><td>Any item (wildcard)</td><td><code>[*]</code></td></tr>
+        <tr><td><code>[FluidName]</code></td><td>A fluid type (for fluid inputs)</td><td><code>[Petrol]</code>, <code>[Alcohol]</code></td></tr>
+      </table>
+
+      <h4>Input Modes</h4>
+      <table>
+        <tr><th>Mode</th><th>What Happens</th></tr>
+        <tr><td><code>(consumed)</code></td><td>Default. The item is used up during crafting.</td></tr>
+        <tr><td><code>keep</code></td><td>The item stays in the player's inventory after crafting (for tools).</td></tr>
+        <tr><td><code>destroy</code></td><td>The item is specially removed (used in recycling/scrapping recipes).</td></tr>
+      </table>
+
+      <h4>Input Flags</h4>
+      <p>Click the <code>...</code> button next to the Flags field to pick from known flags:</p>
+      <table>
+        <tr><th>Flag</th><th>Description</th></tr>
+        <tr><td><code>MayDegradeLight</code></td><td>Tool may lose a small amount of durability.</td></tr>
+        <tr><td><code>MayDegrade</code></td><td>Tool may lose durability.</td></tr>
+        <tr><td><code>Prop1</code> / <code>Prop2</code></td><td>Visual prop held in the character's hands during crafting.</td></tr>
+        <tr><td><code>AllowDestroyedItem</code></td><td>Allows the input item even if it's at zero durability.</td></tr>
+        <tr><td><code>AllowFavorite</code></td><td>Allows items marked as favorite to be used.</td></tr>
+        <tr><td><code>InheritFavorite</code></td><td>Output inherits the favorite status of the input.</td></tr>
+        <tr><td><code>NotFull</code></td><td>The item must not be full (e.g. a lantern needing fuel).</td></tr>
+        <tr><td><code>ItemCount</code></td><td>Uses item count for the recipe.</td></tr>
+      </table>
+
+      <h3>Outputs</h3>
+      <p>Outputs are what the recipe produces. Can be <code>item</code> or <code>fluid</code> type. For most recipes, you'll have one item output with a quantity and a spec like <code>Base.Plank</code>.</p>
+      <p>If your recipe uses an <b>itemMapper</b>, use <code>mapper:YourMapperName</code> as the output spec instead of a specific item.</p>
+
+      <h3>itemMapper</h3>
+      <p>Use itemMapper when your recipe accepts <b>multiple item variants</b> as input and needs to produce the <b>correct matching output</b> for each variant.</p>
+      <h4>Example</h4>
+      <p>A lantern refill recipe accepts 5 types of lantern. The itemMapper ensures that if the player uses a Copper Lantern, they get a Copper Lantern back (not a generic one).</p>
+      <h4>Setup Steps</h4>
+      <ol>
+        <li>Give the mapper a <b>name</b> (e.g. <code>LampMapper</code>)</li>
+        <li>In Inputs, list all variants: <code>[Base.ItemA;Base.ItemB;Base.ItemC]</code></li>
+        <li>Add one mapping row per variant: input on the left, output on the right</li>
+        <li>Optionally set a <b>default</b> fallback item</li>
+        <li>In Outputs, use <code>mapper:LampMapper</code> as the spec</li>
+      </ol>
+
+      <h3>overlayMapper</h3>
+      <p>Use overlayMapper when the output item is always the <b>same type</b>, but should <b>look different</b> depending on the input. It maps input items to visual overlay names (textures/icons).</p>
+      <h4>Example</h4>
+      <p>Tanning different animal hides &mdash; the output is always "leather", but a raccoon hide should display with a different texture than a deer hide.</p>
+      <p><b>Key difference from itemMapper:</b> itemMapper changes <em>which item</em> is produced. overlayMapper changes <em>how it looks</em>.</p>
+
+      <h3>Managing Multiple Recipes</h3>
+      <h4>Save &amp; Build Multiple</h4>
+      <ol>
+        <li>Fill out a recipe and click <b>"Save Current Recipe"</b></li>
+        <li>Click <b>"New Recipe"</b> to clear the form (category and file section are kept for convenience)</li>
+        <li>Build your next recipe and save again</li>
+        <li>Your saved recipes appear in the "Your Recipes" list on the left</li>
+      </ol>
+      <h4>Edit or Delete</h4>
+      <p>Click a saved recipe to load it back into the form for editing. Click <b>"X"</b> to delete it from the list.</p>
+      <h4>Export All</h4>
+      <ul>
+        <li><b>"Export All Recipes"</b> &mdash; copies all saved recipes (grouped by file section) to clipboard, including translation lines as a comment block</li>
+        <li><b>"Download All Recipes"</b> &mdash; downloads two files: <code>crafting_recipes.txt</code> (the recipe script) and <code>Recipes_EN_additions.txt</code> (the translation lines)</li>
+      </ul>
+
+      <h3>Translation Lines (Recipes_EN.txt)</h3>
+      <p>Every recipe needs a translation entry so the game knows what name to display. The format is:</p>
+      <pre>Recipe_YourRecipeID = "Display Name Here",</pre>
+      <p>craftRecipeForge auto-generates this in the preview panel below the recipe output. Click <b>"Copy"</b> to copy it. If you set a Display Name, it uses that; otherwise it auto-generates one from the Recipe ID.</p>
+
+      <h3>Exporting to a File</h3>
+      <h4>Single Recipe</h4>
+      <ul>
+        <li><b>"Copy Recipe Block"</b> &mdash; copies just the recipe to clipboard</li>
+        <li><b>"Copy Full File + Recipe"</b> &mdash; copies the entire loaded file with your recipe inserted in the correct location</li>
+        <li><b>"Download Recipe"</b> / <b>"Download Full File"</b> &mdash; same but saves as <code>.txt</code> files</li>
+      </ul>
+      <h4>Smart Insertion</h4>
+      <p>When using "Full File" options, craftRecipeForge tries to place your recipe intelligently:</p>
+      <ol>
+        <li>If <b>File Section</b> is set and matches a <code>/**** Section ****/</code> separator in the loaded file, the recipe is inserted at the end of that section</li>
+        <li>Otherwise, if recipes with the same <b>category</b> exist, it's inserted after the last one</li>
+        <li>As a last resort, it's placed before the file's closing <code>}</code> with a new section separator</li>
+      </ol>
+
+      <h4>Module Wrapper</h4>
+      <p>Check <b>"Wrap in module Base { }"</b> if you're starting a new recipe file from scratch. All recipes must live inside a <code>module Base { }</code> block. Leave unchecked if you're pasting into an existing file.</p>
+      <p><b>Note:</b> The module is locked to <code>Base</code> because custom module names don't work in multiplayer &mdash; this is a known TIS bug.</p>
+
+      <h3>B42 craftRecipe Format Reference</h3>
+      <p>This is the raw script format that craftRecipeForge generates for you:</p>
+      <pre>module Base
+{
+    craftRecipe MyRecipeName
+    {
+        timedAction = Making,
+        time = 120,
+        tags = AnySurfaceCraft,
+        category = MyCrafting,
+        SkillRequired = Mechanics:2,
+        xpAward = MetalWelding:10,
+        inputs
+        {
+            item 20 [Base.ScrapMetal],
+            item 1 tags[WeldingMask] mode:keep flags[MayDegradeLight],
+            -fluid 0.1 [Alcohol],
+        }
+        outputs
+        {
+            item 1 Base.SmallSheetMetal,
+        }
+    }
+}</pre>
+      <p>Each recipe file goes in your mod's <code>media/scripts/recipes/</code> folder. Translation entries go in <code>media/lua/shared/Translate/EN/</code> in a file following the <code>Recipes_EN</code> format.</p>
+
+    

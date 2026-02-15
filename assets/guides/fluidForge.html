@@ -1,0 +1,75 @@
+
+    <h3>Overview</h3>
+    <p>The <code>fluid</code> block defines a custom fluid for Build 42's fluid system. Fluids can be beverages, fuels, industrial liquids, or anything else that fills containers.</p>
+
+    <h3>Basic Structure</h3>
+<pre>fluid MyFluid
+{
+    Color           = 1.000 : 0.500 : 0.200,
+    DisplayName     = FLUID_MY_FLUID,
+
+    Categories
+    {
+        Beverage,
+    }
+}</pre>
+
+    <h3>Top-Level Fields</h3>
+    <table>
+      <tr><th>Field</th><th>Description</th></tr>
+      <tr><td><code>Color</code></td><td>RGB values from 0 to 1, separated by colons. E.g. <code>1.000 : 0.894 : 0.769</code></td></tr>
+      <tr><td><code>ColorReference</code></td><td>Plaintext color name (e.g. <code>Red</code>). Alternative to RGB values.</td></tr>
+      <tr><td><code>DisplayName</code></td><td>Translation key for the fluid name.</td></tr>
+    </table>
+
+    <h3>Categories Block</h3>
+    <p>Lists categories this fluid belongs to. One per line, comma-separated.</p>
+
+    <h3>Properties Block</h3>
+    <p>Numeric properties that define what happens when the fluid is consumed.</p>
+    <table>
+      <tr><th>Property</th><th>Description</th></tr>
+      <tr><td><code>hungerChange</code></td><td>How much hunger changes.</td></tr>
+      <tr><td><code>thirstChange</code></td><td>How much thirst changes.</td></tr>
+      <tr><td><code>calories</code></td><td>Caloric value.</td></tr>
+      <tr><td><code>carbohydrates</code></td><td>Carbs value.</td></tr>
+      <tr><td><code>lipids</code></td><td>Fat value.</td></tr>
+      <tr><td><code>proteins</code></td><td>Protein value.</td></tr>
+      <tr><td><code>alcohol</code></td><td>Alcohol content.</td></tr>
+      <tr><td><code>fatigueChange</code></td><td>Fatigue effect.</td></tr>
+      <tr><td><code>stressChange</code></td><td>Stress effect.</td></tr>
+      <tr><td><code>unhappyChange</code></td><td>Unhappiness effect.</td></tr>
+      <tr><td><code>enduranceChange</code></td><td>Endurance effect.</td></tr>
+      <tr><td><code>fluReduction</code></td><td>Flu symptom reduction.</td></tr>
+      <tr><td><code>painReduction</code></td><td>Pain reduction.</td></tr>
+      <tr><td><code>foodSicknessReduction</code></td><td>Food sickness reduction.</td></tr>
+    </table>
+
+    <h3>Poison Block</h3>
+    <table>
+      <tr><th>Field</th><th>Description</th></tr>
+      <tr><td><code>maxEffect</code></td><td>Severity: <code>None</code>, <code>Low</code>, <code>Medium</code>, <code>Extreme</code>, <code>Deadly</code>.</td></tr>
+      <tr><td><code>minAmount</code></td><td>Minimum poison amount (0 to 1.0).</td></tr>
+      <tr><td><code>diluteRatio</code></td><td>How much poison dilutes when blended with other fluids.</td></tr>
+    </table>
+
+    <h3>Blend Lists</h3>
+    <p>Control which fluids can or cannot be mixed together. Two approaches:</p>
+    <ul>
+      <li><strong>Script reference:</strong> <code>BlendWhiteList = MyFilter,</code> &mdash; references a separate filter script.</li>
+      <li><strong>Inline block:</strong> Define allowed/blocked fluids and categories directly.</li>
+    </ul>
+<pre>BlendWhiteList
+{
+    whitelist = true,
+    fluids
+    {
+        Water,
+    }
+    categories
+    {
+        Beverage,
+    }
+}</pre>
+
+    

@@ -1,0 +1,256 @@
+/* assets/style.css */
+:root {
+  color-scheme: dark;
+  --bg-primary: #0a0e13;
+  --bg-secondary: #0f1419;
+  --bg-tertiary: #151b23;
+  --bg-input: #1a2332;
+  --border-subtle: #1c2531;
+  --border-medium: #2d3748;
+  --border-active: #3b82f6;
+  --text-primary: #e9ecf0;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-yellow: #f59e0b;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Header Styles */
+header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-medium);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+header .t {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+header .pill {
+  font-size: 12px;
+  padding: 4px 12px;
+  border: 1px solid var(--border-medium);
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Button Styles */
+button, .btn-home {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+button:hover, .btn-home:hover {
+  background: var(--bg-input);
+  border-color: var(--border-active);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.btn-home {
+  display: inline-block;
+  text-decoration: none;
+  padding: 8px 14px;
+}
+
+.guide-btn {
+  margin-left: auto;
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.guide-btn:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Input Styles */
+input, select, textarea {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  width: 100%;
+}
+
+input:hover, select:hover, textarea:hover {
+  border-color: var(--border-active);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-active);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Label Styles */
+label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* Section Styles */
+.section {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.section h2 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+/* Panel Styles */
+.panel {
+  overflow: auto;
+  background: var(--bg-secondary);
+}
+
+.panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.panel::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.panel::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 5px;
+}
+
+.panel::-webkit-scrollbar-thumb:hover {
+  background: #3d4a5c;
+}
+
+/* Card Styles for Landing Page */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card:hover {
+  border-color: var(--accent-blue);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  background: var(--bg-tertiary);
+}
+
+.card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Hero Section for Landing Page */
+.hero {
+  text-align: center;
+  padding: 80px 24px 60px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+}
+
+.hero h1 {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.hero .subtitle {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 6px 16px;
+  border: 1px solid var(--border-medium);
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+}
+
+/* Tools Grid for Landing Page */
+.tools {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
