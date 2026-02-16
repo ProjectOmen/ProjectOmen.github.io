@@ -6,102 +6,22 @@
   <title>fluidForge</title>
   <link rel="stylesheet" href="assets/style.css">
   <style>
-    :root {
-      color-scheme: dark;
-      --bg-primary: #0a0e13;
-      --bg-secondary: #0f1419;
-      --bg-tertiary: #151b23;
-      --bg-input: #1a2332;
-      --border-subtle: #1c2531;
-      --border-medium: #2d3748;
-      --border-active: #3b82f6;
-      --text-primary: #e9ecf0;
-      --text-secondary: #9ca3af;
-      --text-muted: #6b7280;
-      --accent-blue: #3b82f6;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --accent-yellow: #f59e0b;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.5;
-    }
-
-    header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border-medium);
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      background: var(--bg-secondary);
-      box-shadow: var(--shadow-sm);
-    }
-
-    header .t {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    header .pill {
-      font-size: 12px;
-      padding: 4px 12px;
-      border: 1px solid var(--border-medium);
-      border-radius: 999px;
-      background: var(--bg-tertiary);
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .guide-btn {
-      background: linear-gradient(135deg, #1e3a5f 0%, #1a2332 100%);
-      border: 1px solid var(--accent-blue);
-      color: var(--accent-blue);
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .guide-btn:hover {
-      background: linear-gradient(135deg, #264d7a 0%, #1e3044 100%);
-      color: #93c5fd;
-      transform: translateY(-1px);
-    }
+    /* Tool-specific: Header buttons */
     .hdr-btn {
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 500;
-      border: 1px solid var(--border-medium);
-      border-radius: 8px;
-      background: var(--bg-tertiary);
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all .15s;
+      padding: 6px 14px; font-size: 13px; font-weight: 500;
+      border: 1px solid var(--border-medium); border-radius: 8px;
+      background: var(--bg-tertiary); color: var(--text-secondary);
+      cursor: pointer; transition: all .15s;
     }
     .hdr-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
     .hdr-btn + .guide-btn { margin-left: auto; }
 
+    /* Tool-specific: Grid layout */
     main {
       display: grid;
       grid-template-columns: 280px 1fr 1fr;
       height: calc(100vh - 57px);
     }
-
     @media (max-width: 1200px) {
       main { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: auto; min-height: calc(100vh - 57px); }
       main > .panel:first-child { grid-column: 1 / -1; max-height: 260px; }
@@ -111,19 +31,11 @@
       main > .panel:first-child { max-height: none; }
     }
 
-    .panel {
-      overflow: auto;
-      background: var(--bg-secondary);
-      border-right: 1px solid var(--border-medium);
-    }
+    /* Tool-specific: Panel borders */
+    .panel { border-right: 1px solid var(--border-medium); }
     .panel:last-child { border-right: none; }
 
-    .panel::-webkit-scrollbar { width: 10px; }
-    .panel::-webkit-scrollbar-track { background: var(--bg-secondary); }
-    .panel::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
-    .panel::-webkit-scrollbar-thumb:hover { background: #3d4a5c; }
-
-    /* Left panel */
+    /* Tool-specific: Left panel */
     .left-head { padding: 16px; border-bottom: 1px solid var(--border-subtle); }
     .left-head h3 { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 10px; }
 
@@ -160,13 +72,7 @@
     .left-actions button:hover { background: #1f2937; border-color: #3d4a5c; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
     .left-actions button:active { transform: translateY(0); }
 
-    /* Sections */
-    .section { padding: 20px; border-bottom: 1px solid var(--border-subtle); }
-    .section h2 {
-      font-size: 13px; font-weight: 600; margin: 0 0 16px; color: var(--text-primary);
-      text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9;
-    }
-
+    /* Tool-specific: Field system */
     .field { margin-bottom: 12px; }
     .field:last-child { margin-bottom: 0; }
     .field label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
@@ -178,26 +84,23 @@
     .field input:hover, .field select:hover, .field textarea:hover { border-color: #3d4a5c; }
     .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
     .field .hint { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-
     .field-row { display: flex; gap: 10px; }
     .field-row .field { flex: 1; }
 
-    /* Color preview */
+    /* Tool-specific: Color swatch */
     .color-swatch {
       display: inline-block; width: 28px; height: 28px; border-radius: 6px;
       border: 1px solid var(--border-medium); vertical-align: middle; margin-left: 8px;
     }
 
-    /* Tag input for categories */
+    /* Tool-specific: Tag input for categories */
     .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
     .tag {
       display: flex; align-items: center; gap: 4px; padding: 3px 10px; font-size: 12px;
       background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: 999px;
       color: var(--text-primary);
     }
-    .tag .tag-x {
-      font-size: 14px; cursor: pointer; color: var(--text-muted); line-height: 1;
-    }
+    .tag .tag-x { font-size: 14px; cursor: pointer; color: var(--text-muted); line-height: 1; }
     .tag .tag-x:hover { color: var(--accent-red); }
 
     .add-row { display: flex; gap: 6px; }
@@ -210,7 +113,7 @@
     .add-row button:hover { background: #1f2937; border-color: #3d4a5c; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
     .add-row button:active { transform: translateY(0); }
 
-    /* Blend rows */
+    /* Tool-specific: Blend rows */
     .blend-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
     .blend-row input { flex: 1; }
     .blend-row .rm-btn {
@@ -219,17 +122,10 @@
     }
     .blend-row .rm-btn:hover { border-color: var(--accent-red); color: var(--accent-red); }
 
-    /* Details (collapsible) */
-    details { margin-top: 14px; }
-    details > summary {
-      cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-secondary);
-      text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 0; user-select: none;
-    }
-    details > summary:hover { color: var(--text-primary); }
-    details[open] > summary { color: var(--accent-blue); }
+    /* Tool-specific: Detail body */
     .detail-body { padding: 4px 0 0; }
 
-    /* Preview */
+    /* Tool-specific: Preview */
     .preview-panel { background: var(--bg-primary); }
     pre.code {
       margin: 0; padding: 20px; font-size: 13px; line-height: 1.6;
@@ -245,7 +141,7 @@
     pre.code .vl { color: var(--accent-green); }
     pre.code .st { color: #f59e0b; }
 
-    /* Lint bar */
+    /* Tool-specific: Lint bar */
     .lint-bar {
       position: sticky; bottom: 0; padding: 16px 20px; font-size: 12px; font-weight: 500;
       background: var(--bg-secondary); border-top: 1px solid var(--border-subtle);
@@ -254,53 +150,6 @@
     .lint-bar .issues { color: var(--accent-red); }
     .lint-bar .warnings { color: var(--accent-yellow); }
     .lint-bar .ok { color: var(--accent-green); font-weight: 500; }
-
-    /* Guide modal */
-    .guide-overlay {
-      position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.7);
-      display: none; align-items: center; justify-content: center;
-    }
-    .guide-overlay.visible { display: flex; }
-    .guide-modal {
-      background: var(--bg-secondary); border: 1px solid var(--border-medium); border-radius: 12px;
-      width: 90vw; max-width: 800px; max-height: 85vh;
-      display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    }
-    .guide-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 24px; border-bottom: 1px solid var(--border-medium);
-    }
-    .guide-header h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary); }
-    .guide-close {
-      background: none; border: none; color: var(--text-muted); font-size: 20px;
-      cursor: pointer; padding: 4px 8px; border-radius: 6px;
-    }
-    .guide-close:hover { color: var(--text-primary); background: var(--bg-tertiary); }
-    .guide-body {
-      overflow-y: auto; padding: 24px; font-size: 13px; line-height: 1.8; color: var(--text-secondary);
-    }
-    .guide-body::-webkit-scrollbar { width: 10px; }
-    .guide-body::-webkit-scrollbar-track { background: var(--bg-secondary); }
-    .guide-body::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 5px; }
-    .guide-body h3 {
-      color: var(--text-primary); font-size: 15px; margin: 28px 0 10px;
-      padding-bottom: 6px; border-bottom: 1px solid var(--border-subtle);
-    }
-    .guide-body h3:first-child { margin-top: 0; }
-    .guide-body p { margin: 0 0 10px; }
-    .guide-body ul, .guide-body ol { margin: 0 0 10px; padding-left: 20px; }
-    .guide-body li { margin-bottom: 4px; }
-    .guide-body code {
-      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
-      background: var(--bg-input); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--text-primary);
-    }
-    .guide-body pre {
-      background: var(--bg-primary); border: 1px solid var(--border-medium); border-radius: 8px;
-      padding: 14px; overflow-x: auto; font-size: 12px; line-height: 1.6; margin: 0 0 12px; height: auto;
-    }
-    .guide-body table { margin: 8px 0 14px; border: 1px solid var(--border-medium); border-radius: 8px; overflow: hidden; width: 100%; border-collapse: collapse; font-size: 13px; }
-    .guide-body th { background: var(--bg-tertiary); padding: 8px 12px; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 12px; }
-    .guide-body td { padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
   </style>
 </head>
 <body>
@@ -544,6 +393,29 @@
 let fluids = [];
 let activeIdx = -1;
 
+/* ── Persistence ── */
+const STORAGE_KEY = 'fluidForge_session';
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ fluids, activeIdx }));
+  } catch(e) {}
+}
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (data.fluids && data.fluids.length > 0) {
+      fluids = data.fluids;
+      activeIdx = typeof data.activeIdx === 'number' ? data.activeIdx : 0;
+      if (activeIdx >= fluids.length) activeIdx = fluids.length - 1;
+      return true;
+    }
+    return false;
+  } catch(e) { return false; }
+}
+function clearStorage() { localStorage.removeItem(STORAGE_KEY); }
+
 function blank() {
   return {
     name: '', displayName: '',
@@ -593,6 +465,7 @@ function sync() {
   renderList();
   renderPreview();
   lint();
+  saveToStorage();
 }
 
 /* ── Sync model → form ── */
@@ -662,13 +535,13 @@ function addCategory() {
   if (!v) return;
   fluids[activeIdx].categories.push(v);
   inp.value = '';
-  renderCategories(); renderPreview(); lint();
+  renderCategories(); renderPreview(); lint(); saveToStorage();
 }
 
 function removeCategory(i) {
   if (activeIdx < 0) return;
   fluids[activeIdx].categories.splice(i, 1);
-  renderCategories(); renderPreview(); lint();
+  renderCategories(); renderPreview(); lint(); saveToStorage();
 }
 
 /* ── Blend items ── */
@@ -695,17 +568,17 @@ function addBlendItem(listType, subType) {
   if (!v) return;
   getBlendArr(listType, subType).push(v);
   inp.value = '';
-  renderBlendItems(listType, subType); renderPreview(); lint();
+  renderBlendItems(listType, subType); renderPreview(); lint(); saveToStorage();
 }
 
 function updateBlendItem(listType, subType, idx, val) {
   getBlendArr(listType, subType)[idx] = val.trim();
-  renderPreview();
+  renderPreview(); saveToStorage();
 }
 
 function removeBlendItem(listType, subType, idx) {
   getBlendArr(listType, subType).splice(idx, 1);
-  renderBlendItems(listType, subType); renderPreview(); lint();
+  renderBlendItems(listType, subType); renderPreview(); lint(); saveToStorage();
 }
 
 /* ── List panel ── */
@@ -729,6 +602,7 @@ function newFluid() {
   activeIdx = fluids.length - 1;
   renderList();
   load();
+  saveToStorage();
 }
 
 function deleteFluid(i) {
@@ -737,6 +611,7 @@ function deleteFluid(i) {
   renderList();
   if (activeIdx >= 0) load(); else clearForm();
   renderPreview(); lint();
+  saveToStorage();
 }
 
 function clearForm() {
@@ -1026,7 +901,7 @@ function handleFile(evt) {
     if (parsed.length === 0) { alert('No fluid blocks found in file.'); return; }
     fluids = fluids.concat(parsed);
     activeIdx = fluids.length - parsed.length;
-    renderList(); load();
+    renderList(); load(); saveToStorage();
   };
   reader.readAsText(file);
   evt.target.value = '';
@@ -1062,11 +937,15 @@ function loadExample() {
 
   fluids.push(ex);
   activeIdx = fluids.length - 1;
-  renderList(); load();
+  renderList(); load(); saveToStorage();
 }
 
 /* ── Init ── */
-renderList();
+if (loadFromStorage() && activeIdx >= 0) {
+  renderList(); load();
+} else {
+  renderList();
+}
 renderPreview();
 lint();
 </script>
